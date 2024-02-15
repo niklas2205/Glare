@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "718317121487",
+    "project_id": "glare-8e959",
+    "storage_bucket": "glare-8e959.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:718317121487:android:c27f57890f752221f62cba",
+        "android_client_info": {
+          "package_name": "com.example.glare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7xGUAU3huprdes6UUSOztCUSHmWVwtsg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
