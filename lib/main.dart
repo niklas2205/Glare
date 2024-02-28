@@ -1,21 +1,336 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glare/app.dart';
+import 'package:glare/simple_bloc_observer.dart';
+import 'package:user_repository/user_repository.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 //import 'package:firebase_core/firebase_core.dart';
 //import 'firebase_options.dart'; // Adjust the import path if necessary
 
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Stellen Sie sicher, dass Flutter-Widgets initialisiert sind
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(MyApp()); // Ersetzen Sie MyApp durch den Namen Ihrer App-Klasse
+  WidgetsFlutterBinding.ensureInitialized(); 
+  await Firebase.initializeApp();
+  Bloc.observer = SimpleBlocObserver();
+  runApp(MainApp(FirebaseUserRepo())); // Ersetzen Sie MyApp durch den Namen Ihrer App-Klasse
 }
 
+class RegistrationScreen extends StatefulWidget {
+  @override
+  _RegistrationScreenState createState() => _RegistrationScreenState();
+}
+
+class _RegistrationScreenState extends State<RegistrationScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  String _email = '';
+  String _password = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Register'),
+      ),
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: <Widget>[
+            TextFormField(
+              validator: (input) {
+                if (input!.isEmpty) {
+                  return 'Please type an email';
+                }
+                return null;
+              },
+              onSaved: (input) => _email = input!,
+              decoration: const InputDecoration(
+                labelText: 'Email'
+              ),
+            ),
+            TextFormField(
+              validator: (input) {
+                if (input!.length < 6) {
+                  return 'Your password needs to be atleast 6 characters';
+                }
+                return null;
+              },
+              onSaved: (input) => _password = input!,
+              decoration: const InputDecoration(
+              labelText: 'Password'
+              ),
+              obscureText: true,
+            ),
+            ElevatedButton(
+              onPressed: register,
+              child: const Text('Register'),
+            ),      
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> register() async {
+    final formState = _formKey.currentState;
+    if (formState!.validate()) {
+      formState.save();
+      try {
+        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(email: _email, password: _password);
+
+        // Create a new user model instance
+        CustomUser newUser = CustomUser(
+          email: _email,
+          registrationType: 'email', // Since this is email registration
+          uid: userCredential.user!.uid, // Get the UID from userCredential
+        );
+
+
+        // Save the user data to Firestore
+        await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set(newUser.toMap());
+
+        // Navigate to profile page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AdditionalDetailsScreen(uid: userCredential.user!.uid),
+          ),
+        );
+      } catch (e) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+    }
+  }
+}
+
+class AdditionalDetailsScreen extends StatefulWidget {
+  final String uid; // User ID passed from the registration screen
+
+  const AdditionalDetailsScreen({Key? key, required this.uid}) : super(key: key);
+
+  @override
+  _AdditionalDetailsScreenState createState() => _AdditionalDetailsScreenState();
+}
+
+class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
+  final _formKey = GlobalKey<FormState>();
+  String _firstName = '';
+  String _secondName = '';
+  DateTime _dateOfBirth = DateTime.now();
+  TextEditingController _dateController = TextEditingController(); // Define the TextEditingController here
+
+
+  Future<void> _saveAdditionalDetails() async {
+    final formState = _formKey.currentState;
+    if (formState != null && formState.validate()) {
+      formState.save();
+
+      try {
+        // Update the Firestore document with the additional details
+        await FirebaseFirestore.instance.collection('users').doc(widget.uid).update({
+          'firstName': _firstName,
+          'surname': _secondName,  // 'surname' is used instead of 'secondName'
+          'DOB': _dateOfBirth.toIso8601String(),  // Storing the date as a string
+        });
+
+        // Navigate to another screen or home page after saving details
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MyHomePage(title: 'Home')));
+      } catch (e) {
+        // Handle any errors here
+        print(e.toString());
+        // Optionally, show an error message to the user
+      }
+    }
+  }
+
+    Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _dateOfBirth,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != _dateOfBirth) {
+      setState(() {
+        _dateOfBirth = picked;
+        _dateController.text = "${picked.toLocal()}".split(' ')[0]; // Format the date as required
+      });
+    }
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Additional Details')),
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: <Widget>[
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'First Name'),
+              onSaved: (value) => _firstName = value ?? '',
+              validator: (value) => value!.isEmpty ? 'Please enter your first name' : null,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(labelText: 'Surname'),
+              onSaved: (value) => _secondName = value ?? '',
+              validator: (value) => value!.isEmpty ? 'Please enter your second name' : null,
+            ),
+            TextFormField(
+              controller: _dateController,
+              decoration: const InputDecoration(labelText: 'Date of Birth'),
+              onTap: () => _selectDate(context),
+              readOnly: true, // Makes the field read-only
+            ),
+         
+            // Add a date picker for date of birth
+            ElevatedButton(
+              onPressed: _saveAdditionalDetails,
+              child: Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class LoginScreen extends StatelessWidget {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Login"),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'Password'),
+                obscureText: true,
+              ),
+              ElevatedButton(
+                onPressed: () => _loginWithEmailPassword(context),
+                child: const Text("Log in"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationScreen()));
+                },
+                child: const Text("Register with Email"),
+              ),
+              ElevatedButton(
+                onPressed: () => _signInWithGoogle(context),
+                child: const Text("Log in with Google"),
+              ),
+              ElevatedButton(
+                onPressed: () => _signInWithApple(context),
+                child: const Text("Log in with Apple"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _loginWithEmailPassword(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MyHomePage(title: 'Home')));
+    } catch (e) {
+      // Handle error, e.g., show a toast or a dialog
+      Fluttertoast.showToast(msg: "Login Failed: ${e.toString()}");
+    }
+  }
+
+  void _signInWithGoogle(BuildContext context) async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        await FirebaseAuth.instance.signInWithCredential(credential);
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MyHomePage(title: 'Home')));
+      }
+    } catch (e) {
+      // Handle error
+      Fluttertoast.showToast(msg: "Login Failed: ${e.toString()}");
+    }
+  }
+
+  void _signInWithApple(BuildContext context) async {
+    try {
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      // Create an OAuthCredential for Firebase. Here, `appleCredential.identityToken`
+      // and `appleCredential.authorizationCode` are needed.
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      // Sign in the user with Firebase
+      await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+
+      // Navigate to the home page
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MyHomePage(title: 'Home')));
+
+    } catch (e) {
+      // Handle errors here
+      // Example: Fluttertoast.showToast(msg: "Apple Login Failed: ${e.toString()}");
+    }
+  }
+}
+
+class CustomUser {
+  String email;
+  String registrationType;
+  String uid;
+
+  CustomUser({required this.email, required this.registrationType, required this.uid});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'email': email,
+      'registrationType': registrationType,
+      'uid': uid,
+    };
+  }
+}
 
 
 class NoAnimationBottomNavigationBarItem extends StatelessWidget {
@@ -47,6 +362,34 @@ class NoAnimationBottomNavigationBarItem extends StatelessWidget {
   }
 }
 
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          ElevatedButton(
+            onPressed: () {
+              // Navigate to profile page or handle profile actions
+            },
+            child: const Text('Profile'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              // Optionally navigate to the login screen after logout
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen()));
+            },
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class Venue {
   final String imagePath;
@@ -54,30 +397,44 @@ class Venue {
   final String location;
   final int ageRequirement;
 
-  Venue({
-    required this.imagePath,
-    required this.title,
-    required this.location,
-    required this.ageRequirement,
-  });
+  Venue({required this.imagePath, required this.title, required this.location, required this.ageRequirement});
+
+  factory Venue.fromMap(Map<String, dynamic> map) {
+  
+    return Venue(
+      imagePath: map['imagePath'] as String,
+      title: map['title'] as String,
+      location: map['location'] as String,
+      ageRequirement: map["ageRequirement"] 
+    );
+  }
 }
 class Event {
-  final String imagePath;
-  final String title;
-  final String location;
-  final DateTime date; // Example property
+  String imagePath;
+  String title;
+  String location;
+  DateTime date;
 
-  Event({
-    required this.imagePath,
-    required this.title,
-    required this.location,
-    required this.date,
-  });
+  Event({required this.imagePath, required this.title, required this.location, required this.date});
+
+  factory Event.fromMap(Map<String, dynamic> map) {
+    // Assuming 'date' in your Firestore is a Timestamp object
+    Timestamp timestamp = map['date'] as Timestamp;
+    DateTime date = timestamp.toDate();
+
+    return Event(
+      imagePath: map['imagePath'] as String,
+      title: map['title'] as String,
+      location: map['location'] as String,
+      date: date, // Now using the converted DateTime object
+    );
+  }
 }
+
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -86,7 +443,26 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Glare Testing'),
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            User? user = snapshot.data;
+            if (user == null) {
+              // User not logged in, show LoginScreen
+              return LoginScreen();
+            } else {
+              // User is logged in, show MyHomePage
+              return MyHomePage(title: 'Glare Testing');
+            }
+          } else {
+            // Waiting for authentication result
+            return Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+        },
+      ),
     );
   }
 }
@@ -228,7 +604,7 @@ class VenueDetailPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Image.asset(venue.imagePath, fit: BoxFit.cover),
+            Image.network(venue.imagePath, fit: BoxFit.cover),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -267,7 +643,7 @@ class EventDetailPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Image.asset(event.imagePath, fit: BoxFit.cover),
+            Image.network(event.imagePath, fit: BoxFit.cover),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -312,7 +688,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const Center(child: Text('Socials Page')), // Placeholder for the Socials page
     const Center(child: Text('Event Tinder Page')), // Placeholder for the Event Tinder page
     const VenuesPage(), // Your custom Venues page
-    const Center(child: Text('Settings Page')), // Placeholder for the Settings page
+    const SettingsPage(), // Placeholder for the Settings page
   ];
 
 
@@ -371,57 +747,40 @@ class VenuesPage extends StatefulWidget {
 
 class _VenuesPageState extends State<VenuesPage> {
   bool showVenues = true; // Toggle state
-  final List<Venue> venues = [
-    Venue(
-      imagePath: 'assets/images/089_logo.png',
-      title: '089 Bar',
-      location: 'Adresse',
-      ageRequirement: 18,
-    ),
-    Venue(
-      imagePath: "assets/images/P1_logo.png",
-      title: 'P1 Club & Bar',
-      location: 'Adresse',
-      ageRequirement: 21,
-    ),
-    Venue(
-      imagePath: "assets/images/Drella_logo.png",
-      title: "Call me Drella",
-      location: "Adresse",
-      ageRequirement: 18,
-    ),
-    // Add more dummy venues as needed
-  ];
+  List<Venue> venues = [];
+  List<Event> events = [];
 
-List<Event> events = [];
+  @override
+  void initState() {
+    super.initState();
+    fetchVenuesFromFirestore().then((_) {
+      fetchEventsFromFirestore().then((_) {
+        setState(() {}); // Rebuild the widget after fetching data
+      });
+    });
+  }
+
+  Future<void> fetchVenuesFromFirestore() async {
+    try {
+      QuerySnapshot venueSnapshot = await FirebaseFirestore.instance.collection('Venues').get();
+      venues = venueSnapshot.docs.map((doc) => Venue.fromMap(doc.data() as Map<String, dynamic>)).toList();
+      venues.sort((a, b) => a.title.compareTo(b.title));
+    } catch (e) {
+      print("Error fetching venues: $e");
+    }
+  }
+
 Future<void> fetchEventsFromFirestore() async {
-  QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('events').get();
-  events = querySnapshot.docs.map((doc) => Event.fromMap(doc.data() as Map<String, dynamic>)).toList();
+  try {
+    QuerySnapshot eventSnapshot = await FirebaseFirestore.instance.collection('Events').get();
+    events = eventSnapshot.docs.map((doc) => Event.fromMap(doc.data() as Map<String, dynamic>)).toList();
+    // Sort events by date, earliest first
+    events.sort((a, b) => a.date.compareTo(b.date));
+  } catch (e) {
+    print("Error fetching events: $e");
+  }
 }
-}
-  // Dummy events list
-  final List<Event> events = [
-    // Add your events data
-    Event(
-      imagePath: "assets/images/Event1.png",
-      title: "Love Tuesday",
-      location: "089 Bar",
-      date: DateFormat("d MMMM yyyy HH:mm", 'en_US').parse("13 February 2024 22:00"),
-    ),
-    Event(
-      imagePath: "assets/images/Event2.png",
-      title: "Monday Funday",
-      location: "089 Bar",
-      date: DateFormat("d MMMM yyyy HH:mm", 'en_US').parse("12 February 2024 22:00"),
-    ),
-    Event(
-      imagePath: "assets/images/Event3.png",
-      title: "Schnaps & Liebe",
-      location: "089 Bar",
-      date: DateFormat("d MMMM yyyy HH:mm", 'en_US').parse("17 February 2024 22:00")
-    )
-    // Add more events
-  ]..sort((a, b) => a.date.compareTo(b.date));
+
 
   @override
   Widget build(BuildContext context) {
@@ -502,7 +861,7 @@ class VenueItem extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.horizontal(left: Radius.circular(10.0)),
-            child: Image.asset(
+            child: Image.network(
               venue.imagePath,
               width: 140, // Set your desired image width
               height: 100, // Set your desired image height
@@ -547,7 +906,7 @@ class EventItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: Image.asset(event.imagePath, width: 50, height: 50), // Adjust size as needed
+        leading: Image.network(event.imagePath, width: 50, height: 50), // Adjust size as needed
         title: Text(event.title),
         subtitle: Text('${event.location}, ${event.date}'),
         // Add more event details here
