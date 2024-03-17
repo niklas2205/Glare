@@ -62,7 +62,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       },
       child: Form(
         key: _formKey,
-        child: Center(
+        child: Align(
+          alignment: Alignment.topCenter,
           child: SingleChildScrollView(
             child: Column(
               children: [

@@ -1,4 +1,4 @@
-name: Events_Venue_repo
+name: venue_repository
 description: "Pulling of the venues and events in the App"
 publish_to: 'none'
 version: 0.1.0
@@ -22,8 +22,3 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
-
-flutter:
-  assets:
-    - assets/images/
-  uses-material-design: true
