@@ -13,7 +13,7 @@ final class GetVenueInitial extends GetVenueState {}
 final class GetVenueFailure extends GetVenueState {}
 final class GetVenueLoading extends GetVenueState {}
 final class GetVenueSuccess extends GetVenueState {
-  final List<Event> venues;
+  final List<Venue> venues;
 
   const GetVenueSuccess(this.venues);
 

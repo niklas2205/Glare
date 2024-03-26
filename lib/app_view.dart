@@ -1,15 +1,25 @@
 import 'package:event_repository/event_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glare/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:glare/screens/auth/blocs/sign_in_bloc/sign_in_bloc.dart';
+import 'package:glare/screens/home/blocs/home_screen_bloc/home_screen_bloc.dart';
 import 'package:glare/screens/home/blocs/get_event_bloc/get_event_bloc.dart';
+import 'package:glare/screens/home/blocs/get_venue_bloc/get_venue_bloc.dart';
+import 'package:glare/screens/home/views/home_screen1.dart';
+import 'package:user_repository/user_repository.dart';
+import 'package:venue_favorite_repository/venue_fav_repo.dart';
+import 'package:venue_repository/venue_repository.dart';
 
 import 'screens/auth/views/welcome_screen.dart';
-import 'screens/home/views/home_screen.dart';
+import 'screens/home/blocs/favourite_venue_bloc/favourite_venue_bloc.dart';
+import 'screens/home/blocs/user_bloc/user_bloc.dart';
 
 class MainAppView extends StatelessWidget {
-  const MainAppView({super.key});
+  final UserRepository userRepository;
+  const MainAppView({super.key, required this.userRepository});
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,21 +37,38 @@ class MainAppView extends StatelessWidget {
             if (state.status == AuthenticationStatus.authenticated) {
               return MultiBlocProvider(
                 providers: [
-                  BlocProvider(
+                  BlocProvider<SignInBloc>(
                     create: (context) => SignInBloc(
-                        context.read<AuthenticationBloc>().userRepository),
+                      context.read<AuthenticationBloc>().userRepository,
+                    ),
                   ),
-                  BlocProvider(
+                  BlocProvider<GetEventBloc>(
                     create: (context) => GetEventBloc(
-                      FirebaseEventRepo()
+                      FirebaseEventRepo(),
                     )..add(GetEvent()),
                   ),
+                  // Add the HomeScreenBloc provider if it is required for HomeScreen1
+                  BlocProvider<HomeScreenBloc>(
+                    create: (context) => HomeScreenBloc(),
+                  ),
+                  // Add the GetVenueBloc provider here
+                  BlocProvider<GetVenueBloc>(
+                    create: (context) => GetVenueBloc(FirebaseVenueRepo())..add(GetVenue()) // Replace VenueRepo() with your venue repository instance
+                  ),
+                  // Adding UserBloc
+                  BlocProvider<UserBloc>(
+                    create: (context) => UserBloc(userRepository: userRepository),// Adjust UserRepository instantiation as per your project setup
+                  ),
+                   BlocProvider<FavouriteVenueBloc>(
+                    create: (context) => FavouriteVenueBloc(context.read<DatabaseRepository>(),),
+                   ),
                 ],
-                child: const HomeScreen(),
+                child: const HomeScreen1(),
               );
             } else {
               return const WelcomeScreen();
             }
+
           }),
         ));
   }

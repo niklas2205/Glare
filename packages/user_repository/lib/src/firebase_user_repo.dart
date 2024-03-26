@@ -37,6 +37,17 @@ class FirebaseUserRepo implements UserRepository{
       rethrow;
     }
   }
+  @override
+  Future<MyUser?> getCurrentUser() async {
+    var firebaseUser = _firebaseAuth.currentUser;
+    if (firebaseUser != null) {
+      var userDoc = await usersCollection.doc(firebaseUser.uid).get();
+      if (userDoc.exists) {
+        return MyUser.fromEntity(MyUserEntity.fromDocument(userDoc.data()!));
+      }
+    }
+    return null;
+  }
 
   @override
   Future<MyUser> signUp(MyUser myUser, String password) async {
@@ -70,5 +81,17 @@ class FirebaseUserRepo implements UserRepository{
       log(e.toString());
       rethrow;
    }
+  }
+
+    @override
+  Future<List<String>> fetchFavoriteVenueIds(String userId) async {
+    // Example implementation (adjust based on your database structure)
+    var snapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('favorite_venues')
+      .get();
+
+    return snapshot.docs.map((doc) => doc.id).toList();
   }
 }

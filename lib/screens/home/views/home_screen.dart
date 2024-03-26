@@ -2,8 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glare/screens/auth/blocs/sign_in_bloc/sign_in_bloc.dart';
+
 import 'package:glare/screens/home/blocs/get_event_bloc/get_event_bloc.dart';
 import 'package:glare/screens/home/views/Event_screen.dart';
+
+import '../blocs/home_screen_bloc/home_screen_bloc.dart';
+
+
 
 
 class HomeScreen extends StatelessWidget {
@@ -11,7 +16,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocProvider<HomeScreenBloc>(
+      create: (context) => HomeScreenBloc(),
+      child: Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,
@@ -146,6 +153,6 @@ class HomeScreen extends StatelessWidget {
           },
         ),
       ),
-    );
+    ));
   }
 }

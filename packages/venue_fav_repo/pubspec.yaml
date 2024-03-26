@@ -1,0 +1,24 @@
+name: venue_favorite_repository
+description: "Pulling of the venues and events in the App"
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.2.6 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  intl: ^0.17.0 
+  firebase_core: ^2.25.4
+  firebase_database: ^10.4.5
+  cloud_firestore: ^4.15.4
+  firebase_auth: ^4.17.5
+  fluttertoast: ^8.2.4
+  google_sign_in: ^6.2.1
+  sign_in_with_apple: ^5.0.0
+  
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0

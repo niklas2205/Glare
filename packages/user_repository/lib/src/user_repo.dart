@@ -7,6 +7,10 @@ abstract class UserRepository {
 
   Future<void> setUserData(MyUser user);
 
+  Future<MyUser?> getCurrentUser();
+
+  Future<List<String>> fetchFavoriteVenueIds(String userId);
+
   Future<void> signIn(String email, String password);
 
   Future<void> logOut();

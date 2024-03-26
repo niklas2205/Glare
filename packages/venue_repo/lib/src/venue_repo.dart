@@ -1,6 +1,6 @@
 
 
-import 'package:venue_repo/venue_repository.dart';
+import 'package:venue_repository/venue_repository.dart';
 
 
 abstract class VenueRepo{
