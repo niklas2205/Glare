@@ -1,22 +1,36 @@
-import 'package:firebase_database/firebase_database.dart';
+
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseRepository {
-  final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Future<void> addToFavorites(String userId, String venueId) async {
-    await dbRef.child('users/$userId/favorite_venues/$venueId').set(true);
+    try {
+      print("Firestore - Adding venue $venueId to user $userId favorites");
+      await firestore.collection('users').doc(userId).collection('favorite_venues').doc(venueId).set({'favorited': true});
+      print("Firestore - Venue added successfully");
+    } catch (e) {
+      print("Error adding venue to favorites: $e");
+    }
   }
 
   Future<void> removeFromFavorites(String userId, String venueId) async {
-    await dbRef.child('users/$userId/favorite_venues/$venueId').remove();
+    try {
+      print("Firestore - Removing venue $venueId from user $userId favorites");
+      await firestore.collection('users').doc(userId).collection('favorite_venues').doc(venueId).delete();
+      print("Firestore - Venue removed successfully");
+    } catch (e) {
+      print("Error removing venue from favorites: $e");
+    }
   }
 
   Future<List<String>> fetchUserFavorites(String userId) async {
-    DataSnapshot snapshot = await dbRef.child('users/$userId/favorite_venues').get();
-    if (snapshot.exists && snapshot.value != null) {
-      Map<dynamic, dynamic> favoritesMap = Map<dynamic, dynamic>.from(snapshot.value as Map);
-      return favoritesMap.keys.cast<String>().toList();
-    } else {
+    try {
+      var snapshot = await firestore.collection('users').doc(userId).collection('favorite_venues').get();
+      return snapshot.docs.map((doc) => doc.id).toList();
+    } catch (e) {
+      print('Error fetching favorites: $e');
       return [];
     }
   }

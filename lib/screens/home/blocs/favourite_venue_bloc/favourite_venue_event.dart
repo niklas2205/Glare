@@ -13,7 +13,7 @@ class RemoveVenueFromFavorites extends FavouriteVenueEvent {
   final String venueId;
   final String userId;
 
-  RemoveVenueFromFavorites(this.venueId, this.userId);
+  RemoveVenueFromFavorites(this.userId, this.venueId);
 }
 
 class LoadUserFavorites extends FavouriteVenueEvent {

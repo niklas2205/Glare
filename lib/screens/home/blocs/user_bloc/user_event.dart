@@ -15,3 +15,12 @@ class UpdateFavoriteVenues extends UserEvent {
   @override
   List<Object> get props => [favoriteVenueIds];
 }
+
+class RefreshUserFavorites extends UserEvent {
+  final String userId;
+
+  RefreshUserFavorites(this.userId);
+
+  @override
+  List<Object> get props => [userId];
+}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class VenueDetail extends StatelessWidget {
   final String name;
@@ -62,12 +63,29 @@ class VenueDetail extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(
-                        address,
-                        textAlign: TextAlign.left,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                      InkWell(
+                        onTap: () async {
+                          final Uri uri = Uri(scheme: 'https', host: 'www.google.com', path: '/maps/search/', queryParameters: {
+                            'api': '1',
+                            'query': address,
+                          });
+
+                          if (await canLaunchUrl(uri)) {
+                            await launchUrl(uri);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Could not launch Maps for $address')),
+                            );
+                          }
+                        },
+                        child: Text(
+                          address,
+                          textAlign: TextAlign.left,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue, // Styled as a link
+                          ),
                         ),
                       ),
                     ],

@@ -7,7 +7,7 @@ import 'home_screen_event.dart';
 import 'home_screen_state.dart';
 
 class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
-  HomeScreenBloc() : super(HomeScreenState(HomeScreenView.events)) {
+  HomeScreenBloc() : super(const HomeScreenState(HomeScreenView.events)) {
     on<ToggleViewEvent>(_onToggleViewEvent);
   }
 
@@ -15,10 +15,10 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
     // Handle the ToggleViewEvent
     if (event.view == HomeScreenView.events) {
       // Update the state to show events
-      emit(HomeScreenState(HomeScreenView.events));
+      emit(const HomeScreenState(HomeScreenView.events));
     } else if (event.view == HomeScreenView.venues) {
       // Update the state to show venues
-      emit(HomeScreenState(HomeScreenView.venues));
+      emit(const HomeScreenState(HomeScreenView.venues));
     }
   }
 }

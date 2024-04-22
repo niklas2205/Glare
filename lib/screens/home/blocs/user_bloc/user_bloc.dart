@@ -11,6 +11,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   UserBloc({required this.userRepository}) : super(UserInitial()) {
     on<LoadUserData>(_onLoadUserData);
     on<UpdateFavoriteVenues>(_onUpdateFavoriteVenues);
+    on<RefreshUserFavorites>(_onRefreshUserFavorites);
     // ... other event handlers ...
   }
 
@@ -30,8 +31,25 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
   }
 
-  Future<void> _onUpdateFavoriteVenues(UpdateFavoriteVenues event, Emitter<UserState> emit) async {
-    // Handle updating favorite venues logic
-  }
 
+  void _onUpdateFavoriteVenues(UpdateFavoriteVenues event, Emitter<UserState> emit) {
+  if (state is UserLoaded) {
+    // Assuming you have the current user data in the state
+    final currentUser = (state as UserLoaded).user;
+    // Emit new state with updated favorite venue IDs
+    emit(UserLoaded(currentUser, event.favoriteVenueIds));
+  }
+}
+  void _onRefreshUserFavorites(RefreshUserFavorites event, Emitter<UserState> emit) async {
+    try {
+      if (state is UserLoaded) {
+        final currentUser = (state as UserLoaded).user;
+        final updatedFavoriteVenueIds = await userRepository.fetchFavoriteVenueIds(currentUser.userId);
+        print('Updated favorites: $updatedFavoriteVenueIds'); // Debugging statement
+        emit(UserLoaded(currentUser, updatedFavoriteVenueIds));
+      }
+    } catch (e) {
+      print('Error in refreshing favorites: $e'); // Debugging statement
+    }
+  }
 }

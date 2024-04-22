@@ -15,18 +15,24 @@ class FavouriteVenueBloc extends Bloc<FavouriteVenueEvent, FavouriteVenueState> 
 
   void _onAddVenueToFavorites(AddVenueToFavorites event, Emitter<FavouriteVenueState> emit) async {
     try {
+      print("Handling AddVenueToFavorites event in Bloc");
       await databaseRepository.addToFavorites(event.userId, event.venueId);
-      emit(FavoriteAdded());
-    } catch (_) {
+      // Fetch updated favorites after adding
+      var updatedFavorites = await databaseRepository.fetchUserFavorites(event.userId);
+      emit(FavoritesLoaded(updatedFavorites));
+    } catch (e) {
       emit(FavoriteActionError());
     }
   }
 
   Future<void> _onRemoveVenueFromFavorites(RemoveVenueFromFavorites event, Emitter<FavouriteVenueState> emit) async {
     try {
-      await databaseRepository.removeFromFavorites(event.venueId, event.userId);
-      emit(FavoriteRemoved());
-    } catch (_) {
+      print("Handling RemoveVenueFromFavorites event in Bloc");
+      await databaseRepository.removeFromFavorites(event.userId, event.venueId);
+      // Fetch updated favorites after removing
+      var updatedFavorites = await databaseRepository.fetchUserFavorites(event.userId);
+      emit(FavoritesLoaded(updatedFavorites));
+    } catch (e) {
       emit(FavoriteActionError());
     }
   }
