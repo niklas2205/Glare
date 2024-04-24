@@ -58,7 +58,7 @@ class EventDetail extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start, 
                     children: [
                       Text(
-                        'Event Name Placeholder', // Placeholder text for the event name
+                        name, // Use provided name for the event name
                         textAlign: TextAlign.left,
                         style: TextStyle(
                           fontSize: 20,
@@ -68,7 +68,7 @@ class EventDetail extends StatelessWidget {
                       ),
                       SizedBox(height: 10), // Add space between the name and the venue
                       Text(
-                        'Venue Placeholder', // Placeholder text for the event venue
+                        venue, // Use provided venue for the event venue
                         textAlign: TextAlign.left,
                         style: TextStyle(
                           fontSize: 20,
@@ -88,7 +88,7 @@ class EventDetail extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        'Description Placeholder', // Placeholder text for the event description
+                        description, // Use provided description for the event description
                         style: TextStyle(
                           color: Colors.white, // Changed to white for better readability on black background
                         ),
