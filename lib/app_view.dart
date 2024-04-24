@@ -27,11 +27,23 @@ class MainAppView extends StatelessWidget {
         title: 'Glare Events',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            colorScheme: const ColorScheme.light(
-                background: Colors.white,
-                onBackground: Colors.black,
-                primary: Colors.blue,
-                onPrimary: Colors.white)),
+            colorScheme: ColorScheme.dark(
+                primary: Color(0xFF13B8A8),
+                onPrimary: Colors.black,
+                surface: Colors.black,
+                onSurface: Color(0xFF13B8A8),
+                background: Colors.black,
+                onBackground: Color(0xFF13B8A8)),
+            textTheme: TextTheme(
+              headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold, color: Color(0xFF13B8A8)),
+              headline6: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic, color: Color(0xFF13B8A8)),
+              bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Hind', color: Color(0xFF13B8A8)),
+            ),
+            buttonTheme: ButtonThemeData(
+              buttonColor: Color(0xFF13B8A8),
+              textTheme: ButtonTextTheme.primary,
+            )
+        ),
         home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
           builder: ((context, state) {
             if (state.status == AuthenticationStatus.authenticated) {

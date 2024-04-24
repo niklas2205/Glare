@@ -16,7 +16,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); 
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   Bloc.observer = SimpleBlocObserver();
   runApp(MainApp(FirebaseUserRepo())); // Ersetzen Sie MyApp durch den Namen Ihrer App-Klasse
@@ -72,7 +72,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             ElevatedButton(
               onPressed: register,
               child: const Text('Register'),
-            ),      
+            ),
           ],
         ),
       ),
@@ -192,7 +192,7 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
               onTap: () => _selectDate(context),
               readOnly: true, // Makes the field read-only
             ),
-         
+
             // Add a date picker for date of birth
             ElevatedButton(
               onPressed: _saveAdditionalDetails,
@@ -400,12 +400,12 @@ class Venue {
   Venue({required this.imagePath, required this.title, required this.location, required this.ageRequirement});
 
   factory Venue.fromMap(Map<String, dynamic> map) {
-  
+
     return Venue(
       imagePath: map['imagePath'] as String,
       title: map['title'] as String,
       location: map['location'] as String,
-      ageRequirement: map["ageRequirement"] 
+      ageRequirement: map["ageRequirement"]
     );
   }
 }
@@ -440,8 +440,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Glare Test',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
+        primaryColor: Color(0xFF00FF00),
+        scaffoldBackgroundColor: Colors.black,
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          secondary: Color(0xFF00FF00),
+        ),
+        textTheme: TextTheme(
+          bodyText1: TextStyle(color: Colors.white),
+          bodyText2: TextStyle(color: Colors.white),
+        ),
       ),
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
@@ -728,7 +735,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        selectedItemColor: Colors.green,
+        selectedItemColor: Color(0xFF00FF00),
         unselectedItemColor: Colors.black,
       ),
     );
@@ -914,4 +921,3 @@ class EventItem extends StatelessWidget {
     );
   }
 }
-
