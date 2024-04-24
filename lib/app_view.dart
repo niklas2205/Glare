@@ -35,7 +35,7 @@ class MainAppView extends StatelessWidget {
                 background: Colors.black,
                 onBackground: Color(0xFF13B8A8)),
             textTheme: TextTheme(
-              headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold, color: Color(0xFF13B8A8)),
+              displayLarge: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold, color: Color(0xFF13B8A8)),
               headline6: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic, color: Color(0xFF13B8A8)),
               bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Hind', color: Color(0xFF13B8A8)),
             ),
