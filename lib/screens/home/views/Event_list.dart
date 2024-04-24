@@ -45,7 +45,6 @@ class EventListWidget extends StatelessWidget {
         },
       );
     }
-  }
 
   Widget _buildEventRow(dynamic event) {
     // Replace 'dynamic' with your event model class
