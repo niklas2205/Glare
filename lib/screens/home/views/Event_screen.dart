@@ -20,6 +20,12 @@ class EventDetail extends StatelessWidget {
       backgroundColor: Colors.black, // Changed to black for futuristic theme
       appBar: AppBar(
         backgroundColor: Colors.black, // Changed to black for futuristic theme
+        title: Text(
+          'Event Details',
+          style: TextStyle(
+            color: Color(0xFF13B8A8), // Neon green color for the title
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -37,6 +43,7 @@ class EventDetail extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 20), // Add space between the image and the text
             Align(
               alignment: Alignment.centerLeft,
               child: Container(
@@ -51,7 +58,7 @@ class EventDetail extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start, 
                     children: [
                       Text(
-                        name, // Use the event name
+                        'Event Name Placeholder', // Placeholder text for the event name
                         textAlign: TextAlign.left,
                         style: TextStyle(
                           fontSize: 20,
@@ -59,8 +66,9 @@ class EventDetail extends StatelessWidget {
                           color: Color(0xFF13B8A8), // Changed to neon green for futuristic theme
                         ),
                       ),
+                      SizedBox(height: 10), // Add space between the name and the venue
                       Text(
-                        venue, // Use the event venue
+                        'Venue Placeholder', // Placeholder text for the event venue
                         textAlign: TextAlign.left,
                         style: TextStyle(
                           fontSize: 20,
@@ -73,13 +81,14 @@ class EventDetail extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 20), // Add space between the details container and the description
             Row(
               children: [
                 Expanded(
                   child: Column(
                     children: [
                       Text(
-                        description, // Use the event description
+                        'Description Placeholder', // Placeholder text for the event description
                         style: TextStyle(
                           color: Colors.white, // Changed to white for better readability on black background
                         ),
