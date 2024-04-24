@@ -20,11 +20,11 @@ class EventListWidget extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
             child: Material(
-              elevation: 3,
-              color: const Color.fromARGB(215, 148, 240, 142),
-              borderRadius: BorderRadius.circular(16),
+              elevation: 5,
+              color: Colors.black, // Updated to match the black theme
+              borderRadius: BorderRadius.circular(12), // Sleeker borderRadius
               child: InkWell(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -57,7 +57,7 @@ class EventListWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 4),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12), // Updated borderRadius
               child: Image.network(
                 event.picture,
                 height: 90,
@@ -75,8 +75,8 @@ class EventListWidget extends StatelessWidget {
                 children: [
                   Text(
                     event.eventname,
-                    style: const TextStyle(
-                      color: Colors.black,
+                    style: TextStyle(
+                      color: Color(0xFF13B8A8), // Updated to neon green color
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                     ),
@@ -84,8 +84,8 @@ class EventListWidget extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     event.venue,
-                    style: const TextStyle(
-                      color: Colors.black,
+                    style: TextStyle(
+                      color: Color(0xFF13B8A8), // Updated to neon green color
                       fontWeight: FontWeight.bold,
                       fontSize: 10,
                     ),
@@ -98,7 +98,7 @@ class EventListWidget extends StatelessWidget {
             alignment: Alignment.bottomLeft,
             child: IconButton(
               onPressed: () {},
-              icon: const Icon(CupertinoIcons.hand_thumbsup),
+              icon: Icon(CupertinoIcons.hand_thumbsup, color: Color(0xFF13B8A8)), // Updated icon color to neon green
               iconSize: 20,
             ),
           ),
@@ -106,4 +106,4 @@ class EventListWidget extends StatelessWidget {
       ),
     );
   }
-
+}
