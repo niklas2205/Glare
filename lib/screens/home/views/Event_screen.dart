@@ -17,9 +17,15 @@ class EventDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Colors.black, // Changed to black for futuristic theme
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Colors.black, // Changed to black for futuristic theme
+        title: const Text(
+          'Event Details',
+          style: TextStyle(
+            color: Color(0xFF13B8A8), // Neon green color for the title
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -29,7 +35,7 @@ class EventDetail extends StatelessWidget {
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.width - (40),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: const Color(0xFFE0E0E0), // Slight grey tone for the image container
                 borderRadius: BorderRadius.circular(30),
                 image: DecorationImage(
                   image: NetworkImage(pictureUrl), // Use NetworkImage for the picture URL
@@ -37,11 +43,12 @@ class EventDetail extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 20), // Add space between the image and the text
             Align(
               alignment: Alignment.centerLeft,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: const Color(0xFFE0E0E0), // Slight grey tone for the details container
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: Padding(
@@ -51,19 +58,22 @@ class EventDetail extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start, 
                     children: [
                       Text(
-                        name, // Use the event name
+                        name, // Use provided name for the event name
                         textAlign: TextAlign.left,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          color: Color(0xFF13B8A8), // Changed to neon green for futuristic theme
                         ),
                       ),
+                      const SizedBox(height: 10), // Add space between the name and the venue
                       Text(
-                        venue, // Use the event venue
+                        venue, // Use provided venue for the event venue
                         textAlign: TextAlign.left,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          color: Color(0xFF13B8A8), // Changed to neon green for futuristic theme
                         ),
                       ),
                     ],
@@ -71,13 +81,17 @@ class EventDetail extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 20), // Add space between the details container and the description
             Row(
               children: [
                 Expanded(
                   child: Column(
                     children: [
                       Text(
-                        description, // Use the event description
+                        description, // Use provided description for the event description
+                        style: const TextStyle(
+                          color: Colors.white, // Changed to white for better readability on black background
+                        ),
                       ),
                     ],
                   ),

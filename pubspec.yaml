@@ -37,6 +37,8 @@ dependencies:
   sign_in_with_apple: ^5.0.0
   rxdart: ^0.27.7
   url_launcher: ^6.2.5
+  google_fonts: ^6.2.0
+  flutter_svg: ^2.0.10
   
 dev_dependencies:
   flutter_test:
@@ -46,4 +48,6 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/
+    - assets/Style_img/
+    - assets/icons/
   uses-material-design: true

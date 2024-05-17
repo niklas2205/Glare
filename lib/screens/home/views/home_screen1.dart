@@ -34,18 +34,18 @@ class HomeScreen1 extends StatelessWidget {
             backgroundColor: Theme.of(context).colorScheme.background,
             title: const Text(
               'Event List',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30, color: Color(0xFF13B8A8)),
             ),
             actions: [
               IconButton(
                 onPressed: () {}, 
-                icon: const Icon(CupertinoIcons.heart),
+                icon: const Icon(CupertinoIcons.heart, color: Color(0xFF13B8A8)),
               ),
               IconButton(
                 onPressed: () {
                   context.read<SignInBloc>().add(SignOutRequired());
                 },
-                icon: const Icon(CupertinoIcons.arrow_right_to_line),
+                icon: const Icon(CupertinoIcons.arrow_right_to_line, color: Color(0xFF13B8A8)),
               ),
               BlocBuilder<HomeScreenBloc, HomeScreenState>(
                 builder: (context, state) {
@@ -56,6 +56,9 @@ class HomeScreen1 extends StatelessWidget {
                         ToggleViewEvent(value ? HomeScreenView.venues : HomeScreenView.events)
                       );
                     },
+                    activeColor: Color(0xFF13B8A8),
+                    inactiveThumbColor: Colors.black,
+                    inactiveTrackColor: Colors.white30,
                   );
                 },
               ),
@@ -69,7 +72,7 @@ class HomeScreen1 extends StatelessWidget {
                     if (eventState is GetEventSuccess) {
                       return EventListWidget(eventState: eventState);
                     }
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator(color: Color(0xFF13B8A8)));
                   },
                 );
               } else if (homeState.view == HomeScreenView.venues) {
@@ -78,7 +81,7 @@ class HomeScreen1 extends StatelessWidget {
                     if (venueState is GetVenueSuccess) {
                       return VenueListWidget(state: venueState);
                     }
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator(color: Color(0xFF13B8A8)));
                   },
                 );
               }

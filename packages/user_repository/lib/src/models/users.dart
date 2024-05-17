@@ -3,18 +3,16 @@ import '../entities/entities.dart';
 class MyUser {
   String userId;
   String email;
-  String name;
-  bool hasActiveCart;
-  DateTime age; // Nullable DateTime for age
+  String? name;
+  int? age; // Nullable DateTime for age
   String? favoriteGenre; // Nullable String for favorite genre
   String? phoneNumber; // Nullable String for phone number
 
   MyUser({
     required this.userId,
     required this.email,
-    required this.name,
-    required this.hasActiveCart,
-    required this.age,
+    this.name,
+    this.age,
     this.favoriteGenre,
     this.phoneNumber,
   });
@@ -23,8 +21,7 @@ class MyUser {
     userId: '',
     email: '',
     name: '',
-    hasActiveCart: false,
-    age: DateTime.now()
+    age: 0,
     );
 
   MyUserEntity toEntity() {
@@ -32,7 +29,6 @@ class MyUser {
       userId: userId,
       email: email,
       name: name,
-      hasActiveCart: hasActiveCart,
       age: age, // Include age
       favoriteGenre: favoriteGenre, // Include favorite genre
       phoneNumber: phoneNumber, // Include phone number
@@ -44,7 +40,6 @@ class MyUser {
       userId: entity.userId,
       email: entity.email,
       name: entity.name,
-      hasActiveCart: entity.hasActiveCart,
       age: entity.age, // Assign age
       favoriteGenre: entity.favoriteGenre,
       phoneNumber: entity.phoneNumber,
@@ -53,6 +48,6 @@ class MyUser {
 
   @override
   String toString() {
-    return 'MyUser: $userId, $email, $name, $hasActiveCart, $age';
+    return 'MyUser: $userId, $email, $name, $age';
   }
 }

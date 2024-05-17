@@ -1,9 +1,8 @@
 class MyUserEntity {
   String userId;
   String email;
-  String name;
-  bool hasActiveCart;
-  DateTime age; // Make DateTime non-nullable
+  String? name;
+  int? age; // Make DateTime non-nullable
   String? favoriteGenre;
   String? phoneNumber;
 
@@ -11,7 +10,6 @@ class MyUserEntity {
     required this.userId,
     required this.email,
     required this.name,
-    required this.hasActiveCart,
     required this.age, // Make age required
     this.favoriteGenre,
     this.phoneNumber,
@@ -22,8 +20,7 @@ class MyUserEntity {
       'userId': userId,
       'email': email,
       'name': name,
-      'hasActiveCart': hasActiveCart,
-      'age': age.toIso8601String(), // No need for null check
+      'age': age, // No need for null check
       'favoriteGenre': favoriteGenre,
       'phoneNumber': phoneNumber,
     };
@@ -34,8 +31,7 @@ class MyUserEntity {
       userId: doc['userId'],
       email: doc['email'],
       name: doc['name'],
-      hasActiveCart: doc['hasActiveCart'],
-      age: DateTime.parse(doc['age']), // Directly parse as DateTime is non-nullable
+      age: doc['age'], // Directly parse as DateTime is non-nullable
       favoriteGenre: doc['favoriteGenre'],
       phoneNumber: doc['phoneNumber'],
     );
