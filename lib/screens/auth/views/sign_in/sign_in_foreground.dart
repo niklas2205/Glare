@@ -175,26 +175,32 @@ Widget EmailAndPasswordFields(TextEditingController emailController, TextEditing
             border: Border.all(color: const Color(0xFF8FFA58), width: 1), // Added green border
             borderRadius: BorderRadius.circular(100),
           ),
-          child: TextField(
-            controller: emailController,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(100),
-                borderSide: BorderSide.none,
-              ),
-              filled: true,
-              fillColor: const Color(0xFF1A1A1A),
-              hintText: 'Email address',
-              hintStyle: GoogleFonts.getFont(
+            child: TextField(
+              controller: emailController,
+              style: GoogleFonts.getFont(
                 'Inter',
                 fontWeight: FontWeight.w400,
                 fontSize: 16,
                 color: const Color(0xFFFFFFFF),
               ),
-              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 18), // Adjust content padding to center the text properly
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(100),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: const Color(0xFF1A1A1A),
+                hintText: 'Email address',
+                hintStyle: GoogleFonts.getFont(
+                  'Inter',
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16,
+                  color: const Color(0xFFFFFFFF),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18), // Adjust content padding to center the text properly
+              ),
             ),
           ),
-        ),
       ),
       Padding(
         padding: const EdgeInsets.fromLTRB(23, 22, 20, 0), // Consistent padding as email field
@@ -202,10 +208,16 @@ Widget EmailAndPasswordFields(TextEditingController emailController, TextEditing
           width: 322,
           height: 56,
           decoration: BoxDecoration(
-            border: Border.all(color: Color(0xFF8FFA58), width: 1), // Added green border
+            border: Border.all(color: const Color(0xFF8FFA58), width: 1), // Added green border
             borderRadius: BorderRadius.circular(100),
           ),
           child: TextField(
+            style: GoogleFonts.getFont(
+                'Inter',
+                fontWeight: FontWeight.w400,
+                fontSize: 16,
+                color: const Color(0xFFFFFFFF),
+              ),
             controller: passwordController,
             obscureText: true,
             decoration: InputDecoration(
@@ -226,7 +238,7 @@ Widget EmailAndPasswordFields(TextEditingController emailController, TextEditing
                 padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
                 child: Image.asset('assets/icons/Icon_eye.png', height: 22.3),
               ),
-              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 18), // Adjust content padding to center the text properly
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18), // Adjust content padding to center the text properly
             ),
           ),
         ),

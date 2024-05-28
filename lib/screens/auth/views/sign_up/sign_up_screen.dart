@@ -3,13 +3,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glare/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:glare/screens/auth/blocs/sign_in_bloc/sign_in_bloc.dart';
+import 'package:glare/screens/auth/views/sign_in/sign_in_screen.dart';
 import 'package:glare/screens/auth/views/sign_up/sign_up_foreground.dart';
 import 'package:glare/screens/background_screen/background_screen.dart';
 import 'package:user_repository/user_repository.dart';
 
 
 
-import '../blocs/sign_up_bloc/sign_up_bloc.dart';
+import '../../blocs/sign_up_bloc/sign_up_bloc.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -53,6 +56,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 passwordController: passwordController,
                 confirmPasswordController: confirmPasswordController,
                 registerWithEmail: _registerUser,
+                loginWithEmail: _loginWithEmail,
               ),
             ),
           ],
@@ -93,6 +97,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // Log validation failure
       print('Form validation failed');
     }
+  }
+  void _loginWithEmail(){
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) {
+        return BlocProvider<SignInBloc>(
+          create: (_) => SignInBloc(context.read<AuthenticationBloc>().userRepository,),
+          child: const SignInScreen(),
+        );
+      }),
+    );
+  
   }
 }
 

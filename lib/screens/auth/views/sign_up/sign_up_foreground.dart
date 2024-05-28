@@ -7,6 +7,7 @@ class SignUpFore1 extends StatelessWidget {
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
   final VoidCallback registerWithEmail;
+  final VoidCallback loginWithEmail;
   
 
   const SignUpFore1({
@@ -15,6 +16,7 @@ class SignUpFore1 extends StatelessWidget {
     required this.passwordController,
     required this.confirmPasswordController,
     required this.registerWithEmail,
+    required this.loginWithEmail,
   });
 
 
@@ -130,7 +132,7 @@ class SignUpFore1 extends StatelessWidget {
                 )
               ),
               termsAndPrivacy(),
-              loginPrompt(),
+              loginPrompt(loginWithEmail),
             ],
           ),
         ],
@@ -303,7 +305,7 @@ class SignUpFore1 extends StatelessWidget {
     );
   }
 
-    Widget loginPrompt() {
+    Widget loginPrompt(VoidCallback controller) {
     return Container(
       margin: const EdgeInsets.fromLTRB(0.5, 0, 0, 0),
       child: RichText(
@@ -329,7 +331,7 @@ class SignUpFore1 extends StatelessWidget {
             WidgetSpan(
               child: InkWell(
                 onTap: () {
-                  
+                  controller();
                 },
                 child: Text(
                   'Login',

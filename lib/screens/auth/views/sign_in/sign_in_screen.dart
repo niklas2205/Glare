@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glare/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:glare/screens/auth/blocs/sign_up_bloc/sign_up_bloc.dart';
 import 'package:glare/screens/auth/views/sign_in/sign_in_foreground.dart';
+import 'package:glare/screens/auth/views/sign_up/sign_up_screen.dart';
 import 'package:glare/screens/background_screen/background_screen.dart';
 
-import '../../../components/my_text_field.dart';
-import '../blocs/sign_in_bloc/sign_in_bloc.dart';
+import '../../../../components/my_text_field.dart';
+import '../../blocs/sign_in_bloc/sign_in_bloc.dart';
 
 
 
@@ -71,11 +74,14 @@ class _SignInScreenState extends State<SignInScreen> {
   void _registerWithEmail() {
     // Close the SignInBloc if it's scoped to this screen only
     // and needs manual disposal (uncommon scenario)
-    var signInBloc = context.read<SignInBloc>();
-    signInBloc.close();  // Only if you must manage the lifecycle manually
-
-    // Then navigate to the SignUp screen
-    Navigator.pushReplacementNamed(context, '/signUp');
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) {
+        return BlocProvider<SignUpBloc>(
+          create: (_) => SignUpBloc(context.read<AuthenticationBloc>().userRepository,),
+          child: const SignUpScreen(),
+        );
+      }),
+    );
   }
   void _forgotPassword() {
     
