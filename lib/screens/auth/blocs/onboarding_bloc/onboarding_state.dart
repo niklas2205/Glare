@@ -10,6 +10,11 @@ abstract class OnboardingState extends Equatable {
 
 class OnboardingInitial extends OnboardingState {}
 
+class GenderSelected extends OnboardingState {
+  final String selectedGender;
+  GenderSelected(this.selectedGender);
+}
+
 class OnboardingLoadInProgress extends OnboardingState {}
 
 class OnboardingDataSubmitted extends OnboardingState {
@@ -20,5 +25,22 @@ class OnboardingDataSubmitted extends OnboardingState {
   @override
   List<Object> get props => [user];
 }
-
+class OnboardingRequired extends OnboardingState {}
 class OnboardingCompletionSuccess extends OnboardingState {}
+
+class OnboardingFailure extends OnboardingState {
+  final String errorMessage;
+
+  const OnboardingFailure(this.errorMessage);
+
+  @override
+  List<Object> get props => [errorMessage];
+}
+
+class GenresUpdated extends OnboardingState {
+  final List<String> genres;
+  GenresUpdated(this.genres);
+  
+  @override
+  List<Object> get props => [genres];
+}

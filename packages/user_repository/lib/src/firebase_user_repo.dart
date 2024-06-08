@@ -6,7 +6,15 @@ import 'dart:developer';
 import '../user_repository.dart';
 
 
-class FirebaseUserRepo implements UserRepository{
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:rxdart/rxdart.dart';
+import 'dart:developer';
+import '../user_repository.dart';
+import 'models/models.dart';  // Ensure you have the correct imports for your user models
+
+class FirebaseUserRepo implements UserRepository {
   final FirebaseAuth _firebaseAuth;
   final usersCollection = FirebaseFirestore.instance.collection('users');
 
@@ -14,29 +22,45 @@ class FirebaseUserRepo implements UserRepository{
     FirebaseAuth? firebaseAuth,
   }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
+
+  @override
+  Future<void> updateUserData(Map<String, dynamic> userData) async {
+    var currentUser = _firebaseAuth.currentUser;
+    if (currentUser == null) {
+      throw Exception("No user signed in.");
+    }
+    try {
+      await usersCollection.doc(currentUser.uid).update(userData);
+    } catch (e) {
+      log('Error updating user data: ${e.toString()}');
+      throw e; // Or handle more gracefully
+    }
+  }
+
   @override
   Stream<MyUser?> get user {
     return _firebaseAuth.authStateChanges().flatMap((firebaseUser) async* {
-        if(firebaseUser == null) {
-          yield MyUser.empty;  
-        } else {
-          yield await usersCollection
-            .doc(firebaseUser.uid)
-            .get()
-            .then((value) => MyUser.fromEntity(MyUserEntity.fromDocument(value.data() !)));
-        }
+      if (firebaseUser == null) {
+        yield MyUser.empty;
+      } else {
+        yield await usersCollection
+          .doc(firebaseUser.uid)
+          .get()
+          .then((value) => MyUser.fromEntity(MyUserEntity.fromDocument(value.data()!)));
+      }
     });
   }
 
   @override
   Future<void> signIn(String email, String password) async {
-   try {
-    await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
-    } catch(e) {
+    try {
+      await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+    } catch (e) {
       log(e.toString());
       rethrow;
     }
   }
+
   @override
   Future<MyUser?> getCurrentUser() async {
     var firebaseUser = _firebaseAuth.currentUser;
@@ -56,11 +80,10 @@ class FirebaseUserRepo implements UserRepository{
         email: myUser.email,
         password: password
       );
-
-      myUser.userId = user.user!.uid;
-
+      myUser.userId = user.user!.uid;  // Ensure you update the user ID after successful sign-up
+      await setUserData(myUser);  // Save user data after signing up
       return myUser;
-    } catch(e) {
+    } catch (e) {
       log(e.toString());
       rethrow;
     }
@@ -77,15 +100,14 @@ class FirebaseUserRepo implements UserRepository{
       await usersCollection
         .doc(myUser.userId)
         .set(myUser.toEntity().toDocument());
-    } catch(e) {
+    } catch (e) {
       log(e.toString());
       rethrow;
-   }
+    }
   }
 
-    @override
+  @override
   Future<List<String>> fetchFavoriteVenueIds(String userId) async {
-    // Example implementation (adjust based on your database structure)
     var snapshot = await FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -93,5 +115,15 @@ class FirebaseUserRepo implements UserRepository{
       .get();
 
     return snapshot.docs.map((doc) => doc.id).toList();
+  }
+
+  @override
+  Future<void> saveUserGenres(String userId, List<String> genres) async {
+    try {
+      await usersCollection.doc(userId).update({'favoriteGenres': genres});
+    } catch (e) {
+      log('Failed to save user genres: ${e.toString()}');
+      throw e;  // Or handle more gracefully
+    }
   }
 }

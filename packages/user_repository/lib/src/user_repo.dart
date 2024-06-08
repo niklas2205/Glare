@@ -14,4 +14,8 @@ abstract class UserRepository {
   Future<void> signIn(String email, String password);
 
   Future<void> logOut();
+
+   Future<void> saveUserGenres(String userId, List<String> genres); // Ensure this is declared
+
+   Future<void> updateUserData(Map<String, dynamic> userData);
 }
