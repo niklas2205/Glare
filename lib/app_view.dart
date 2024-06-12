@@ -101,6 +101,8 @@ class MainAppView extends StatelessWidget {
                     print('Successfully read OnboardingBloc from context: $onboardingBloc');
                     onboardingBloc.add(OnboardingStarted());
                     print('OnboardingStarted event successfully added.');
+                    print('Forcing navigation to onboarding screen.');
+                    navigatorKey.currentState?.pushReplacementNamed('/onboarding');
                   } catch (e) {
                     print('Error reading OnboardingBloc from context: $e');
                   }
