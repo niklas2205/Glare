@@ -28,7 +28,6 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
         emit(const AuthenticationState.unauthenticated());
       }
     });
-
   }
 
   @override

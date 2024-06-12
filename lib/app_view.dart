@@ -91,12 +91,13 @@ class MainAppView extends StatelessWidget {
          home: MultiBlocListener(
           listeners: [
             BlocListener<AuthenticationBloc, AuthenticationState>(
-              listener: (context, state) {
+              listener: (context, state) async {
                 print('Listener in AuthenticationBloc triggered with context: $context and state: ${state.status}');
                 if (state.status == AuthenticationStatus.authenticated) {
                   print('Authenticated state detected - attempting to add OnboardingStarted.');
                   try {
-                    print('Attempting to read OnboardingBloc from context.');
+                    print('Attempting to read OnboardingBloc from context after a short delay.');
+                    await Future.delayed(Duration(milliseconds: 500));
                     final onboardingBloc = context.read<OnboardingBloc>();
                     print('Successfully read OnboardingBloc from context: $onboardingBloc');
                     onboardingBloc.add(OnboardingStarted());
@@ -108,6 +109,7 @@ class MainAppView extends StatelessWidget {
                   print('Unauthenticated state detected - navigating to welcome screen.');
                   navigatorKey.currentState?.pushReplacementNamed('/welcome');
                 }
+                print('Listener in AuthenticationBloc completed.');
               },
             ),
             BlocListener<OnboardingBloc, OnboardingState>(
@@ -119,6 +121,10 @@ class MainAppView extends StatelessWidget {
                 } else if (onboardingState is OnboardingCompletionSuccess) {
                   print("Navigating to Home Screen");
                   navigatorKey.currentState?.pushReplacementNamed('/home');
+                } else {
+                  print("Unexpected state in OnboardingBloc: ${onboardingState.runtimeType}");
+                  // Handle unexpected states or errors
+                  navigatorKey.currentState?.pushReplacementNamed('/error');
                 }
               },
             ),
@@ -150,6 +156,7 @@ class MainAppView extends StatelessWidget {
           '/signIn': (context) => const SignInScreen(),
           '/signUp': (context) => const SignUpScreen(),
           '/onboarding': (context) => OnboardingScreen(),
+          '/error': (context) => ErrorScreen(),
         },
       ),
     );
