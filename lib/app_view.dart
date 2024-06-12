@@ -102,8 +102,6 @@ class MainAppView extends StatelessWidget {
                     print('Successfully read OnboardingBloc from context: $onboardingBloc');
                     onboardingBloc.add(OnboardingStarted());
                     print('OnboardingStarted event successfully added.');
-                    print('Forcing navigation to onboarding screen.');
-                    navigatorKey.currentState?.pushReplacementNamed('/onboarding');
                   } catch (e) {
                     print('Error reading OnboardingBloc from context: $e');
                   }
@@ -123,6 +121,10 @@ class MainAppView extends StatelessWidget {
                 } else if (onboardingState is OnboardingCompletionSuccess) {
                   print("Navigating to Home Screen");
                   navigatorKey.currentState?.pushReplacementNamed('/home');
+                } else {
+                  print("Unexpected state in OnboardingBloc: ${onboardingState.runtimeType}");
+                  // Handle unexpected states or errors
+                  navigatorKey.currentState?.pushReplacementNamed('/error');
                 }
               },
             ),
@@ -154,6 +156,7 @@ class MainAppView extends StatelessWidget {
           '/signIn': (context) => const SignInScreen(),
           '/signUp': (context) => const SignUpScreen(),
           '/onboarding': (context) => OnboardingScreen(),
+          '/error': (context) => ErrorScreen(),
         },
       ),
     );
