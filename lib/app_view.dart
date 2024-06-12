@@ -91,12 +91,13 @@ class MainAppView extends StatelessWidget {
          home: MultiBlocListener(
           listeners: [
             BlocListener<AuthenticationBloc, AuthenticationState>(
-              listener: (context, state) {
+              listener: (context, state) async {
                 print('Listener in AuthenticationBloc triggered with context: $context and state: ${state.status}');
                 if (state.status == AuthenticationStatus.authenticated) {
                   print('Authenticated state detected - attempting to add OnboardingStarted.');
                   try {
-                    print('Attempting to read OnboardingBloc from context.');
+                    print('Attempting to read OnboardingBloc from context after a short delay.');
+                    await Future.delayed(Duration(milliseconds: 500));
                     final onboardingBloc = context.read<OnboardingBloc>();
                     print('Successfully read OnboardingBloc from context: $onboardingBloc');
                     onboardingBloc.add(OnboardingStarted());
