@@ -96,7 +96,10 @@ class MainAppView extends StatelessWidget {
                 if (state.status == AuthenticationStatus.authenticated) {
                   print('Authenticated state detected - attempting to add OnboardingStarted.');
                   try {
-                    context.read<OnboardingBloc>().add(OnboardingStarted());
+                    print('Attempting to read OnboardingBloc from context.');
+                    final onboardingBloc = context.read<OnboardingBloc>();
+                    print('Successfully read OnboardingBloc from context: $onboardingBloc');
+                    onboardingBloc.add(OnboardingStarted());
                     print('OnboardingStarted event successfully added.');
                   } catch (e) {
                     print('Error reading OnboardingBloc from context: $e');
@@ -112,7 +115,7 @@ class MainAppView extends StatelessWidget {
                 print('OnboardingBloc Listener: State - ${onboardingState.runtimeType} and context: $context');
                 if (onboardingState is OnboardingRequired) {
                   print("Navigating to Onboarding Screen");
-                  navigatorKey.currentState?.pushReplacementNamed('/home');
+                  navigatorKey.currentState?.pushReplacementNamed('/onboarding');
                 } else if (onboardingState is OnboardingCompletionSuccess) {
                   print("Navigating to Home Screen");
                   navigatorKey.currentState?.pushReplacementNamed('/home');
