@@ -35,6 +35,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
 
 
   void _onSkipOnboarding(SkipOnboarding event, Emitter<OnboardingState> emit) {
+    print("Skip Onboarding Event Triggered");
     // Logic to set the age to 0 and complete onboarding
     userRepository.updateUserData({'age': 0});
     emit(OnboardingCompletionSuccess());
@@ -76,6 +77,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
 }
 
   void _onCompleted(OnboardingCompleted event, Emitter<OnboardingState> emit) {
+    print("Onboarding Completion Success State Emitted");
     emit(OnboardingCompletionSuccess());
   }
 }

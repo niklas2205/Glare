@@ -37,8 +37,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: BlocListener<OnboardingBloc, OnboardingState>(
         listener: (context, state) {
           if (state is OnboardingCompletionSuccess) {
+            print("Navigating to Home Screen after successful onboarding");
             Navigator.pushReplacementNamed(context, '/home');
           } else if (state is OnboardingFailure) {
+            print("Onboarding failed with error: ${state.errorMessage}");
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(SnackBar(content: Text(state.errorMessage)));
