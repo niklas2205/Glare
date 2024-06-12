@@ -108,6 +108,7 @@ class MainAppView extends StatelessWidget {
                   print('Unauthenticated state detected - navigating to welcome screen.');
                   navigatorKey.currentState?.pushReplacementNamed('/welcome');
                 }
+                print('Listener in AuthenticationBloc completed.');
               },
             ),
             BlocListener<OnboardingBloc, OnboardingState>(
