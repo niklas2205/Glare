@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'onboarding_event.dart';
 part 'onboarding_state.dart';
+
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final UserRepository userRepository;
   List<String> selectedGenres = [];
@@ -28,7 +29,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<SubmitGenres>((event, emit) async {
       try {
         await userRepository.updateUserData({
-          'genres': selectedGenres,
+          'favoriteGenres': selectedGenres,
+          'gender': updatedUser.gender,
           'userId': updatedUser.userId, // Ensure userId is passed
         });
         emit(OnboardingCompletionSuccess());
@@ -44,7 +46,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   }
 
   void _onSkipOnboarding(SkipOnboarding event, Emitter<OnboardingState> emit) {
-    userRepository.updateUserData({'age': 0, 'userId': updatedUser.userId});
+    userRepository.updateUserData({
+      'age': 0,
+      'userId': updatedUser.userId,
+    });
     emit(OnboardingCompletionSuccess());
   }
 
@@ -66,7 +71,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   void _onInfoSubmitted(OnboardingInfoSubmitted event, Emitter<OnboardingState> emit) async {
     emit(OnboardingLoadInProgress());
     try {
-      updatedUser = event.updatedUser.copyWith(userId: updatedUser.userId); // Ensure userId is copied
+      updatedUser = event.updatedUser.copyWith(
+        userId: updatedUser.userId,
+        email: updatedUser.email, // Ensure email is retained
+      );
       await userRepository.setUserData(updatedUser);
       emit(OnboardingDataSubmitted(updatedUser));
     } catch (e) {
@@ -77,10 +85,13 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   void _onCompleted(OnboardingCompleted event, Emitter<OnboardingState> emit) async {
     try {
       await userRepository.updateUserData({
-        'genres': selectedGenres,
+        'favoriteGenres': selectedGenres,
+        'gender': updatedUser.gender,
         'userId': updatedUser.userId, // Ensure userId is passed
+        'name': updatedUser.name,
+        'age': updatedUser.age,
+        'phoneNumber': updatedUser.phoneNumber,
       });
-      await userRepository.setUserData(updatedUser);
       emit(OnboardingCompletionSuccess());
     } catch (error) {
       emit(OnboardingFailure(error.toString()));

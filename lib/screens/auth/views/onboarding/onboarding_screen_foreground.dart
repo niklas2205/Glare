@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:glare/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_repository/user_repository.dart';
 
 import '../../blocs/onboarding_bloc/onboarding_bloc.dart';
 
-class OnboardingScreenForeground extends StatelessWidget {
+class OnboardingScreenForeground extends StatefulWidget {
   final Function onNext;
+
+  OnboardingScreenForeground({required this.onNext});
+
+  @override
+  _OnboardingScreenForegroundState createState() => _OnboardingScreenForegroundState();
+}
+
+class _OnboardingScreenForegroundState extends State<OnboardingScreenForeground> {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
   final List<String> genders = ['Male', 'Female', 'Diverse', 'Rather not say'];
   String? selectedGender;
-
-  OnboardingScreenForeground({required this.onNext, this.selectedGender});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +36,6 @@ class OnboardingScreenForeground extends StatelessWidget {
           buildTellUs(),
           buildInputField('First Name', firstNameController),
           buildInputField('Last Name', lastNameController),
-          buildInputField('Email', emailController),
           buildInputField('Phone', phoneController),
           buildInputField('Age', ageController),
           buildDropdownField(context),
@@ -139,7 +144,9 @@ class OnboardingScreenForeground extends StatelessWidget {
         ),
         dropdownColor: const Color(0xFF1A1A1A),
         onChanged: (String? newValue) {
-          selectedGender = newValue;
+          setState(() {
+            selectedGender = newValue;
+          });
           BlocProvider.of<OnboardingBloc>(context).add(GenderChanged(newValue!));
         },
         items: genders.map<DropdownMenuItem<String>>((String value) {
@@ -168,26 +175,26 @@ class OnboardingScreenForeground extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       child: ElevatedButton(
         style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.all(bgColor),
-          shape: WidgetStateProperty.all(
+          backgroundColor: MaterialStateProperty.all(bgColor),
+          shape: MaterialStateProperty.all(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(100),
               side: const BorderSide(color: Color(0xFF8FFA58)),
             ),
           ),
-          padding: WidgetStateProperty.all(EdgeInsets.zero),
+          padding: MaterialStateProperty.all(EdgeInsets.zero),
         ),
         onPressed: () {
           final updatedUser = MyUser(
-            userId: '', // Ensure this is set correctly
-            email: emailController.text,
+            userId: context.read<AuthenticationBloc>().state.user!.userId,
+            email: context.read<AuthenticationBloc>().state.user!.email,
             name: firstNameController.text + ' ' + lastNameController.text,
             age: int.tryParse(ageController.text),
             phoneNumber: phoneController.text,
             gender: selectedGender,
           );
           BlocProvider.of<OnboardingBloc>(context).add(OnboardingInfoSubmitted(updatedUser));
-          onNext();
+          widget.onNext();
         },
         child: Text(
           text,

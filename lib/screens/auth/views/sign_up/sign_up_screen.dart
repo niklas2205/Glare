@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glare/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:glare/screens/auth/blocs/onboarding_bloc/onboarding_bloc.dart';
 import 'package:glare/screens/auth/blocs/sign_in_bloc/sign_in_bloc.dart';
+import 'package:glare/screens/auth/views/onboarding/onboarding_screen.dart';
 import 'package:glare/screens/auth/views/sign_in/sign_in_screen.dart';
 import 'package:glare/screens/auth/views/sign_up/sign_up_foreground.dart';
 import 'package:glare/screens/background_screen/background_screen.dart';
@@ -32,11 +34,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return BlocListener<SignUpBloc, SignUpState>(
       listener: (context, state) {
         if (state is SignUpSuccess) {
-          // Display a SnackBar on successful sign-up instead of navigating
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Registration Successful!'),
-            backgroundColor: Colors.green,
-          ));
+          // Navigate to the onboarding screen with the newly created user
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) {
+                return MultiBlocProvider(
+                  providers: [
+                    BlocProvider<OnboardingBloc>(
+                      create: (context) => OnboardingBloc(userRepository: context.read<AuthenticationBloc>().userRepository)
+                        ..add(OnboardingStarted()),
+                    ),
+                  ],
+                  child: OnboardingScreen(),
+                );
+              },
+            ),
+          );
         } else if (state is SignUpFailure) {
           // Display a SnackBar if registration fails
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -98,21 +111,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
       print('Form validation failed');
     }
   }
-  void _loginWithEmail(){
+
+  void _loginWithEmail() {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (context) {
         return BlocProvider<SignInBloc>(
-          create: (_) => SignInBloc(context.read<AuthenticationBloc>().userRepository,),
+          create: (_) => SignInBloc(context.read<AuthenticationBloc>().userRepository),
           child: const SignInScreen(),
         );
       }),
     );
-  
   }
 }
-
-
-
 
 
 
