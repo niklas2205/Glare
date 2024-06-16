@@ -21,17 +21,24 @@ class OnboardingInfoSubmitted extends OnboardingEvent {
   List<Object> get props => [updatedUser];
 }
 
-class OnboardingCompleted extends OnboardingEvent {}
-
-
 class GenderChanged extends OnboardingEvent {
   final String gender;
+
   const GenderChanged(this.gender);
+
+  @override
+  List<Object> get props => [gender];
 }
+
+class OnboardingCompleted extends OnboardingEvent {}
 
 class GenreSelected extends OnboardingEvent {
   final String genre;
-  GenreSelected(this.genre);
+
+  const GenreSelected(this.genre);
+
+  @override
+  List<Object> get props => [genre];
 }
 
 class SubmitGenres extends OnboardingEvent {}

@@ -15,7 +15,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
   await Firebase.initializeApp();
   Bloc.observer = const SimpleBlocObserver();
-  runApp(MainApp(FirebaseUserRepo())); // Ersetzen Sie MyApp durch den Namen Ihrer App-Klasse
-}
 
+  final userRepository = FirebaseUserRepo();
+  runApp(MainApp(userRepository));
+}
 

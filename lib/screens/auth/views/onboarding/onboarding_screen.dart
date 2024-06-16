@@ -46,11 +46,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         },
         child: Stack(
           children: [
-            BackgroundScreen(), // Assumes BackgroundScreen is a defined widget.
+            BackgroundScreen(),
             SingleChildScrollView(
-              child: _currentPage == 1 ? 
-                OnboardingScreenForeground(onNext: _goToNextPage) : 
-                AdditionalDetailsScreen(onBack: _goBack),
+              child: _currentPage == 1
+                  ? OnboardingScreenForeground(onNext: _goToNextPage)
+                  : AdditionalDetailsScreen(onBack: _goBack),
             ),
           ],
         ),

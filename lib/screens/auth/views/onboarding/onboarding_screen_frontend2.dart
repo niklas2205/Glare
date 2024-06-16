@@ -26,17 +26,30 @@ class AdditionalDetailsScreen extends StatelessWidget {
             children: <Widget>[
               buildTitle(context),
               buildTellUs(),
-              Wrap(
-                children: ['Rock', 'Jazz', 'Pop', 'Classical', 'Electronic']
-                    .map((genre) => genreButton(context, genre, selectedGenres.contains(genre)))
-                    .toList(),
-              ),
+              buildGenreGrid(context, selectedGenres),
               buildNextButton(context),
               buildBackButton(context),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget buildGenreGrid(BuildContext context, List<String> selectedGenres) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GridView.count(
+        shrinkWrap: true,
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 3,
+        physics: const NeverScrollableScrollPhysics(),
+        children: ['Rock', 'Jazz', 'Pop', 'Classical', 'Electronic']
+            .map((genre) => genreButton(context, genre, selectedGenres.contains(genre)))
+            .toList(),
+      ),
     );
   }
 
@@ -53,10 +66,13 @@ class AdditionalDetailsScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
           border: Border.all(color: Color(0xFF8FFA58)),
         ),
-        child: Text(genre,
-          style: TextStyle(
-            color: isSelected ? Color(0xFF1A1A1A) : Colors.white,
-            fontWeight: FontWeight.bold,
+        child: Center(
+          child: Text(
+            genre,
+            style: TextStyle(
+              color: isSelected ? Color(0xFF1A1A1A) : Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
@@ -116,7 +132,7 @@ class AdditionalDetailsScreen extends StatelessWidget {
           padding: MaterialStateProperty.all(EdgeInsets.zero),
         ),
         onPressed: () {
-          BlocProvider.of<OnboardingBloc>(context).add(SubmitGenres());
+          BlocProvider.of<OnboardingBloc>(context).add(OnboardingCompleted());
         },
         child: Text("Next", style: GoogleFonts.inter(
           fontWeight: FontWeight.w600,
@@ -128,7 +144,7 @@ class AdditionalDetailsScreen extends StatelessWidget {
   }
 
   Widget buildBackButton(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 322,
       height: 48,
       child: ElevatedButton(
@@ -144,9 +160,10 @@ class AdditionalDetailsScreen extends StatelessWidget {
         child: Text("Back", style: GoogleFonts.inter(
           fontWeight: FontWeight.w600,
           fontSize: 16,
-          color: const Color(0xFF8FFA58),
-        )),
+          color: const Color(0xFF8FFA58)),
+        )
       ),
     );
   }
 }
+

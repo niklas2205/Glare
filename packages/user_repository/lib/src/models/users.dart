@@ -4,9 +4,10 @@ class MyUser {
   String userId;
   String email;
   String? name;
-  int? age; // Nullable DateTime for age
-  String? favoriteGenre; // Nullable String for favorite genre
-  String? phoneNumber; // Nullable String for phone number
+  int? age;
+  String? favoriteGenre;
+  String? phoneNumber;
+  String? gender;
 
   MyUser({
     required this.userId,
@@ -15,23 +16,26 @@ class MyUser {
     this.age,
     this.favoriteGenre,
     this.phoneNumber,
+    this.gender,
   });
 
-  static final empty =MyUser(
+  static final empty = MyUser(
     userId: '',
     email: '',
     name: '',
     age: 0,
-    );
+    gender: '',
+  );
 
   MyUserEntity toEntity() {
     return MyUserEntity(
       userId: userId,
       email: email,
       name: name,
-      age: age, // Include age
-      favoriteGenre: favoriteGenre, // Include favorite genre
-      phoneNumber: phoneNumber, // Include phone number
+      age: age,
+      favoriteGenre: favoriteGenre,
+      phoneNumber: phoneNumber,
+      gender: gender,
     );
   }
 
@@ -40,14 +44,35 @@ class MyUser {
       userId: entity.userId,
       email: entity.email,
       name: entity.name,
-      age: entity.age, // Assign age
+      age: entity.age,
       favoriteGenre: entity.favoriteGenre,
       phoneNumber: entity.phoneNumber,
+      gender: entity.gender,
+    );
+  }
+
+  MyUser copyWith({
+    String? userId,
+    String? email,
+    String? name,
+    int? age,
+    String? favoriteGenre,
+    String? phoneNumber,
+    String? gender,
+  }) {
+    return MyUser(
+      userId: userId ?? this.userId,
+      email: email ?? this.email,
+      name: name ?? this.name,
+      age: age ?? this.age,
+      favoriteGenre: favoriteGenre ?? this.favoriteGenre,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      gender: gender ?? this.gender,
     );
   }
 
   @override
   String toString() {
-    return 'MyUser: $userId, $email, $name, $age';
+    return 'MyUser: $userId, $email, $name, $age, $gender';
   }
 }

@@ -2,17 +2,19 @@ class MyUserEntity {
   String userId;
   String email;
   String? name;
-  int? age; // Make DateTime non-nullable
+  int? age;
   String? favoriteGenre;
   String? phoneNumber;
+  String? gender;
 
   MyUserEntity({
     required this.userId,
     required this.email,
     required this.name,
-    required this.age, // Make age required
+    required this.age,
     this.favoriteGenre,
     this.phoneNumber,
+    this.gender,
   });
 
   Map<String, Object?> toDocument() {
@@ -20,9 +22,10 @@ class MyUserEntity {
       'userId': userId,
       'email': email,
       'name': name,
-      'age': age, // No need for null check
+      'age': age,
       'favoriteGenre': favoriteGenre,
       'phoneNumber': phoneNumber,
+      'gender': gender,
     };
   }
 
@@ -31,9 +34,10 @@ class MyUserEntity {
       userId: doc['userId'],
       email: doc['email'],
       name: doc['name'],
-      age: doc['age'], // Directly parse as DateTime is non-nullable
+      age: doc['age'],
       favoriteGenre: doc['favoriteGenre'],
       phoneNumber: doc['phoneNumber'],
+      gender: doc['gender'],
     );
   }
 }

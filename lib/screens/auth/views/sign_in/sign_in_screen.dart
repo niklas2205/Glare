@@ -6,13 +6,15 @@ import 'package:glare/screens/auth/blocs/sign_up_bloc/sign_up_bloc.dart';
 import 'package:glare/screens/auth/views/sign_in/sign_in_foreground.dart';
 import 'package:glare/screens/auth/views/sign_up/sign_up_screen.dart';
 import 'package:glare/screens/background_screen/background_screen.dart';
+import 'package:user_repository/user_repository.dart';
 
+import '../../../../app_view.dart';
 import '../../../../components/my_text_field.dart';
 import '../../blocs/sign_in_bloc/sign_in_bloc.dart';
 
 
 
-class SignInScreen extends StatefulWidget {
+class SignInScreen extends StatefulWidget { 
   const SignInScreen({super.key});
 
   @override
@@ -30,20 +32,30 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return BlocListener<SignInBloc, SignInState>(
       listener: (context, state) {
-        if(state is SignInSuccess) {
-					setState(() {
-					  signInRequired = false;
-					});
-				} else if(state is SignInProcess) {
-					setState(() {
-					  signInRequired = true;
-					});
-				} else if(state is SignInFailure) {
-					setState(() {
-					  signInRequired = false;
-						_errorMsg = 'Invalid email or password';
-					});
-				}
+        if (state is SignInSuccess) {
+          print('Sign in success in BlocListener');
+          setState(() {
+            signInRequired = false;
+          });
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => MainAppView(userRepository: context.read<UserRepository>()),
+            ),
+          );
+        } else if (state is SignInProcess) {
+          print('Sign in process in BlocListener');
+          setState(() {
+            signInRequired = true;
+          });
+        } else if (state is SignInFailure) {
+          print('Sign in failure in BlocListener');
+          setState(() {
+            signInRequired = false;
+            _errorMsg = 'Invalid email or password';
+          });
+        } else {
+          print('Unknown state in BlocListener: $state');
+        }
       },
       child: Scaffold(
         body: Stack(
@@ -64,35 +76,34 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
     );
   }
+
   void _loginWithEmail() {
     if (_formKey.currentState!.validate()) {
+      print('Attempting sign in with email: ${emailController.text}');
       context.read<SignInBloc>().add(SignInRequired(
-          emailController.text,
-          passwordController.text));
+        emailController.text,
+        passwordController.text,
+      ));
     }
   }
+
   void _registerWithEmail() {
-    // Close the SignInBloc if it's scoped to this screen only
-    // and needs manual disposal (uncommon scenario)
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) {
-        return BlocProvider<SignUpBloc>(
-          create: (_) => SignUpBloc(context.read<AuthenticationBloc>().userRepository,),
-          child: const SignUpScreen(),
-        );
-      }),
+      MaterialPageRoute(
+        builder: (context) {
+          return BlocProvider<SignUpBloc>(
+            create: (_) => SignUpBloc(context.read<UserRepository>()),
+            child: const SignUpScreen(),
+          );
+        },
+      ),
     );
   }
+
   void _forgotPassword() {
-    
+    // Handle forgot password logic
   }
 }
-
-
-
-
-
-
 
 
 //       child: Form(

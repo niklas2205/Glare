@@ -29,86 +29,113 @@ class MainAppView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Glare Events',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF8FFA58),
-          onPrimary: Colors.black,
-          surface: Colors.black,
-          onSurface: Color(0xFF8FFA58),
-          background: Colors.black,
-          onBackground: Color(0xFF8FFA58)
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthenticationBloc>(
+          create: (context) => AuthenticationBloc(userRepository: userRepository),
         ),
-        textTheme: const TextTheme(
-          displayLarge: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold, color: Color(0xFF8FFA58)),
-          displayMedium: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic, color: Color(0xFF8FFA58)),
-          displaySmall: TextStyle(fontSize: 14.0, fontFamily: 'Hind', color: Color(0xFF8FFA58)),
+        BlocProvider<SignInBloc>(
+          create: (context) => SignInBloc(context.read<AuthenticationBloc>().userRepository),
         ),
-        buttonTheme: const ButtonThemeData(
-          buttonColor: Color(0xFF13B8A8),
-          textTheme: ButtonTextTheme.primary,
-        )
-      ),
-      home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-        builder: (context, state) {
-          if (state.status == AuthenticationStatus.authenticated) {
-            return MultiBlocProvider(
-              providers: [
-                BlocProvider<SignInBloc>(
-                  create: (context) => SignInBloc(context.read<AuthenticationBloc>().userRepository),
-                ),
-                BlocProvider<SignUpBloc>(
-                  create: (context) => SignUpBloc(context.read<AuthenticationBloc>().userRepository),
-                ),
-                BlocProvider<GetEventBloc>(
-                  create: (context) => GetEventBloc(FirebaseEventRepo())..add(GetEvent()),
-                ),
-                BlocProvider<HomeScreenBloc>(
-                  create: (context) => HomeScreenBloc(),
-                ),
-                BlocProvider<GetVenueBloc>(
-                  create: (context) => GetVenueBloc(FirebaseVenueRepo())..add(GetVenue()),
-                ),
-                BlocProvider<UserBloc>(
-                  create: (context) => UserBloc(userRepository: userRepository),
-                ),
-                BlocProvider<FavouriteVenueBloc>(
-                  create: (context) => FavouriteVenueBloc(context.read<DatabaseRepository>()),
-                ),
-                BlocProvider<OnboardingBloc>(
-                  create: (context) {
-                    return OnboardingBloc(userRepository: userRepository)
-                      ..add(OnboardingStarted());
+        BlocProvider<SignUpBloc>(
+          create: (context) => SignUpBloc(context.read<AuthenticationBloc>().userRepository),
+        ),
+        BlocProvider<GetEventBloc>(
+          create: (context) => GetEventBloc(FirebaseEventRepo())..add(GetEvent()),
+        ),
+        BlocProvider<HomeScreenBloc>(
+          create: (context) => HomeScreenBloc(),
+        ),
+        BlocProvider<GetVenueBloc>(
+          create: (context) => GetVenueBloc(FirebaseVenueRepo())..add(GetVenue()),
+        ),
+        BlocProvider<UserBloc>(
+          create: (context) => UserBloc(userRepository: userRepository),
+        ),
+        BlocProvider<FavouriteVenueBloc>(
+          create: (context) => FavouriteVenueBloc(context.read<DatabaseRepository>()),
+        ),
+        BlocProvider<OnboardingBloc>(
+          create: (context) {
+            return OnboardingBloc(userRepository: userRepository)
+              ..add(OnboardingStarted());
+          },
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Glare Events',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: const ColorScheme.dark(
+            primary: Color(0xFF8FFA58),
+            onPrimary: Colors.black,
+            surface: Colors.black,
+            onSurface: Color(0xFF8FFA58),
+            background: Colors.black,
+            onBackground: Color(0xFF8FFA58),
+          ),
+          textTheme: const TextTheme(
+            displayLarge: TextStyle(
+              fontSize: 72.0,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF8FFA58),
+            ),
+            displayMedium: TextStyle(
+              fontSize: 36.0,
+              fontStyle: FontStyle.italic,
+              color: Color(0xFF8FFA58),
+            ),
+            displaySmall: TextStyle(
+              fontSize: 14.0,
+              fontFamily: 'Hind',
+              color: Color(0xFF8FFA58),
+            ),
+          ),
+          buttonTheme: const ButtonThemeData(
+            buttonColor: Color(0xFF13B8A8),
+            textTheme: ButtonTextTheme.primary,
+          ),
+        ),
+        home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+          builder: (context, state) {
+            if (state.status == AuthenticationStatus.authenticated) {
+              return MultiBlocProvider(
+                providers: [
+                  BlocProvider<OnboardingBloc>.value(
+                    value: context.read<OnboardingBloc>(),
+                  ),
+                  // Other necessary Blocs for the authenticated state
+                ],
+                child: BlocBuilder<OnboardingBloc, OnboardingState>(
+                  builder: (context, onboardingState) {
+                    if (onboardingState is OnboardingCompletionSuccess) {
+                      return const HomeScreen1(); // Direct to Home Screen after Onboarding is completed
+                    } else {
+                      return OnboardingScreen(); // Show Onboarding Screen for initial or any non-completion state
+                    }
                   },
                 ),
-              ],
-              child: BlocBuilder<OnboardingBloc, OnboardingState>(
-                builder: (context, onboardingState) {
-                  if (onboardingState is OnboardingCompletionSuccess) {
-                    return const HomeScreen1();  // Direct to Home Screen after Onboarding is completed
-                  } else {
-                    return OnboardingScreen();  // Show Onboarding Screen for initial or any non-completion state
-                  }
-                },
-              ),
-            );
-          } else {
-            return const WelcomeScreen();  // Show Welcome Screen if not authenticated
-          }
+              );
+            } else if (state.status == AuthenticationStatus.unauthenticated) {
+              print('Status Unauthenticated');
+              return const WelcomeScreen(); // Show Welcome Screen if not authenticated
+            } else {
+              return const WelcomeScreen();
+            }
+          },
+        ),
+        routes: {
+          '/welcome': (context) => const WelcomeScreen(),
+          '/home': (context) => const HomeScreen1(),
+          '/signIn': (context) => const SignInScreen(),
+          '/signUp': (context) => const SignUpScreen(),
+          '/onboarding': (context) =>  OnboardingScreen(),
         },
       ),
-      routes: {
-        '/welcome': (context) => const WelcomeScreen(),
-        '/home': (context) => const HomeScreen1(),
-        '/signIn': (context) => const SignInScreen(),
-        '/signUp': (context) => const SignUpScreen(),
-        '/onboarding': (context) => OnboardingScreen(),
-      },
     );
   }
 }
+
 
 // class MainAppView extends StatelessWidget {
 //   final UserRepository userRepository;
