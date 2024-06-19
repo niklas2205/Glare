@@ -2,7 +2,7 @@
 
 import 'package:event_repository/event_repository.dart';
 
-class Event{
+class Event {
   String eventId;
   String eventname;
   String picture;
@@ -10,6 +10,7 @@ class Event{
   String venue;
   String dj;
   int age;
+  DateTime date; // Add the date field
 
   Event({
     required this.eventId,
@@ -19,8 +20,8 @@ class Event{
     required this.venue,
     required this.dj,
     required this.age,
+    required this.date, // Initialize the date field
   });
-
 
   EventEntity toEntity() {
     return EventEntity(
@@ -29,8 +30,9 @@ class Event{
       picture: picture,
       description: description,
       venue: venue,
-      dj:  dj,
+      dj: dj,
       age: age,
+      date: date, // Add the date field
     );
   }
 
@@ -41,8 +43,9 @@ class Event{
       picture: entity.picture,
       description: entity.description,
       venue: entity.venue,
-      dj:  entity.dj,
+      dj: entity.dj,
       age: entity.age,
+      date: entity.date, // Add the date field
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class EventEntity {
   String eventId;
   String eventname;
@@ -6,6 +8,7 @@ class EventEntity {
   String venue;
   String dj;
   int age;
+  DateTime date; // Add the date field
 
   EventEntity({
     required this.eventId,
@@ -15,17 +18,19 @@ class EventEntity {
     required this.venue,
     required this.dj,
     required this.age,
+    required this.date, // Initialize the date field
   });
 
   Map<String, Object?> toDocument() {
     return {
-      'eventId':  eventId,
-      'eventname':  eventname,
-      'picture':  picture,
-      'description':  description,
-      'venue':  venue,
+      'eventId': eventId,
+      'eventname': eventname,
+      'picture': picture,
+      'description': description,
+      'venue': venue,
       'dj': dj,
       'age': age,
+      'date': Timestamp.fromDate(date), // Store the date as a Firestore Timestamp
     };
   }
 
@@ -38,6 +43,7 @@ class EventEntity {
       venue: doc['venue'],
       dj: doc['dj'],
       age: doc['age'],
+      date: (doc['date'] as Timestamp).toDate(), // Convert the Timestamp back to DateTime
     );
   }
 }

@@ -18,6 +18,4 @@ final class GetEventSuccess extends GetEventState {
 
   @override
   List<Object> get props => [events];
-
 }
-
