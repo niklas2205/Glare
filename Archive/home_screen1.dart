@@ -8,8 +8,8 @@ import 'package:glare/screens/home/blocs/get_event_bloc/get_event_bloc.dart';
 import 'package:glare/screens/home/blocs/get_venue_bloc/get_venue_bloc.dart';
 import 'package:glare/screens/home/views/Event_list.dart';
 import 'package:glare/screens/home/views/Venue_list.dart';
-import '../blocs/home_screen_bloc/home_screen_state.dart';
-import '../blocs/user_bloc/user_bloc.dart';
+import '../lib/screens/home/blocs/home_screen_bloc/home_screen_state.dart';
+import '../lib/screens/home/blocs/user_bloc/user_bloc.dart';
 
 class HomeScreen1 extends StatelessWidget {
   const HomeScreen1({super.key});

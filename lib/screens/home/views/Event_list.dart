@@ -1,4 +1,5 @@
 // EventListWidget.dart
+import 'package:event_repository/event_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:glare/screens/home/blocs/get_event_bloc/get_event_bloc.dart';
@@ -6,48 +7,58 @@ import 'package:glare/screens/home/views/Event_screen.dart';
 
 
 // EventListWidget.dart
-class EventListWidget extends StatelessWidget {
-  final GetEventSuccess eventState;
+import 'package:flutter/material.dart';
+import 'package:cupertino_icons/cupertino_icons.dart';
 
-  const EventListWidget({Key? key, required this.eventState}) : super(key: key);
+import 'package:flutter/material.dart';
+import 'package:cupertino_icons/cupertino_icons.dart';
+
+
+import 'package:flutter/material.dart';
+import 'package:cupertino_icons/cupertino_icons.dart';
+
+
+class EventListWidget extends StatelessWidget {
+  final List<Event> events;
+
+  const EventListWidget({Key? key, required this.events}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: eventState.events.length,
+      itemCount: events.length,
       itemBuilder: (context, int i) {
-        var event = eventState.events[i];
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-            child: Material(
-              elevation: 5,
-              color: Colors.black, // Updated to match the black theme
-              borderRadius: BorderRadius.circular(12), // Sleeker borderRadius
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (BuildContext context) => EventDetail(
-                        name: event.eventname,
-                        venue: event.venue,
-                        description: event.description,
-                        pictureUrl: event.picture,
-                      ),
+        var event = events[i];
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+          child: Material(
+            elevation: 5,
+            color: Colors.black, // Updated to match the black theme
+            borderRadius: BorderRadius.circular(12), // Sleeker borderRadius
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (BuildContext context) => EventDetail(
+                      name: event.eventname,
+                      venue: event.venue,
+                      description: event.description,
+                      pictureUrl: event.picture,
                     ),
-                  );
-                },
-                child: _buildEventRow(event),
-              ),
+                  ),
+                );
+              },
+              child: _buildEventRow(event),
             ),
-          );
-        },
-      );
-    }
+          ),
+        );
+      },
+    );
+  }
 
-  Widget _buildEventRow(dynamic event) {
-    // Replace 'dynamic' with your event model class
+  Widget _buildEventRow(Event event) {
     return Container(
       height: 80,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),

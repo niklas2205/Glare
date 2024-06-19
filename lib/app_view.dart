@@ -12,7 +12,7 @@ import 'package:glare/screens/auth/views/sign_up/sign_up_screen.dart';
 import 'package:glare/screens/home/blocs/home_screen_bloc/home_screen_bloc.dart';
 import 'package:glare/screens/home/blocs/get_event_bloc/get_event_bloc.dart';
 import 'package:glare/screens/home/blocs/get_venue_bloc/get_venue_bloc.dart';
-import 'package:glare/screens/home/views/home_screen1.dart';
+import 'package:glare/screens/home/views/New_Version/main_screen.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:venue_favorite_repository/venue_fav_repo.dart';
 import 'package:venue_repository/venue_repository.dart';
@@ -109,7 +109,7 @@ class MainAppView extends StatelessWidget {
                 child: BlocBuilder<OnboardingBloc, OnboardingState>(
                   builder: (context, onboardingState) {
                     if (onboardingState is OnboardingCompletionSuccess) {
-                      return const HomeScreen1(); // Direct to Home Screen after Onboarding is completed
+                      return const MainScreen(); // Direct to Home Screen after Onboarding is completed
                     } else {
                       return OnboardingScreen(); // Show Onboarding Screen for initial or any non-completion state
                     }
@@ -126,7 +126,7 @@ class MainAppView extends StatelessWidget {
         ),
         routes: {
           '/welcome': (context) => const WelcomeScreen(),
-          '/home': (context) => const HomeScreen1(),
+          '/home': (context) => const MainScreen(),
           '/signIn': (context) => const SignInScreen(),
           '/signUp': (context) => const SignUpScreen(),
           '/onboarding': (context) =>  OnboardingScreen(),
