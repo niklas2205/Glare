@@ -1,7 +1,7 @@
 import 'models/models.dart';
 
 abstract class UserRepository {
-  Stream <MyUser?> get user;
+  Stream<MyUser?> get user;
 
   Future<MyUser> signUp(MyUser myUser, String password);
 
@@ -15,7 +15,13 @@ abstract class UserRepository {
 
   Future<void> logOut();
 
-   Future<void> saveUserGenres(String userId, List<String> genres); // Ensure this is declared
+  Future<void> saveUserGenres(String userId, List<String> genres);
 
-   Future<void> updateUserData(Map<String, dynamic> userData);
+  Future<void> updateUserData(Map<String, dynamic> userData);
+
+  Future<void> likeEvent(String userId, String eventId);
+
+  Future<void> unlikeEvent(String userId, String eventId);
+
+  Future<bool> isEventLiked(String userId, String eventId);
 }

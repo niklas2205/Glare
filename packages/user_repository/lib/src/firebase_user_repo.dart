@@ -22,7 +22,6 @@ class FirebaseUserRepo implements UserRepository {
     FirebaseAuth? firebaseAuth,
   }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
-
   @override
   Future<void> updateUserData(Map<String, dynamic> userData) async {
     var currentUser = _firebaseAuth.currentUser;
@@ -44,9 +43,9 @@ class FirebaseUserRepo implements UserRepository {
         yield MyUser.empty;
       } else {
         yield await usersCollection
-          .doc(firebaseUser.uid)
-          .get()
-          .then((value) => MyUser.fromEntity(MyUserEntity.fromDocument(value.data()!)));
+            .doc(firebaseUser.uid)
+            .get()
+            .then((value) => MyUser.fromEntity(MyUserEntity.fromDocument(value.data()!)));
       }
     });
   }
@@ -77,8 +76,8 @@ class FirebaseUserRepo implements UserRepository {
   Future<MyUser> signUp(MyUser myUser, String password) async {
     try {
       UserCredential user = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: myUser.email,
-        password: password
+          email: myUser.email,
+          password: password
       );
       myUser.userId = user.user!.uid;  // Ensure you update the user ID after successful sign-up
       await setUserData(myUser);  // Save user data after signing up
@@ -98,8 +97,8 @@ class FirebaseUserRepo implements UserRepository {
   Future<void> setUserData(MyUser myUser) async {
     try {
       await usersCollection
-        .doc(myUser.userId)
-        .set(myUser.toEntity().toDocument());
+          .doc(myUser.userId)
+          .set(myUser.toEntity().toDocument());
     } catch (e) {
       log(e.toString());
       rethrow;
@@ -109,10 +108,10 @@ class FirebaseUserRepo implements UserRepository {
   @override
   Future<List<String>> fetchFavoriteVenueIds(String userId) async {
     var snapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection('favorite_venues')
-      .get();
+        .collection('users')
+        .doc(userId)
+        .collection('favorite_venues')
+        .get();
 
     return snapshot.docs.map((doc) => doc.id).toList();
   }
@@ -123,6 +122,27 @@ class FirebaseUserRepo implements UserRepository {
       await usersCollection.doc(userId).update({'favoriteGenres': genres});
     } catch (e) {
       log('Failed to save user genres: ${e.toString()}');
+      throw e;  // Or handle more gracefully
+    }
+  }
+
+  @override
+  Future<void> likeEvent(String userId, String eventId) async {
+    try {
+      var userDoc = usersCollection.doc(userId);
+      var eventDoc = FirebaseFirestore.instance.collection('events').doc(eventId);
+
+      // Update user's liked events
+      await userDoc.update({
+        'likedEvents': FieldValue.arrayUnion([eventId])
+      });
+
+      // Update event's liked by users
+      await eventDoc.update({
+        'likedBy': FieldValue.arrayUnion([userId])
+      });
+    } catch (e) {
+      log('Failed to like event: ${e.toString()}');
       throw e;  // Or handle more gracefully
     }
   }
