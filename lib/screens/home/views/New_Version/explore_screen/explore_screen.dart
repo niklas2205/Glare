@@ -7,16 +7,19 @@ import 'package:glare/screens/home/blocs/user_bloc/user_bloc.dart';
 import 'package:glare/screens/home/views/New_Version/explore_screen/EventList_screen.dart';
 import 'package:glare/screens/home/views/New_Version/explore_screen/togglebutton.dart';
 import 'package:glare/screens/home/views/New_Version/explore_screen/venuelist_screen.dart';
+import 'package:venue_repository/venue_repository.dart';
 
 
 import '../../../../background_screen/background_screen.dart';
 
 import '../../../blocs/get_event_bloc/get_event_bloc.dart';
+import '../../../blocs/get_venue_bloc/get_venue_bloc.dart';
 import '../../../blocs/home_screen_bloc/home_screen_event.dart';
 import '../../../blocs/home_screen_bloc/home_screen_state.dart';
 
 
 import '../../../blocs/search_event_bloc/search_event_bloc.dart';
+import '../../../blocs/search_venue_bloc/search_venue_bloc.dart';
 
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({Key? key}) : super(key: key);
@@ -92,7 +95,10 @@ class ExploreScreen extends StatelessWidget {
                               child: EventListScreen(),
                             );
                           } else if (homeState.view == HomeScreenView.venues) {
-                            return VenueListScreen();
+                            return BlocProvider(
+                              create: (context) => VenueSearchBloc(context.read<GetVenueBloc>()),
+                              child: VenueListScreen(),
+                            );
                           } else {
                             return const Center(child: Text("No view selected"));
                           }

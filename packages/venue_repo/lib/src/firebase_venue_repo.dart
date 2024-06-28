@@ -5,21 +5,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../venue_repository.dart';
 
-class FirebaseVenueRepo implements VenueRepo{
+class FirebaseVenueRepo implements VenueRepo {
   final venueCollection = FirebaseFirestore.instance.collection('venues');
 
-  Future<List<Venue>> getVenue() async{
-    try{
-      return await venueCollection
-        .get()
-        .then((value) => value.docs.map((e) =>
-          Venue.fromEntity(VenueEntity.fromDocument(e.data()))
-        ).toList());
+  @override
+  Future<List<Venue>> getVenue() async {
+    try {
+      final querySnapshot = await venueCollection.get();
+      return querySnapshot.docs.map((doc) => Venue.fromEntity(VenueEntity.fromDocument(doc.data()!))).toList();
     } catch (e) {
-      log(e.toString());
+      print('Error getting venues: $e');
       rethrow;
     }
   }
-
-
 }

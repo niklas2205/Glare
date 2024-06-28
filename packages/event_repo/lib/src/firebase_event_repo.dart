@@ -36,16 +36,27 @@ class FirebaseEventRepo implements EventRepo {
 
   @override
   Future<void> likeEvent(String eventId, String userId) async {
-    try {
-      var eventDoc = eventCollection.doc(eventId);
+    final eventRef = eventCollection.doc(eventId);
+    await eventRef.update({
+      'likedBy': FieldValue.arrayUnion([userId])
+    });
+  }
 
-      // Update event's liked by users
-      await eventDoc.update({
-        'likedBy': FieldValue.arrayUnion([userId])
-      });
-    } catch (e) {
-      log('Failed to like event: ${e.toString()}');
-      throw e;  // Or handle more gracefully
+  @override
+  Future<void> unlikeEvent(String eventId, String userId) async {
+    final eventRef = eventCollection.doc(eventId);
+    await eventRef.update({
+      'likedBy': FieldValue.arrayRemove([userId])
+    });
+  }
+
+  @override
+  Future<int> getEventLikesCount(String eventId) async {
+    final eventDoc = await eventCollection.doc(eventId).get();
+    if (eventDoc.exists) {
+      List likedBy = eventDoc.data()?['likedBy'] ?? [];
+      return likedBy.length;
     }
+    return 0;
   }
 }

@@ -16,11 +16,14 @@ import 'models/models.dart';  // Ensure you have the correct imports for your us
 
 class FirebaseUserRepo implements UserRepository {
   final FirebaseAuth _firebaseAuth;
+  final FirebaseFirestore _firestore;
   final usersCollection = FirebaseFirestore.instance.collection('users');
 
   FirebaseUserRepo({
     FirebaseAuth? firebaseAuth,
-  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+    FirebaseFirestore? firestore,
+  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _firestore = firestore ?? FirebaseFirestore.instance;
 
   @override
   Future<void> updateUserData(Map<String, dynamic> userData) async {
@@ -38,14 +41,12 @@ class FirebaseUserRepo implements UserRepository {
 
   @override
   Stream<MyUser?> get user {
-    return _firebaseAuth.authStateChanges().flatMap((firebaseUser) async* {
+    return _firebaseAuth.authStateChanges().asyncMap((firebaseUser) async {
       if (firebaseUser == null) {
-        yield MyUser.empty;
+        return MyUser.empty;
       } else {
-        yield await usersCollection
-            .doc(firebaseUser.uid)
-            .get()
-            .then((value) => MyUser.fromEntity(MyUserEntity.fromDocument(value.data()!)));
+        var doc = await usersCollection.doc(firebaseUser.uid).get();
+        return MyUser.fromEntity(MyUserEntity.fromDocument(doc.data()!));
       }
     });
   }
@@ -128,22 +129,49 @@ class FirebaseUserRepo implements UserRepository {
 
   @override
   Future<void> likeEvent(String userId, String eventId) async {
-    try {
-      var userDoc = usersCollection.doc(userId);
-      var eventDoc = FirebaseFirestore.instance.collection('events').doc(eventId);
+    final userRef = _firestore.collection('users').doc(userId);
+    final eventRef = _firestore.collection('events').doc(eventId);
 
-      // Update user's liked events
-      await userDoc.update({
-        'likedEvents': FieldValue.arrayUnion([eventId])
-      });
+    await userRef.update({
+      'likedEvents': FieldValue.arrayUnion([eventId])
+    });
 
-      // Update event's liked by users
-      await eventDoc.update({
-        'likedBy': FieldValue.arrayUnion([userId])
-      });
-    } catch (e) {
-      log('Failed to like event: ${e.toString()}');
-      throw e;  // Or handle more gracefully
+    await eventRef.update({
+      'likedBy': FieldValue.arrayUnion([userId])
+    });
+  }
+
+  @override
+  Future<void> unlikeEvent(String userId, String eventId) async {
+    final userRef = _firestore.collection('users').doc(userId);
+    final eventRef = _firestore.collection('events').doc(eventId);
+
+    await userRef.update({
+      'likedEvents': FieldValue.arrayRemove([eventId])
+    });
+
+    await eventRef.update({
+      'likedBy': FieldValue.arrayRemove([userId])
+    });
+  }
+
+  @override
+  Future<bool> isEventLiked(String userId, String eventId) async {
+    final userDoc = await _firestore.collection('users').doc(userId).get();
+    if (userDoc.exists) {
+      List likedEvents = userDoc.data()?['likedEvents'] ?? [];
+      return likedEvents.contains(eventId);
     }
+    return false;
+  }
+
+  @override
+  Future<List<String>> getLikedEvents(String userId) async {
+    final userDoc = await _firestore.collection('users').doc(userId).get();
+    if (userDoc.exists) {
+      List likedEvents = userDoc.data()?['likedEvents'] ?? [];
+      return List<String>.from(likedEvents);
+    }
+    return [];
   }
 }

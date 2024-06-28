@@ -1,23 +1,23 @@
 part of 'get_venue_bloc.dart';
 
-sealed class GetVenueState extends Equatable {
+abstract class GetVenueState extends Equatable {
   const GetVenueState();
-  
+
   @override
   List<Object> get props => [];
 }
 
+class GetVenueInitial extends GetVenueState {}
 
-final class GetVenueInitial extends GetVenueState {}
+class GetVenueLoading extends GetVenueState {}
 
-final class GetVenueFailure extends GetVenueState {}
-final class GetVenueLoading extends GetVenueState {}
-final class GetVenueSuccess extends GetVenueState {
+class GetVenueSuccess extends GetVenueState {
   final List<Venue> venues;
 
   const GetVenueSuccess(this.venues);
 
   @override
   List<Object> get props => [venues];
-
 }
+
+class GetVenueFailure extends GetVenueState {}

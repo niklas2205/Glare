@@ -8,23 +8,20 @@ part 'get_venue_event.dart';
 part 'get_venue_state.dart';
 
 class GetVenueBloc extends Bloc<GetVenueEvent, GetVenueState> {
-  final VenueRepo _venueRepo;
+  final VenueRepo venueRepo;
 
-  GetVenueBloc(this._venueRepo) : super(GetVenueInitial()) {
-    on<GetVenueEvent>((event, emit) async{
-      emit(GetVenueLoading());
-      try{
-        List<Venue> events = await _venueRepo.getVenue();
-        emit(GetVenueSuccess(events));
+  GetVenueBloc(this.venueRepo) : super(GetVenueInitial()) {
+    on<GetVenue>(_onGetVenue);
+  }
 
-      } catch(e) {
-        emit(GetVenueFailure());
-
-      }
-      
-    
+  Future<void> _onGetVenue(GetVenue event, Emitter<GetVenueState> emit) async {
+    emit(GetVenueLoading());
+    try {
+      final venues = await venueRepo.getVenue();
+      emit(GetVenueSuccess(venues));
+    } catch (e) {
+      emit(GetVenueFailure());
     }
-    );
-
   }
 }
+

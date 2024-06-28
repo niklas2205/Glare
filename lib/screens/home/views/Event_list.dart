@@ -1,20 +1,12 @@
-// EventListWidget.dart
-import 'package:event_repository/event_repository.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:glare/screens/home/blocs/event_like_bloc/event_like_bloc.dart';
-
-import 'package:glare/screens/home/views/Event_screen.dart';
-
-
-// EventListWidget.dart
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
+import 'package:event_repository/event_repository.dart';
+import 'package:glare/screens/home/views/Event_screen.dart';
 import 'package:user_repository/user_repository.dart';
+import 'package:intl/intl.dart';
+import '../blocs/event_like_bloc/event_like_bloc.dart';
 
-
-class EventListWidget extends StatelessWidget {
+class EventListWidget extends StatefulWidget {
   final List<Event> events;
   final ScrollController scrollController;
 
@@ -25,22 +17,50 @@ class EventListWidget extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final groupedEvents = _groupEventsByDate(events);
+  _EventListWidgetState createState() => _EventListWidgetState();
+}
 
-    return ListView.builder(
-      controller: scrollController,
-      padding: EdgeInsets.zero, // Ensure no padding at the start
-      itemCount: groupedEvents.length,
-      itemBuilder: (context, index) {
-        final group = groupedEvents[index];
-        if (group is DateTime) {
-          return _buildDateHeader(context, group);
-        } else if (group is Event) {
-          return _buildEventCard(context, group);
-        }
-        return const SizedBox.shrink();
-      },
+class _EventListWidgetState extends State<EventListWidget> {
+  late EventLikeBloc _eventLikeBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _eventLikeBloc = context.read<EventLikeBloc>();
+
+    // Fetch initial like counts for all events
+    widget.events.forEach((event) {
+      _eventLikeBloc.add(LoadEventLikeCount(event.eventId));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final groupedEvents = _groupEventsByDate(widget.events);
+
+    return BlocProvider(
+      create: (context) => EventLikeBloc(
+        userRepository: context.read<UserRepository>(),
+        eventRepository: context.read<EventRepo>(),
+      ),
+      child: BlocBuilder<EventLikeBloc, EventLikeState>(
+        builder: (context, state) {
+          return ListView.builder(
+            controller: widget.scrollController,
+            padding: EdgeInsets.zero, // Ensure no padding at the start
+            itemCount: groupedEvents.length,
+            itemBuilder: (context, index) {
+              final group = groupedEvents[index];
+              if (group is DateTime) {
+                return _buildDateHeader(context, group);
+              } else if (group is Event) {
+                return _buildEventCard(context, group);
+              }
+              return const SizedBox.shrink();
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -49,7 +69,7 @@ class EventListWidget extends StatelessWidget {
     DateTime? currentDate;
 
     for (var event in events) {
-      if (event.date != null && (currentDate == null || !_isSameDate(currentDate, event.date!))) {
+      if (event.date != null && (currentDate == null || !_isSameDate(currentDate, event.date))) {
         currentDate = event.date;
         groupedEvents.add(currentDate);
       }
@@ -80,6 +100,37 @@ class EventListWidget extends StatelessWidget {
           fontSize: 16,
         ),
       ),
+    );
+  }
+
+  Widget _buildLikeButton(BuildContext context, Event event) {
+    return BlocBuilder<EventLikeBloc, EventLikeState>(
+      builder: (context, state) {
+        if (state is EventLikeSuccess) {
+          bool isLiked = state.likedEvents.contains(event.eventId);
+          return IconButton(
+            icon: Icon(
+              isLiked ? Icons.favorite : Icons.favorite_border,
+              color: isLiked ? Colors.red : Colors.white,
+            ),
+            onPressed: () {
+              final user = context.read<UserRepository>().getCurrentUser().then((user) {
+                if (user != null) {
+                  if (isLiked) {
+                    context.read<EventLikeBloc>().add(UnlikeEvent(userId: user.userId, eventId: event.eventId));
+                  } else {
+                    context.read<EventLikeBloc>().add(LikeEvent(userId: user.userId, eventId: event.eventId));
+                  }
+                }
+              });
+            },
+          );
+        }
+        return const Icon(
+          Icons.favorite_border,
+          color: Colors.white,
+        );
+      },
     );
   }
 
@@ -115,49 +166,72 @@ class EventListWidget extends StatelessWidget {
               width: cardWidth,
               height: cardHeight,
               margin: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
+              child: Stack(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        event.picture,
-                        width: imageSize, // Smaller square image
-                        height: imageSize,
-                        fit: BoxFit.cover,
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                            event.picture,
+                            width: imageSize, // Smaller square image
+                            height: imageSize,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
-                    ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10, top: 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                event.eventname,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                event.venue,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 10,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              BlocBuilder<EventLikeBloc, EventLikeState>(
+                                builder: (context, state) {
+                                  int likesCount = state is EventLikeSuccess
+                                      ? state.likesCount[event.eventId] ?? 0
+                                      : 0;
+                                  return Text(
+                                    '$likesCount Going',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 10,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10, top: 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            event.eventname,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            event.venue,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w400,
-                              fontSize: 10,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          _buildLikeButton(context, event),
-                        ],
-                      ),
-                    ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: _buildLikeButton(context, event),
                   ),
                 ],
               ),
@@ -165,41 +239,6 @@ class EventListWidget extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildLikeButton(BuildContext context, Event event) {
-    return FutureBuilder<MyUser?>(
-      future: context.read<UserRepository>().getCurrentUser(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else if (!snapshot.hasData) {
-          return Text('No user data');
-        } else {
-          final user = snapshot.data!;
-          return BlocBuilder<EventLikeBloc, EventLikeState>(
-            builder: (context, state) {
-              if (state is EventLikeLoading) {
-                return CircularProgressIndicator();
-              } else if (state is EventLikeFailure) {
-                return Text('Error: ${state.error}');
-              }
-              return IconButton(
-                icon: Icon(
-                  Icons.favorite_border,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  context.read<EventLikeBloc>().add(LikeEvent(userId: user.userId, eventId: event.eventId));
-                },
-              );
-            },
-          );
-        }
-      },
     );
   }
 }

@@ -3,19 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glare/screens/home/blocs/get_venue_bloc/get_venue_bloc.dart';
 import 'package:glare/screens/home/views/Venue_screen.dart';
+import 'package:venue_repository/venue_repository.dart';
 
 
 import '../../auth/blocs/sign_in_bloc/sign_in_bloc.dart';
 import '../blocs/favourite_venue_bloc/favourite_venue_bloc.dart';
 import '../blocs/user_bloc/user_bloc.dart';
 
-class VenueListWidget extends StatelessWidget {
-  final GetVenueSuccess state;
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-  const VenueListWidget({
-    Key? key,
-    required this.state,
-  }) : super(key: key);
+class VenueListWidget extends StatelessWidget {
+  final List<Venue> venues;
+
+  const VenueListWidget({Key? key, required this.venues}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +24,9 @@ class VenueListWidget extends StatelessWidget {
       builder: (context, userState) {
         if (userState is UserLoaded) {
           return ListView.builder(
-            itemCount: state.venues.length,
+            itemCount: venues.length,
             itemBuilder: (context, int i) {
-              var venue = state.venues[i];
+              var venue = venues[i];
               bool isFavorite = userState.favoriteVenueIds.contains(venue.venueId);
 
               return Padding(
@@ -45,8 +46,8 @@ class VenueListWidget extends StatelessWidget {
                             address: venue.address,
                             description: venue.description,
                             pictureUrl: venue.picture,
-                            instagram: venue.instagram, // Added 'instagram' field
-                            website: venue.website, // Added 'website' field
+                            instagram: venue.instagram,
+                            website: venue.website,
                           ),
                         ),
                       );
@@ -124,7 +125,6 @@ class VenueListWidget extends StatelessWidget {
                       } else {
                         context.read<FavouriteVenueBloc>().add(AddVenueToFavorites(userId, venue.venueId));
                       }
-                      // Dispatch an event to UserBloc to update the favorite list
                       context.read<UserBloc>().add(RefreshUserFavorites(userId));
                     },
                     icon: Icon(
