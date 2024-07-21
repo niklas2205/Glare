@@ -8,14 +8,7 @@ import 'package:venue_repository/venue_repository.dart';
 import '../../../blocs/get_venue_bloc/get_venue_bloc.dart';
 import '../../../blocs/search_venue_bloc/search_venue_bloc.dart';
 import '../../Venue_list.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class VenueListScreen extends StatelessWidget {
   @override

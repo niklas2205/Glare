@@ -10,7 +10,8 @@ class Event {
   String venue;
   String dj;
   int age;
-  DateTime date; // Add the date field
+  DateTime date;
+  String venueId; // Add the venueId field
 
   Event({
     required this.eventId,
@@ -20,7 +21,8 @@ class Event {
     required this.venue,
     required this.dj,
     required this.age,
-    required this.date, // Initialize the date field
+    required this.date,
+    required this.venueId, // Initialize the venueId field
   });
 
   EventEntity toEntity() {
@@ -32,7 +34,8 @@ class Event {
       venue: venue,
       dj: dj,
       age: age,
-      date: date, // Add the date field
+      date: date,
+      venueId: venueId, // Add the venueId field
     );
   }
 
@@ -45,7 +48,8 @@ class Event {
       venue: entity.venue,
       dj: entity.dj,
       age: entity.age,
-      date: entity.date, // Add the date field
+      date: entity.date,
+      venueId: entity.venueId, // Add the venueId field
     );
   }
 }

@@ -8,7 +8,8 @@ class EventEntity {
   String venue;
   String dj;
   int age;
-  DateTime date; // Add the date field
+  DateTime date;
+  String venueId; // Add the venueId field
 
   EventEntity({
     required this.eventId,
@@ -18,7 +19,8 @@ class EventEntity {
     required this.venue,
     required this.dj,
     required this.age,
-    required this.date, // Initialize the date field
+    required this.date,
+    required this.venueId, // Initialize the venueId field
   });
 
   Map<String, Object?> toDocument() {
@@ -31,6 +33,7 @@ class EventEntity {
       'dj': dj,
       'age': age,
       'date': Timestamp.fromDate(date), // Store the date as a Firestore Timestamp
+      'venueId': venueId, // Add the venueId field
     };
   }
 
@@ -44,6 +47,7 @@ class EventEntity {
       dj: doc['dj'],
       age: doc['age'],
       date: (doc['date'] as Timestamp).toDate(), // Convert the Timestamp back to DateTime
+      venueId: doc['venueId'], // Add the venueId field
     );
   }
 }

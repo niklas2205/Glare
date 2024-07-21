@@ -2,7 +2,7 @@
 
 import '../entities/venue_entities.dart';
 
-class Venue{
+class Venue {
   String venueId;
   String venuename;
   String picture;
@@ -10,8 +10,7 @@ class Venue{
   String address;
   String instagram;
   String website;
-  
-
+  int reviews; // Added reviews field
 
   Venue({
     required this.venueId,
@@ -19,10 +18,10 @@ class Venue{
     required this.picture,
     required this.description,
     required this.address,
-    required this.instagram, // Added initializer for the 'Instagram' field
-    required this.website, // Added initializer for the 'Website' field
+    required this.instagram,
+    required this.website,
+    required this.reviews, // Initialize the reviews field
   });
-
 
   VenueEntity toEntity() {
     return VenueEntity(
@@ -31,8 +30,9 @@ class Venue{
       picture: picture,
       description: description,
       address: address,
-      instagram: instagram, // Added initializer for the 'Instagram' field
-      website: website, // Added initializer for the 'Website' field
+      instagram: instagram,
+      website: website,
+      reviews: reviews, // Initialize the reviews field
     );
   }
 
@@ -43,8 +43,20 @@ class Venue{
       picture: entity.picture,
       description: entity.description,
       address: entity.address,
-      instagram: entity.instagram, // Added initializer for the 'Instagram' field
-      website: entity.website, // Added initializer for the 'Website' field
+      instagram: entity.instagram,
+      website: entity.website,
+      reviews: entity.reviews, // Initialize the reviews field
     );
   }
+
+  // Add an empty constructor
+  Venue.empty()
+      : venueId = '',
+        venuename = '',
+        picture = '',
+        description = '',
+        address = '',
+        instagram = '',
+        website = '',
+        reviews = 0;
 }

@@ -19,11 +19,15 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
     on<LoadLikedEvents>(_onLoadLikedEvents);
     on<LoadEventLikeCount>(_onLoadEventLikeCount);
 
-    userRepository.getCurrentUser().then((user) {
-      if (user != null) {
-        add(LoadLikedEvents(user.userId));
-      }
-    });
+    // Load initial liked events and like counts
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    final user = await userRepository.getCurrentUser();
+    if (user != null) {
+      add(LoadLikedEvents(user.userId));
+    }
   }
 
   Future<void> _onLikeEvent(LikeEvent event, Emitter<EventLikeState> emit) async {
@@ -90,3 +94,4 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
     }
   }
 }
+

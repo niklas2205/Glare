@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:event_repository/event_repository.dart';
-import 'package:glare/screens/home/views/Event_screen.dart';
+import 'package:glare/screens/home/views/New_Version/Event_Detail/Event_screen.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:intl/intl.dart';
 import '../blocs/event_like_bloc/event_like_bloc.dart';
+import 'New_Version/explore_screen/event_card.dart';
 
 class EventListWidget extends StatefulWidget {
   final List<Event> events;
@@ -54,7 +55,15 @@ class _EventListWidgetState extends State<EventListWidget> {
               if (group is DateTime) {
                 return _buildDateHeader(context, group);
               } else if (group is Event) {
-                return _buildEventCard(context, group);
+                final double cardWidth = MediaQuery.of(context).size.width * 0.82;
+                final double cardHeight = MediaQuery.of(context).size.height * 0.132;
+                final double imageSize = cardHeight - 16;
+                return EventCard(
+                  event: group,
+                  cardWidth: cardWidth,
+                  cardHeight: cardHeight,
+                  imageSize: imageSize,
+                );
               }
               return const SizedBox.shrink();
             },
@@ -98,145 +107,6 @@ class _EventListWidgetState extends State<EventListWidget> {
           color: Colors.white,
           fontWeight: FontWeight.w600,
           fontSize: 16,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLikeButton(BuildContext context, Event event) {
-    return BlocBuilder<EventLikeBloc, EventLikeState>(
-      builder: (context, state) {
-        if (state is EventLikeSuccess) {
-          bool isLiked = state.likedEvents.contains(event.eventId);
-          return IconButton(
-            icon: Icon(
-              isLiked ? Icons.favorite : Icons.favorite_border,
-              color: isLiked ? Colors.red : Colors.white,
-            ),
-            onPressed: () {
-              final user = context.read<UserRepository>().getCurrentUser().then((user) {
-                if (user != null) {
-                  if (isLiked) {
-                    context.read<EventLikeBloc>().add(UnlikeEvent(userId: user.userId, eventId: event.eventId));
-                  } else {
-                    context.read<EventLikeBloc>().add(LikeEvent(userId: user.userId, eventId: event.eventId));
-                  }
-                }
-              });
-            },
-          );
-        }
-        return const Icon(
-          Icons.favorite_border,
-          color: Colors.white,
-        );
-      },
-    );
-  }
-
-  Widget _buildEventCard(BuildContext context, Event event) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double cardWidth = screenWidth * 0.82;
-    final double cardHeight = MediaQuery.of(context).size.height * 0.132;
-    final double imageSize = cardHeight - 16; // Smaller image size with some padding
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Material(
-          elevation: 5,
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(10),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(10),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (BuildContext context) => EventDetail(
-                    name: event.eventname,
-                    venue: event.venue,
-                    description: event.description,
-                    pictureUrl: event.picture,
-                  ),
-                ),
-              );
-            },
-            child: Container(
-              width: cardWidth,
-              height: cardHeight,
-              margin: const EdgeInsets.symmetric(vertical: 4),
-              child: Stack(
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            event.picture,
-                            width: imageSize, // Smaller square image
-                            height: imageSize,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 10, top: 8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                event.eventname,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                event.venue,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 10,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              BlocBuilder<EventLikeBloc, EventLikeState>(
-                                builder: (context, state) {
-                                  int likesCount = state is EventLikeSuccess
-                                      ? state.likesCount[event.eventId] ?? 0
-                                      : 0;
-                                  return Text(
-                                    '$likesCount Going',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 10,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: _buildLikeButton(context, event),
-                  ),
-                ],
-              ),
-            ),
-          ),
         ),
       ),
     );
