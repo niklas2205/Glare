@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:glare/screens/home/views/Venue_screen.dart';
+import 'package:glare/screens/home/views/New_Version/Event_Venue_Detail/Venue_screen.dart';
 import 'package:venue_repository/venue_repository.dart';
 
 

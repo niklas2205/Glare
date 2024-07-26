@@ -20,6 +20,7 @@ import 'package:venue_repository/venue_repository.dart';
 
 import 'screens/auth/views/onboarding/onboarding_screen.dart';
 import 'screens/auth/views/welcome_screen_comp/welcome_screen.dart';
+import 'screens/home/blocs/event_list_by_Ids_bloc/event_list_by_ids_bloc.dart';
 import 'screens/home/blocs/favourite_venue_bloc/favourite_venue_bloc.dart';
 import 'screens/home/blocs/search_venue_bloc/search_venue_bloc.dart';
 import 'screens/home/blocs/user_bloc/user_bloc.dart';
@@ -40,7 +41,6 @@ class MainAppView extends StatelessWidget {
         RepositoryProvider<EventRepo>(
           create: (_) => FirebaseEventRepo(),
         ),
-        
       ],
       child: MultiBlocProvider(
         providers: [
@@ -80,6 +80,12 @@ class MainAppView extends StatelessWidget {
               eventRepository: context.read<EventRepo>(),
             ),
           ),
+          BlocProvider<EventListByIdsBloc>(
+            create: (context) => EventListByIdsBloc(
+              context.read<EventRepo>(),
+              context.read<UserRepository>(),
+            ),
+          ),
         ],
         child: MaterialApp(
           title: 'Glare Events',
@@ -111,7 +117,7 @@ class MainAppView extends StatelessWidget {
               ),
             ),
             buttonTheme: const ButtonThemeData(
-              buttonColor: Color(0xFF13B8A8),
+              buttonColor: Color(0xFF8FFA58),
               textTheme: ButtonTextTheme.primary,
             ),
           ),
@@ -123,21 +129,20 @@ class MainAppView extends StatelessWidget {
                     BlocProvider<OnboardingBloc>.value(
                       value: context.read<OnboardingBloc>(),
                     ),
-                    // Other necessary Blocs for the authenticated state
                   ],
                   child: BlocBuilder<OnboardingBloc, OnboardingState>(
                     builder: (context, onboardingState) {
                       if (onboardingState is OnboardingCompletionSuccess) {
-                        return const MainScreen(); // Direct to Home Screen after Onboarding is completed
+                        return const MainScreen();
                       } else {
-                        return OnboardingScreen(); // Show Onboarding Screen for initial or any non-completion state
+                        return OnboardingScreen();
                       }
                     },
                   ),
                 );
               } else if (state.status == AuthenticationStatus.unauthenticated) {
                 print('Status Unauthenticated');
-                return const WelcomeScreen(); // Show Welcome Screen if not authenticated
+                return const WelcomeScreen();
               } else {
                 return const WelcomeScreen();
               }
@@ -155,3 +160,4 @@ class MainAppView extends StatelessWidget {
     );
   }
 }
+

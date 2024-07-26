@@ -51,4 +51,6 @@ flutter:
     - assets/images/
     - assets/Style_img/
     - assets/icons/
+    - assets/icons/Navbar/
+    - assets/icons/Profile_screen/
   uses-material-design: true

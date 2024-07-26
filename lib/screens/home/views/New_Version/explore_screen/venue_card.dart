@@ -1,9 +1,12 @@
+import 'package:event_repository/event_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:glare/screens/home/views/Venue_screen.dart';
+import 'package:glare/screens/home/views/New_Version/Event_Venue_Detail/Venue_screen.dart';
+import 'package:user_repository/user_repository.dart';
 import 'package:venue_repository/venue_repository.dart';
 
+import '../../../blocs/event_list_by_Ids_bloc/event_list_by_ids_bloc.dart';
 import '../../../blocs/favourite_venue_bloc/favourite_venue_bloc.dart';
 import '../../../blocs/user_bloc/user_bloc.dart';
 
@@ -40,13 +43,20 @@ class VenueCard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute<void>(
-                  builder: (BuildContext context) => VenueDetail(
-                    name: venue.venuename,
-                    address: venue.address,
-                    description: venue.description,
-                    pictureUrl: venue.picture,
-                    instagram: venue.instagram,
-                    website: venue.website,
+                  builder: (BuildContext context) => BlocProvider(
+                    create: (context) => EventListByIdsBloc(
+                      context.read<EventRepo>(),
+                      context.read<UserRepository>(),
+                    )..add(FetchEventsByIds(venue.eventIds)),
+                    child: VenueDetail(
+                      name: venue.venuename,
+                      address: venue.address,
+                      description: venue.description,
+                      pictureUrl: venue.picture,
+                      instagram: venue.instagram,
+                      website: venue.website,
+                      eventIds: venue.eventIds,
+                    ),
                   ),
                 ),
               );

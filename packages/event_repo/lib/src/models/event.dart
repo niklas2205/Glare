@@ -11,7 +11,8 @@ class Event {
   String dj;
   int age;
   DateTime date;
-  String venueId; // Add the venueId field
+  String venueId;
+  List<String> eventTag;
 
   Event({
     required this.eventId,
@@ -22,7 +23,8 @@ class Event {
     required this.dj,
     required this.age,
     required this.date,
-    required this.venueId, // Initialize the venueId field
+    required this.venueId,
+    required this.eventTag,
   });
 
   EventEntity toEntity() {
@@ -35,7 +37,8 @@ class Event {
       dj: dj,
       age: age,
       date: date,
-      venueId: venueId, // Add the venueId field
+      venueId: venueId,
+      eventTag: eventTag,
     );
   }
 
@@ -49,7 +52,8 @@ class Event {
       dj: entity.dj,
       age: entity.age,
       date: entity.date,
-      venueId: entity.venueId, // Add the venueId field
+      venueId: entity.venueId,
+      eventTag: entity.eventTag,
     );
   }
 }

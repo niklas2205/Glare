@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:glare/screens/home/views/New_Version/explore_screen/explore_screen.dart';
 
 import 'package:glare/screens/home/views/New_Version/home_screen.dart';
@@ -7,7 +8,11 @@ import '../../blocs/bottom_navigation_bloc/bottom_navigation_bloc.dart';
 
 
 
-import 'settings_screen.dart';
+import 'Profile_screen/Profile_main.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -24,7 +29,7 @@ class MainScreen extends StatelessWidget {
               children: const [
                 HomeScreen(),
                 ExploreScreen(),
-                SettingsScreen(),
+                ProfileMain(),
               ],
             );
           },
@@ -36,20 +41,40 @@ class MainScreen extends StatelessWidget {
               onTap: (index) {
                 context.read<BottomNavigationBloc>().add(NavigateTo(index));
               },
-              items: const [
+              items: [
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
+                  icon: SvgPicture.asset(
+                    'assets/icons/Navbar/house-2.svg',
+                    colorFilter: ColorFilter.mode(
+                      state.selectedIndex == 0 ? Color(0xFF8FFA58) : Colors.grey[700]!,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                   label: 'Home',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.event),
+                  icon: SvgPicture.asset(
+                    'assets/icons/Navbar/search-status.svg',
+                    colorFilter: ColorFilter.mode(
+                      state.selectedIndex == 1 ? Color(0xFF8FFA58) : Colors.grey[700]!,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                   label: 'Explore',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.settings),
-                  label: 'Settings',
+                   icon: SvgPicture.asset(
+                    'assets/icons/Navbar/user.svg',
+                    colorFilter: ColorFilter.mode(
+                      state.selectedIndex == 2 ? Color(0xFF8FFA58) : Colors.grey[700]!,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                  label: 'Profile',
                 ),
               ],
+              selectedItemColor: Color(0xFF8FFA58),
+              unselectedItemColor: Colors.grey[700],
             );
           },
         ),

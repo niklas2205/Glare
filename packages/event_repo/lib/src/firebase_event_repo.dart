@@ -59,4 +59,29 @@ class FirebaseEventRepo implements EventRepo {
     }
     return 0;
   }
+
+  @override
+  Future<List<Event>> getEventsByIds(List<String> eventIds) async {
+    try {
+      return await eventCollection
+          .where(FieldPath.documentId, whereIn: eventIds)
+          .get()
+          .then((value) => value.docs
+              .map((e) => Event.fromEntity(EventEntity.fromDocument(e.data())))
+              .toList());
+    } catch (e) {
+      print(e.toString());
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> isEventLikedByUser(String eventId, String userId) async {
+    final eventDoc = await eventCollection.doc(eventId).get();
+    if (eventDoc.exists) {
+      List likedBy = eventDoc.data()?['likedBy'] ?? [];
+      return likedBy.contains(userId);
+    }
+    return false;
+  }
 }

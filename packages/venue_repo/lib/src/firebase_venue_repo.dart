@@ -12,10 +12,15 @@ class FirebaseVenueRepo implements VenueRepo {
   Future<List<Venue>> getVenue() async {
     try {
       final querySnapshot = await venueCollection.get();
-      return querySnapshot.docs.map((doc) => Venue.fromEntity(VenueEntity.fromDocument(doc.data()))).toList();
+      return querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        data['eventIds'] = (data['eventIds'] as List<dynamic>).map((e) => e.toString()).toList();
+        return Venue.fromEntity(VenueEntity.fromDocument(data));
+      }).toList();
     } catch (e) {
       print('Error getting venues: $e');
       rethrow;
     }
   }
 }
+

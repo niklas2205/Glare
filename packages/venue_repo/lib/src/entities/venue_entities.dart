@@ -6,7 +6,8 @@ class VenueEntity {
   String address;
   String instagram;
   String website;
-  int reviews; // Added reviews field
+  int reviews;
+  List<String> eventIds;
 
   VenueEntity({
     required this.venueId,
@@ -16,7 +17,8 @@ class VenueEntity {
     required this.address,
     required this.instagram,
     required this.website,
-    required this.reviews, // Initialize the reviews field
+    required this.reviews,
+    required this.eventIds,
   });
 
   Map<String, Object?> toDocument() {
@@ -28,20 +30,22 @@ class VenueEntity {
       'address': address,
       'instagram': instagram,
       'website': website,
-      'reviews': reviews, // Add reviews field
+      'reviews': reviews,
+      'eventIds': eventIds,
     };
   }
 
   static VenueEntity fromDocument(Map<String, dynamic> doc) {
     return VenueEntity(
-      venueId: doc['venueId'] ?? '',
-      venuename: doc['venuename'] ?? '',
-      picture: doc['picture'] ?? '',
-      description: doc['description'] ?? '',
-      address: doc['address'] ?? '',
-      instagram: doc['instagram'] ?? '',
-      website: doc['website'] ?? '',
-      reviews: doc['reviews'] ?? 0, // Add reviews field
+      venueId: doc['venueId'] ?? 'Default Venue ID',
+      venuename: doc['venuename'] ?? 'Default Venue Name',
+      picture: doc['picture'] ?? 'Default Picture URL',
+      description: doc['description'] ?? 'Default Description',
+      address: doc['address'] ?? 'Default Address',
+      instagram: doc['instagram'] ?? 'Default Instagram',
+      website: doc['website'] ?? 'Default Website',
+      reviews: doc['reviews'] ?? 0,
+      eventIds: (doc['eventIds'] as List<dynamic>).map((e) => e.toString()).toList(),
     );
   }
 }

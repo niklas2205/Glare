@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 class EventEntity {
   String eventId;
   String eventname;
@@ -9,7 +8,8 @@ class EventEntity {
   String dj;
   int age;
   DateTime date;
-  String venueId; // Add the venueId field
+  String venueId;
+  List<String> eventTag;
 
   EventEntity({
     required this.eventId,
@@ -20,7 +20,8 @@ class EventEntity {
     required this.dj,
     required this.age,
     required this.date,
-    required this.venueId, // Initialize the venueId field
+    required this.venueId,
+    required this.eventTag,
   });
 
   Map<String, Object?> toDocument() {
@@ -33,7 +34,8 @@ class EventEntity {
       'dj': dj,
       'age': age,
       'date': Timestamp.fromDate(date), // Store the date as a Firestore Timestamp
-      'venueId': venueId, // Add the venueId field
+      'venueId': venueId,
+      'eventTag': eventTag,
     };
   }
 
@@ -47,7 +49,8 @@ class EventEntity {
       dj: doc['dj'],
       age: doc['age'],
       date: (doc['date'] as Timestamp).toDate(), // Convert the Timestamp back to DateTime
-      venueId: doc['venueId'], // Add the venueId field
+      venueId: doc['venueId'],
+      eventTag: List<String>.from(doc['eventTag'] ?? []), // Add the eventTag field
     );
   }
 }

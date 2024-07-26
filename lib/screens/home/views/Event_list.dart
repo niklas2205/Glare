@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:event_repository/event_repository.dart';
-import 'package:glare/screens/home/views/New_Version/Event_Detail/Event_screen.dart';
+import 'package:glare/screens/home/views/New_Version/Event_Venue_Detail/Event_screen.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:intl/intl.dart';
 import '../blocs/event_like_bloc/event_like_bloc.dart';
@@ -39,37 +39,39 @@ class _EventListWidgetState extends State<EventListWidget> {
   Widget build(BuildContext context) {
     final groupedEvents = _groupEventsByDate(widget.events);
 
-    return BlocProvider(
-      create: (context) => EventLikeBloc(
-        userRepository: context.read<UserRepository>(),
-        eventRepository: context.read<EventRepo>(),
-      ),
-      child: BlocBuilder<EventLikeBloc, EventLikeState>(
-        builder: (context, state) {
-          return ListView.builder(
-            controller: widget.scrollController,
-            padding: EdgeInsets.zero, // Ensure no padding at the start
-            itemCount: groupedEvents.length,
-            itemBuilder: (context, index) {
-              final group = groupedEvents[index];
-              if (group is DateTime) {
-                return _buildDateHeader(context, group);
-              } else if (group is Event) {
-                final double cardWidth = MediaQuery.of(context).size.width * 0.82;
-                final double cardHeight = MediaQuery.of(context).size.height * 0.132;
-                final double imageSize = cardHeight - 16;
-                return EventCard(
-                  event: group,
-                  cardWidth: cardWidth,
-                  cardHeight: cardHeight,
-                  imageSize: imageSize,
-                );
+    return BlocBuilder<EventLikeBloc, EventLikeState>(
+      builder: (context, state) {
+        return ListView.builder(
+          controller: widget.scrollController,
+          padding: EdgeInsets.zero, // Ensure no padding at the start
+          itemCount: groupedEvents.length,
+          itemBuilder: (context, index) {
+            final group = groupedEvents[index];
+            if (group is DateTime) {
+              return _buildDateHeader(context, group);
+            } else if (group is Event) {
+              bool isLiked = false;
+              int likesCount = 0;
+              if (state is EventLikeSuccess) {
+                isLiked = state.likedEvents.contains(group.eventId);
+                likesCount = state.likesCount[group.eventId] ?? 0;
               }
-              return const SizedBox.shrink();
-            },
-          );
-        },
-      ),
+              final double cardWidth = MediaQuery.of(context).size.width * 0.82;
+              final double cardHeight = MediaQuery.of(context).size.height * 0.132;
+              final double imageSize = cardHeight - 16;
+              return EventCard(
+                event: group,
+                cardWidth: cardWidth,
+                cardHeight: cardHeight,
+                imageSize: imageSize,
+                isLiked: isLiked,
+                likesCount: likesCount,
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        );
+      },
     );
   }
 
@@ -78,7 +80,7 @@ class _EventListWidgetState extends State<EventListWidget> {
     DateTime? currentDate;
 
     for (var event in events) {
-      if (event.date != null && (currentDate == null || !_isSameDate(currentDate, event.date))) {
+      if (event.date != null && (currentDate == null || !_isSameDate(currentDate, event.date!))) {
         currentDate = event.date;
         groupedEvents.add(currentDate);
       }
