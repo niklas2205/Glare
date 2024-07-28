@@ -9,6 +9,7 @@ import 'package:glare/screens/auth/blocs/sign_up_bloc/sign_up_bloc.dart';
 import 'package:glare/screens/auth/views/onboarding/onboarding_screen_foreground.dart';
 import 'package:glare/screens/auth/views/sign_in/sign_in_screen.dart';
 import 'package:glare/screens/auth/views/sign_up/sign_up_screen.dart';
+import 'package:glare/screens/home/blocs/change_genre_bloc/change_genre_bloc.dart';
 import 'package:glare/screens/home/blocs/event_like_bloc/event_like_bloc.dart';
 import 'package:glare/screens/home/blocs/home_screen_bloc/home_screen_bloc.dart';
 import 'package:glare/screens/home/blocs/get_event_bloc/get_event_bloc.dart';
@@ -24,6 +25,7 @@ import 'screens/home/blocs/event_list_by_Ids_bloc/event_list_by_ids_bloc.dart';
 import 'screens/home/blocs/favourite_venue_bloc/favourite_venue_bloc.dart';
 import 'screens/home/blocs/search_venue_bloc/search_venue_bloc.dart';
 import 'screens/home/blocs/user_bloc/user_bloc.dart';
+import 'screens/home/blocs/user_update_bloc/user_update_bloc.dart';
 
 
 class MainAppView extends StatelessWidget {
@@ -86,6 +88,12 @@ class MainAppView extends StatelessWidget {
               context.read<UserRepository>(),
             ),
           ),
+          BlocProvider<UserUpdateBloc>(
+            create: (context) => UserUpdateBloc(userRepository: context.read<UserRepository>()),
+          ),
+          BlocProvider<ChangeGenreBloc>(
+          create: (context) => ChangeGenreBloc(userRepository: userRepository),
+        ),
         ],
         child: MaterialApp(
           title: 'Glare Events',

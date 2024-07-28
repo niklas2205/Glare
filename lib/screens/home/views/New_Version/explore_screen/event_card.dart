@@ -7,8 +7,6 @@ import 'package:user_repository/user_repository.dart';
 import '../../../blocs/event_like_bloc/event_like_bloc.dart';
 import '../Event_Venue_Detail/Event_screen.dart';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class EventCard extends StatelessWidget {
   final Event event;
@@ -173,7 +171,7 @@ class EventCard extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.all(4.0), // Adjust the padding as needed
                               child: SvgPicture.asset(
-                                '/Users/niklasheckmann/Desktop/Development/Glare/assets/icons/bx_party.svg',
+                                'assets/icons/bx_party.svg',
                                 color: isLiked ? Color(0xFF1A1A1A) : Color(0xFF8FFA58),
                               ),
                             ),
