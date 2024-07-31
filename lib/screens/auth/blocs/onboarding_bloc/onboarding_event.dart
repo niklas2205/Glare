@@ -42,3 +42,5 @@ class GenreSelected extends OnboardingEvent {
 }
 
 class SubmitGenres extends OnboardingEvent {}
+
+class LoadUserGenres extends OnboardingEvent {}

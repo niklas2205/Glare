@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glare/screens/auth/blocs/onboarding_bloc/onboarding_bloc.dart';
 import 'package:glare/screens/background_screen/background_screen.dart';
 import 'package:glare/screens/home/blocs/change_genre_bloc/change_genre_bloc.dart';
 import 'package:glare/screens/home/blocs/user_bloc/user_bloc.dart';
@@ -9,18 +10,16 @@ import 'package:glare/screens/home/blocs/user_update_bloc/user_update_bloc.dart'
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:user_repository/user_repository.dart';
-
-
-
+import 'package:glare/screens/auth/blocs/onboarding_bloc/onboarding_bloc.dart' as onboarding;
+import 'package:glare/screens/home/blocs/change_genre_bloc/change_genre_bloc.dart' as changeGenre;
 
 class ChangeGenreScreen extends StatelessWidget {
   const ChangeGenreScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ChangeGenreBloc(userRepository: context.read<UserRepository>())
-        ..add(LoadUserGenres()),
+    return BlocProvider.value(
+      value: BlocProvider.of<onboarding.OnboardingBloc>(context)..add(onboarding.LoadUserGenres()),
       child: Scaffold(
         body: Stack(
           children: [
@@ -67,14 +66,15 @@ class ChangeGenreScreen extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            BlocBuilder<ChangeGenreBloc, ChangeGenreState>(
+                            BlocBuilder<onboarding.OnboardingBloc, onboarding.OnboardingState>(
                               builder: (context, state) {
-                                if (state is ChangeGenreLoading) {
+                                if (state is onboarding.OnboardingLoadInProgress) {
                                   return const CircularProgressIndicator();
-                                } else if (state is ChangeGenreLoaded) {
-                                  return buildGenreGrid(context, state.selectedGenres);
-                                } else if (state is ChangeGenreError) {
-                                  return Text(state.error, style: const TextStyle(color: Colors.red));
+                                } else if (state is onboarding.GenresUpdated) {
+                                  print("UI rebuild with genres: ${state.genres}"); // Debugging log
+                                  return buildGenreGrid(context, state.genres);
+                                } else if (state is onboarding.OnboardingFailure) {
+                                  return Text(state.errorMessage, style: const TextStyle(color: Colors.red));
                                 }
                                 return const SizedBox.shrink();
                               },
@@ -115,7 +115,7 @@ class ChangeGenreScreen extends StatelessWidget {
   Widget genreButton(BuildContext context, String genre, bool isSelected) {
     return GestureDetector(
       onTap: () {
-        context.read<ChangeGenreBloc>().add(GenreSelected(genre));
+        context.read<onboarding.OnboardingBloc>().add(onboarding.GenreSelected(genre));
       },
       child: Container(
         margin: const EdgeInsets.all(4),
@@ -153,9 +153,9 @@ class ChangeGenreScreen extends StatelessWidget {
           padding: MaterialStateProperty.all(EdgeInsets.zero),
         ),
         onPressed: () {
-          final state = context.read<ChangeGenreBloc>().state;
-          if (state is ChangeGenreLoaded) {
-            context.read<ChangeGenreBloc>().add(UpdateUserGenres(state.selectedGenres));
+          final state = context.read<onboarding.OnboardingBloc>().state;
+          if (state is onboarding.GenresUpdated) {
+            context.read<onboarding.OnboardingBloc>().add(onboarding.SubmitGenres());
             Navigator.pop(context); // Navigate back to previous screen after update
           }
         },

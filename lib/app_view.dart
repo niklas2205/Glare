@@ -14,6 +14,8 @@ import 'package:glare/screens/home/blocs/event_like_bloc/event_like_bloc.dart';
 import 'package:glare/screens/home/blocs/home_screen_bloc/home_screen_bloc.dart';
 import 'package:glare/screens/home/blocs/get_event_bloc/get_event_bloc.dart';
 import 'package:glare/screens/home/blocs/get_venue_bloc/get_venue_bloc.dart';
+import 'package:glare/screens/home/views/New_Version/Profile_screen/Add_friends.dart';
+import 'package:glare/screens/home/views/New_Version/Profile_screen/Manage_friends.dart';
 import 'package:glare/screens/home/views/New_Version/main_screen.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:venue_favorite_repository/venue_fav_repo.dart';
@@ -23,6 +25,7 @@ import 'screens/auth/views/onboarding/onboarding_screen.dart';
 import 'screens/auth/views/welcome_screen_comp/welcome_screen.dart';
 import 'screens/home/blocs/event_list_by_Ids_bloc/event_list_by_ids_bloc.dart';
 import 'screens/home/blocs/favourite_venue_bloc/favourite_venue_bloc.dart';
+import 'screens/home/blocs/friends_bloc/friends_bloc.dart';
 import 'screens/home/blocs/search_venue_bloc/search_venue_bloc.dart';
 import 'screens/home/blocs/user_bloc/user_bloc.dart';
 import 'screens/home/blocs/user_update_bloc/user_update_bloc.dart';
@@ -94,6 +97,9 @@ class MainAppView extends StatelessWidget {
           BlocProvider<ChangeGenreBloc>(
           create: (context) => ChangeGenreBloc(userRepository: userRepository),
         ),
+         BlocProvider<FriendsBloc>(
+          create: (context) => FriendsBloc(userRepository: userRepository),
+        ),
         ],
         child: MaterialApp(
           title: 'Glare Events',
@@ -162,7 +168,10 @@ class MainAppView extends StatelessWidget {
             '/signIn': (context) => const SignInScreen(),
             '/signUp': (context) => const SignUpScreen(),
             '/onboarding': (context) => OnboardingScreen(),
+            '/magnate_friends': (context) =>  ManageFriends(),
+            '/add_friends': (context) => const AddFriends(),
           },
+          
         ),
       ),
     );

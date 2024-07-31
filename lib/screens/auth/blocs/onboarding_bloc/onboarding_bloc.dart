@@ -12,37 +12,13 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   MyUser updatedUser = MyUser.empty;
 
   OnboardingBloc({required this.userRepository}) : super(OnboardingInitial()) {
-    on<GenreSelected>((event, emit) {
-      if (selectedGenres.contains(event.genre)) {
-        selectedGenres.remove(event.genre);
-      } else {
-        selectedGenres.add(event.genre);
-      }
-      emit(GenresUpdated(List.from(selectedGenres)));
-    });
-
-    on<GenderChanged>((event, emit) {
-      updatedUser = updatedUser.copyWith(gender: event.gender);
-      emit(OnboardingDataSubmitted(updatedUser));
-    });
-
-    on<SubmitGenres>((event, emit) async {
-      try {
-        await userRepository.updateUserData({
-          'favoriteGenres': selectedGenres,
-          'gender': updatedUser.gender,
-          'userId': updatedUser.userId, // Ensure userId is passed
-        });
-        emit(OnboardingCompletionSuccess());
-      } catch (error) {
-        emit(OnboardingFailure(error.toString()));
-      }
-    });
-
     on<OnboardingStarted>(_onStarted);
     on<OnboardingInfoSubmitted>(_onInfoSubmitted);
     on<OnboardingCompleted>(_onCompleted);
     on<SkipOnboarding>(_onSkipOnboarding);
+    on<GenreSelected>(_onGenreSelected);
+    on<SubmitGenres>(_onSubmitGenres);
+    on<LoadUserGenres>(_onLoadUserGenres);
   }
 
   void _onSkipOnboarding(SkipOnboarding event, Emitter<OnboardingState> emit) {
@@ -97,4 +73,53 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       emit(OnboardingFailure(error.toString()));
     }
   }
+
+  void _onGenreSelected(GenreSelected event, Emitter<OnboardingState> emit) {
+    if (selectedGenres.contains(event.genre)) {
+      selectedGenres.remove(event.genre);
+    } else {
+      selectedGenres.add(event.genre);
+    }
+    emit(GenresUpdated(List.from(selectedGenres)));
+  }
+
+
+  void _onSubmitGenres(SubmitGenres event, Emitter<OnboardingState> emit) async {
+    try {
+      await userRepository.updateUserData({
+        'favoriteGenres': selectedGenres,
+        'gender': updatedUser.gender,
+        'userId': updatedUser.userId, // Ensure userId is passed
+      });
+      emit(OnboardingCompletionSuccess());
+    } catch (error) {
+      emit(OnboardingFailure(error.toString()));
+    }
+  }
+
+  void _onLoadUserGenres(LoadUserGenres event, Emitter<OnboardingState> emit) async {
+  emit(OnboardingLoadInProgress());
+  try {
+    final MyUser? user = await userRepository.getCurrentUser();
+    if (user != null) {
+      print("User data: ${user.toString()}"); // Debugging log
+      if (user.favoriteGenres != null && user.favoriteGenres!.isNotEmpty) {
+        selectedGenres = List<String>.from(user.favoriteGenres!);
+        print("Parsed genres: $selectedGenres"); // Debugging log
+      } else {
+        print("No favoriteGenres found in user data."); // Debugging log
+      }
+      emit(GenresUpdated(List.from(selectedGenres)));
+    } else {
+      print("No user found."); // Debugging log
+      emit(GenresUpdated([]));
+    }
+  } catch (e) {
+    print("Error loading user genres: $e"); // Debugging log
+    emit(OnboardingFailure(e.toString()));
+  }
+}
+
+
+
 }

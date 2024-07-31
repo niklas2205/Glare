@@ -15,15 +15,16 @@ class ChangeGenreBloc extends Bloc<ChangeGenreEvent, ChangeGenreState> {
   }
 
   void _onLoadUserGenres(LoadUserGenres event, Emitter<ChangeGenreState> emit) async {
-    emit(ChangeGenreLoading());
-    try {
-      final user = await userRepository.getCurrentUser();
-      final selectedGenres = user?.favoriteGenre?.split(',') ?? [];
-      emit(ChangeGenreLoaded(selectedGenres));
-    } catch (e) {
-      emit(ChangeGenreError(e.toString()));
-    }
+  emit(ChangeGenreLoading());
+  try {
+    final user = await userRepository.getCurrentUser();
+    final selectedGenres = user?.favoriteGenres ?? [];
+    emit(ChangeGenreLoaded(selectedGenres));
+  } catch (e) {
+    emit(ChangeGenreError(e.toString()));
   }
+}
+
 
   void _onGenreSelected(GenreSelected event, Emitter<ChangeGenreState> emit) {
     if (state is ChangeGenreLoaded) {

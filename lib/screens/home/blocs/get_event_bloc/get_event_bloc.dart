@@ -11,14 +11,19 @@ class GetEventBloc extends Bloc<GetEventEvent, GetEventState> {
 
   GetEventBloc(this._eventRepo) : super(GetEventInitial()) {
     on<GetEventEvent>((event, emit) async {
-      emit(GetEventLoading());
-      try {
-        List<Event> events = await _eventRepo.getEvents();  // Ensure this method name matches EventRepo
-        emit(GetEventSuccess(events));
-      } catch (e) {
-        emit(GetEventFailure());
+      if (event is LoadEvents) {
+        emit(GetEventLoading());
+        try {
+          List<Event> events = await _eventRepo.getEvents();
+          emit(GetEventSuccess(events));
+        } catch (e) {
+          emit(GetEventFailure());
+        }
       }
     });
+
+    // Load initial events when the bloc is created
+    add(LoadEvents());
   }
 }
 

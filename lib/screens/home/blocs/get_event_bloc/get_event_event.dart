@@ -8,3 +8,5 @@ sealed class GetEventEvent extends Equatable {
 }
 
 final class GetEvent extends GetEventEvent {}
+
+class LoadEvents extends GetEventEvent {}

@@ -12,8 +12,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rxdart/rxdart.dart';
 import 'dart:developer';
 import '../user_repository.dart';
-import 'models/models.dart';  // Ensure you have the correct imports for your user models
+import 'models/models.dart';  
 
+// Ensure you have the correct imports for your user models
 class FirebaseUserRepo implements UserRepository {
   final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore _firestore;
@@ -67,6 +68,7 @@ class FirebaseUserRepo implements UserRepository {
     if (firebaseUser != null) {
       var userDoc = await usersCollection.doc(firebaseUser.uid).get();
       if (userDoc.exists) {
+        print("User document data: ${userDoc.data()}"); // Debugging log
         return MyUser.fromEntity(MyUserEntity.fromDocument(userDoc.data()!));
       }
     }
@@ -173,5 +175,108 @@ class FirebaseUserRepo implements UserRepository {
       return List<String>.from(likedEvents);
     }
     return [];
+  }
+
+  // Friend request and friends management methods
+
+   @override
+  Future<void> sendFriendRequest(String userId, String friendId) async {
+    final friendRef = _firestore.collection('users').doc(friendId);
+
+    await friendRef.update({
+      'friendRequests': FieldValue.arrayUnion([userId])
+    });
+  }
+
+  @override
+  Future<void> acceptFriendRequest(String userId, String friendId) async {
+    final userRef = _firestore.collection('users').doc(userId);
+    final friendRef = _firestore.collection('users').doc(friendId);
+
+    await userRef.update({
+      'friends': FieldValue.arrayUnion([friendId]),
+      'friendRequests': FieldValue.arrayRemove([friendId])
+    });
+
+    await friendRef.update({
+      'friends': FieldValue.arrayUnion([userId])
+    });
+  }
+
+  @override
+  Future<void> rejectFriendRequest(String userId, String friendId) async {
+    final userRef = _firestore.collection('users').doc(userId);
+
+    await userRef.update({
+      'friendRequests': FieldValue.arrayRemove([friendId])
+    });
+  }
+
+  @override
+  Future<List<MyUser>> searchUsers(String query) async {
+    final snapshot = await _firestore.collection('users')
+        .where('name', isGreaterThanOrEqualTo: query)
+        .where('name', isLessThanOrEqualTo: query + '\uf8ff')
+        .get();
+
+    return snapshot.docs.map((doc) => MyUser.fromEntity(MyUserEntity.fromDocument(doc.data()!))).toList();
+  }
+
+  @override
+  Stream<List<MyUser>> getFriends(String userId) {
+    return usersCollection.doc(userId).snapshots().asyncMap((doc) async {
+      final List<String> friendsIds = List<String>.from(doc['friends'] ?? []);
+      final List<MyUser> friends = [];
+
+      for (final friendId in friendsIds) {
+        final friendDoc = await usersCollection.doc(friendId).get();
+        if (friendDoc.exists) {
+          friends.add(MyUser.fromEntity(MyUserEntity.fromDocument(friendDoc.data()!)));
+        }
+      }
+
+      return friends;
+    });
+  }
+
+  @override
+  Stream<List<MyUser>> getFriendRequests(String userId) {
+    return usersCollection.doc(userId).snapshots().asyncMap((doc) async {
+      List<String> requestIds = List<String>.from(doc['friendRequests'] ?? []);
+      List<MyUser> requests = [];
+
+      for (final requestId in requestIds) {
+        final requestDoc = await usersCollection.doc(requestId).get();
+        if (requestDoc.exists) {
+          requests.add(MyUser.fromEntity(MyUserEntity.fromDocument(requestDoc.data()!)));
+        }
+      }
+
+      return requests;
+    });
+  }
+
+  @override
+  Future<List<MyUser>> getFirstUsers(int limit) async {
+    final snapshot = await _firestore.collection('users')
+        .orderBy('name')
+        .limit(limit)
+        .get();
+
+    return snapshot.docs.map((doc) => MyUser.fromEntity(MyUserEntity.fromDocument(doc.data()!))).toList();
+  }
+
+  // Getter for current user
+  @override
+  MyUser? get currentUser {
+    var firebaseUser = _firebaseAuth.currentUser;
+    if (firebaseUser != null) {
+      // This assumes the MyUser class can be created from FirebaseUser data
+      return MyUser(
+        userId: firebaseUser.uid,
+        email: firebaseUser.email!,
+      );
+    }
+    return null;
   }
 }

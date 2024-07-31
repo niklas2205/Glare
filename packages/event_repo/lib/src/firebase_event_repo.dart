@@ -37,17 +37,29 @@ class FirebaseEventRepo implements EventRepo {
   @override
   Future<void> likeEvent(String eventId, String userId) async {
     final eventRef = eventCollection.doc(eventId);
-    await eventRef.update({
-      'likedBy': FieldValue.arrayUnion([userId])
-    });
-  }
+    final eventDoc = await eventRef.get();
+
+    if (eventDoc.exists) {
+      await eventRef.update({
+        'likedBy': FieldValue.arrayUnion([userId])
+      });
+    } else {
+      throw Exception("Event does not exist.");
+    }
+  }              
 
   @override
   Future<void> unlikeEvent(String eventId, String userId) async {
     final eventRef = eventCollection.doc(eventId);
-    await eventRef.update({
-      'likedBy': FieldValue.arrayRemove([userId])
-    });
+    final eventDoc = await eventRef.get();
+
+    if (eventDoc.exists) {
+      await eventRef.update({
+        'likedBy': FieldValue.arrayRemove([userId])
+      });
+    } else {
+      throw Exception("Event does not exist.");
+    }
   }
 
   @override
@@ -83,5 +95,10 @@ class FirebaseEventRepo implements EventRepo {
       return likedBy.contains(userId);
     }
     return false;
+  }
+
+  // New method to reload events
+  Future<void> reloadEvents() async {
+    await getEvents();
   }
 }

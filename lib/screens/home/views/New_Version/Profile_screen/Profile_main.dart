@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:glare/screens/home/views/New_Version/Profile_screen/Manage_friends.dart';
 import 'package:glare/screens/home/views/New_Version/Profile_screen/My_account.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_repository/user_repository.dart';
@@ -68,7 +69,7 @@ class ProfileMain extends StatelessWidget {
                 final user = state.user;
                 return Positioned(
                   top: MediaQuery.of(context).size.height * 0.18, // Adjust the position as needed
-                  left: MediaQuery.of(context).size.width * 0.27, // Center the circle horizontally
+                 
                   child: Column(
                     children: [
                       ProfilePictureWidget(name: user.name ?? 'User'),
@@ -80,6 +81,7 @@ class ProfileMain extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             },
           ),
+
         ],
       ),
     );
@@ -162,18 +164,29 @@ class ProfilePictureWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        Text(
-          name,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
+        Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width, // Full width of the screen
+            alignment: Alignment.center,
+            child: Text(
+              name,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 20,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
       ],
     );
   }
 }
+
+
+
+
 
 class DottedBorderPainter extends CustomPainter {
   final Color color;
@@ -237,7 +250,15 @@ class SettingsContainer extends StatelessWidget {
                 context,
                 icon: 'assets/icons/Profile_screen/people.svg',
                 text: 'Manage Friends',
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ManageFriends(),
+                    ),
+                  );
+                
+                },
               ),
               _buildSettingsOption(
                 context,

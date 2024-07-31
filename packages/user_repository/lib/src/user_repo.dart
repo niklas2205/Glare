@@ -14,5 +14,17 @@ abstract class UserRepository {
   Future<void> likeEvent(String userId, String eventId);
   Future<void> unlikeEvent(String userId, String eventId);
   Future<bool> isEventLiked(String userId, String eventId);
-  Future<List<String>> getLikedEvents(String userId);  // Add this line
+  Future<List<String>> getLikedEvents(String userId);
+
+  Future<void> sendFriendRequest(String userId, String friendId);
+  Future<void> acceptFriendRequest(String userId, String friendId);
+  Future<void> rejectFriendRequest(String userId, String friendId); // Added this line
+  Future<List<MyUser>> searchUsers(String query);
+  Stream<List<MyUser>> getFriends(String userId); // Changed to Stream
+  Stream<List<MyUser>> getFriendRequests(String userId); // Added this line
+
+  Future<List<MyUser>> getFirstUsers(int limit); // Add this line
+
+  MyUser? get currentUser;
 }
+
