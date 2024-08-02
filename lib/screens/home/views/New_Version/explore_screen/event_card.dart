@@ -50,6 +50,8 @@ class EventCard extends StatelessWidget {
                     eventId: event.eventId,
                     venueId: event.venueId,
                     eventTag: event.eventTag,
+                    location: event.location,
+                    price: event.price,
                   ),
                 ),
               ) ?? false; // Default to false if the result is null
@@ -209,4 +211,3 @@ class EventCard extends StatelessWidget {
     );
   }
 }
-

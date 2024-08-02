@@ -2,6 +2,8 @@
 
 import 'package:event_repository/event_repository.dart';
 
+import 'package:event_repository/event_repository.dart';
+
 class Event {
   String eventId;
   String eventname;
@@ -13,6 +15,8 @@ class Event {
   DateTime date;
   String venueId;
   List<String> eventTag;
+  String location;
+  String price;
 
   Event({
     required this.eventId,
@@ -25,6 +29,8 @@ class Event {
     required this.date,
     required this.venueId,
     required this.eventTag,
+    required this.location,
+    required this.price,
   });
 
   EventEntity toEntity() {
@@ -39,6 +45,8 @@ class Event {
       date: date,
       venueId: venueId,
       eventTag: eventTag,
+      location: location,
+      price: price,
     );
   }
 
@@ -54,6 +62,8 @@ class Event {
       date: entity.date,
       venueId: entity.venueId,
       eventTag: entity.eventTag,
+      location: entity.location,
+      price: entity.price,
     );
   }
 }

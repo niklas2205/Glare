@@ -26,7 +26,9 @@ class EventDetail extends StatelessWidget {
   final int age;
   final String eventId;
   final String venueId;
-  final List<String> eventTag; // Add this line
+  final List<String> eventTag;
+  final String location; 
+  final String price;
 
   const EventDetail({
     required this.name,
@@ -36,7 +38,9 @@ class EventDetail extends StatelessWidget {
     required this.age,
     required this.eventId,
     required this.venueId,
-    required this.eventTag, // Add this line
+    required this.eventTag,
+    required this.location,
+    required this.price,
     super.key,
   });
 
@@ -50,9 +54,6 @@ class EventDetail extends StatelessWidget {
 
     // Fetch initial like count for the event
     context.read<EventLikeBloc>().add(LoadEventLikeCount(eventId));
-
-    // Fetch venue details using venueId
-    context.read<GetVenueBloc>().add(GetVenue());
 
     return Scaffold(
       body: Stack(
@@ -84,7 +85,7 @@ class EventDetail extends StatelessWidget {
                       left: 20,
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.pop(context, true);
+                          Navigator.pop(context, true); // Return true to indicate an update
                         },
                         child: Container(
                           decoration: const BoxDecoration(
@@ -104,8 +105,10 @@ class EventDetail extends StatelessWidget {
                   child: BlocBuilder<EventLikeBloc, EventLikeState>(
                     builder: (context, state) {
                       int likesCount = 0;
+                      bool isLiked = false;
                       if (state is EventLikeSuccess) {
                         likesCount = state.likesCount[eventId] ?? 0;
+                        isLiked = state.likedEvents.contains(eventId);
                       }
                       return Container(
                         width: widgetWidth,
@@ -134,7 +137,7 @@ class EventDetail extends StatelessWidget {
                 CustomTitleWithButtons(
                   name: name,
                   eventId: eventId,
-                  eventTag: eventTag, // Pass eventTag to the widget
+                  eventTag: eventTag,
                 ),
                 const SizedBox(height: 10),
                 Padding(
@@ -151,7 +154,13 @@ class EventDetail extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 5),
-                      InformationBox(width: widgetWidth, description: description, age: age),
+                      InformationBox(
+                        width: widgetWidth,
+                        description: description,
+                        age: age,
+                        location: location,
+                        price: price,
+                      ),
                     ],
                   ),
                 ),
@@ -331,7 +340,6 @@ class EventDetail extends StatelessWidget {
   }
 }
 
-
 class CustomTitleWithButtons extends StatelessWidget {
   final String name;
   final String eventId;
@@ -444,12 +452,15 @@ class CustomTitleWithButtons extends StatelessWidget {
 
 
 
+
 class InformationBox extends StatefulWidget {
   final double width;
   final String description;
   final int age;
+  final String location;
+  final String price;
 
-  const InformationBox({required this.width, Key? key, required this.description, required this.age}) : super(key: key);
+  const InformationBox({required this.width, Key? key, required this.description, required this.age, required this.location, required this.price}) : super(key: key);
 
   @override
   _InformationBoxState createState() => _InformationBoxState();
@@ -481,16 +492,12 @@ class _InformationBoxState extends State<InformationBox> {
             iconPath: 'assets/icons/user_8_x2.svg',
             text: '${widget.age}+',
           ),
-          const InfoRow(
+          InfoRow(
             iconPath: 'assets/icons/dollar_circle_2_x2.svg',
-            text: '€10.00',
+            text: '€' + widget.price,
           ),
-          const InfoRow(
-            iconPath: 'assets/icons/vector_521_x2.svg',
-            text: 'Genre',
-          ),
-          const AddressRow(
-            address: '123 Address Street, 7601',
+          AddressRow(
+            address: widget.location,
             iconPath: 'assets/icons/buliding_11_x2.svg',
           ),
           Container(

@@ -45,7 +45,7 @@ class VenueEntity {
       instagram: doc['instagram'] ?? 'Default Instagram',
       website: doc['website'] ?? 'Default Website',
       reviews: doc['reviews'] ?? 0,
-      eventIds: (doc['eventIds'] as List<dynamic>).map((e) => e.toString()).toList(),
+      eventIds: (doc['eventIds'] != null ? List<String>.from(doc['eventIds']) : []),
     );
   }
 }

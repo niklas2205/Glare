@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:glare/screens/home/blocs/event_like_bloc/event_like_bloc.dart';
 import 'package:glare/screens/home/views/Event_list.dart';
 import 'package:glare/screens/home/views/New_Version/explore_screen/day_selector.dart';
 import 'package:glare/screens/home/views/New_Version/explore_screen/searchbar.dart';
@@ -7,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:user_repository/user_repository.dart';
 
 import '../../../blocs/day_selector_bloc/day_selector_bloc.dart';
 import '../../../blocs/get_event_bloc/get_event_bloc.dart';
@@ -16,9 +18,20 @@ import '../../../blocs/search_event_bloc/search_event_bloc.dart';
 class EventListScreen extends StatelessWidget {
   final ScrollController _scrollController = ScrollController();
 
-  Future<void> _refreshEvents(BuildContext context) async {
-    // Reload events using the EventBloc or a similar mechanism
-    context.read<GetEventBloc>().add(LoadEvents());
+  Future<void> _refreshEventsAndLikes(BuildContext context) async {
+    final getEventBloc = context.read<GetEventBloc>();
+    final eventLikeBloc = context.read<EventLikeBloc>();
+    final userRepository = context.read<UserRepository>();
+
+    final user = await userRepository.getCurrentUser();
+
+    // Fetch and update events
+    getEventBloc.add(LoadEvents());
+
+    // Fetch and update liked events
+    if (user != null) {
+      eventLikeBloc.add(LoadLikedEvents(user.userId));
+    }
   }
 
   @override
@@ -45,7 +58,7 @@ class EventListScreen extends StatelessWidget {
           ),
           Expanded(
             child: RefreshIndicator(
-              onRefresh: () => _refreshEvents(context),
+              onRefresh: () => _refreshEventsAndLikes(context),
               child: BlocBuilder<SearchBloc, SearchState>(
                 builder: (context, state) {
                   if (state is SearchLoading) {
@@ -66,7 +79,7 @@ class EventListScreen extends StatelessWidget {
                 },
               ),
             ),
-          ),
+          )
         ],
       ),
     );

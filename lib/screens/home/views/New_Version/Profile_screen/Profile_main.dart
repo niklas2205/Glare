@@ -363,7 +363,7 @@ class SettingsContainer extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF282828),
+          color: const Color(0xFF1A1A1A),
         ),
         padding: const EdgeInsets.fromLTRB(8, 14, 16.4, 14),
         child: Row(

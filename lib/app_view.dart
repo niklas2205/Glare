@@ -17,6 +17,7 @@ import 'package:glare/screens/home/blocs/get_venue_bloc/get_venue_bloc.dart';
 import 'package:glare/screens/home/views/New_Version/Profile_screen/Add_friends.dart';
 import 'package:glare/screens/home/views/New_Version/Profile_screen/Manage_friends.dart';
 import 'package:glare/screens/home/views/New_Version/main_screen.dart';
+import 'package:glare/splash_screen.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:venue_favorite_repository/venue_fav_repo.dart';
 import 'package:venue_repository/venue_repository.dart';
@@ -29,7 +30,6 @@ import 'screens/home/blocs/friends_bloc/friends_bloc.dart';
 import 'screens/home/blocs/search_venue_bloc/search_venue_bloc.dart';
 import 'screens/home/blocs/user_bloc/user_bloc.dart';
 import 'screens/home/blocs/user_update_bloc/user_update_bloc.dart';
-
 
 class MainAppView extends StatelessWidget {
   final UserRepository userRepository;
@@ -95,11 +95,11 @@ class MainAppView extends StatelessWidget {
             create: (context) => UserUpdateBloc(userRepository: context.read<UserRepository>()),
           ),
           BlocProvider<ChangeGenreBloc>(
-          create: (context) => ChangeGenreBloc(userRepository: userRepository),
-        ),
-         BlocProvider<FriendsBloc>(
-          create: (context) => FriendsBloc(userRepository: userRepository),
-        ),
+            create: (context) => ChangeGenreBloc(userRepository: userRepository),
+          ),
+          BlocProvider<FriendsBloc>(
+            create: (context) => FriendsBloc(userRepository: userRepository),
+          ),
         ],
         child: MaterialApp(
           title: 'Glare Events',
@@ -135,46 +135,18 @@ class MainAppView extends StatelessWidget {
               textTheme: ButtonTextTheme.primary,
             ),
           ),
-          home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-            builder: (context, state) {
-              if (state.status == AuthenticationStatus.authenticated) {
-                return MultiBlocProvider(
-                  providers: [
-                    BlocProvider<OnboardingBloc>.value(
-                      value: context.read<OnboardingBloc>(),
-                    ),
-                  ],
-                  child: BlocBuilder<OnboardingBloc, OnboardingState>(
-                    builder: (context, onboardingState) {
-                      if (onboardingState is OnboardingCompletionSuccess) {
-                        return const MainScreen();
-                      } else {
-                        return OnboardingScreen();
-                      }
-                    },
-                  ),
-                );
-              } else if (state.status == AuthenticationStatus.unauthenticated) {
-                print('Status Unauthenticated');
-                return const WelcomeScreen();
-              } else {
-                return const WelcomeScreen();
-              }
-            },
-          ),
+          home: SplashScreen(),
           routes: {
             '/welcome': (context) => const WelcomeScreen(),
             '/home': (context) => const MainScreen(),
             '/signIn': (context) => const SignInScreen(),
             '/signUp': (context) => const SignUpScreen(),
             '/onboarding': (context) => OnboardingScreen(),
-            '/magnate_friends': (context) =>  ManageFriends(),
+            '/magnate_friends': (context) => ManageFriends(),
             '/add_friends': (context) => const AddFriends(),
           },
-          
         ),
       ),
     );
   }
 }
-

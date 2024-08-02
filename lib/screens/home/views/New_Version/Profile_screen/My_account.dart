@@ -138,7 +138,7 @@ class MyAccount extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF282828),
+          color: const Color(0xFF1A1A1A),
         ),
         padding: const EdgeInsets.fromLTRB(8, 10, 16.4, 10), // Decrease the padding to reduce the height
         child: Row(

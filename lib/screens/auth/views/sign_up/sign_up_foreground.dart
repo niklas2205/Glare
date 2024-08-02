@@ -8,7 +8,6 @@ class SignUpFore1 extends StatelessWidget {
   final TextEditingController confirmPasswordController;
   final VoidCallback registerWithEmail;
   final VoidCallback loginWithEmail;
-  
 
   const SignUpFore1({
     super.key,
@@ -18,7 +17,6 @@ class SignUpFore1 extends StatelessWidget {
     required this.registerWithEmail,
     required this.loginWithEmail,
   });
-
 
   @override
   Widget build(BuildContext context) {
@@ -30,110 +28,125 @@ class SignUpFore1 extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          headerWithBackButton(context),
+          SizedBox(height: 30),
           Container(
-            margin: const EdgeInsets.fromLTRB(20, 0, 24.4, 40),
-            width: 322,
-            height: 62,
+            margin: const EdgeInsets.fromLTRB(0, 0, 0, 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      'Welcome to Glare,',
-                      style: GoogleFonts.getFont(
-                        'Inter',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20,
-                        height: 1.5,
-                        color: const Color(0xFF8FFA58),
-                      ),
-                    ),
-                  ),
-                ),
-                Text(
-                  'Register with your email address today.',
-                  style: GoogleFonts.getFont(
-                    'Inter',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 16,
-                    height: 1.5,
-                    color: const Color(0xFFFFFFFF),
-                  ),
-                ),
+                inputField('Email address', emailController),
+                passwordField('Password', passwordController),
+                passwordField('Confirm Password', confirmPasswordController),
               ],
             ),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.fromLTRB(0, 0, 0, 24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // inputField('First name'),
-                    // inputField('Last name'),
-                    inputField('Email address', emailController),
-                    passwordField('Password', 'assets/icons/Icon_eye.png',passwordController),
-                    passwordField('Confirm Password', 'assets/icons/Icon_eye.png',confirmPasswordController),
-                  ],
+          Container(
+            margin: const EdgeInsets.fromLTRB(0, 0, 0, 24),
+            width: 322,
+            child: ElevatedButton(
+              onPressed: () {
+                if (passwordController.text != confirmPasswordController.text) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Passwords do not match!'),
+                    backgroundColor: Colors.red,
+                  ));
+                } else if (!isValidPassword(passwordController.text)) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Password must be 7-25 characters long, include at least one uppercase letter and one number.'),
+                    backgroundColor: Colors.red,
+                  ));
+                } else if (!isValidEmail(emailController.text)) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Please enter a valid email address.'),
+                    backgroundColor: Colors.red,
+                  ));
+                } else {
+                  registerWithEmail();
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.fromLTRB(0, 11, 0, 11),
+                backgroundColor: const Color(0xFF8FFA58),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(100),
                 ),
               ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(0, 0, 0, 24),
-                width: 322,
-                child: ElevatedButton(
-                  onPressed: () {   
-                    if (passwordController.text != confirmPasswordController.text) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Passwords do not match!'),
-                        backgroundColor: Colors.red,
-                      ));
-                    } else if (!isValidPassword(passwordController.text)) {
-                      // Check other password validity requirements
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Password must be 7-25 characters long, include at least one uppercase letter and one number.'),
-                        backgroundColor: Colors.red,
-                      ));
-                    } else if (!isValidEmail(emailController.text)){
-
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Please enter a valid email address.'),
-                        backgroundColor: Colors.red,
-                      ));
-                    } else {
-                      registerWithEmail(); // All checks passed, proceed with registration
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.fromLTRB(0, 11, 0, 11),
-                    backgroundColor: const Color(0xFF8FFA58),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                  ),
-                  child: Text(
-                    'Register',
-                    style: GoogleFonts.getFont(
-                      'Inter',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                      height: 1.7,
-                      color: const Color(0xFF000000),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                )
+              child: Text(
+                'Register',
+                style: GoogleFonts.getFont(
+                  'Inter',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                  height: 1.7,
+                  color: const Color(0xFF000000),
+                ),
+                textAlign: TextAlign.center,
               ),
-              termsAndPrivacy(),
-              loginPrompt(loginWithEmail),
-            ],
+            ),
+          ),
+          termsAndPrivacy(),
+          loginPrompt(loginWithEmail),
+        ],
+      ),
+    );
+  }
+
+  Widget headerWithBackButton(BuildContext context) {
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Transform.rotate(
+            angle: 3.14159, // 180 degrees in radians
+            child: SvgPicture.asset(
+              'assets/icons/Profile_screen/ic_expand_more.svg',
+              width: 24,
+              height: 24,
+              color: Color(0xFF8FFA58),
+            ),
+          ),
+        ),
+        SizedBox(width: 10), // Adjust the spacing as needed
+        welcomeTextWidget(),
+      ],
+    );
+  }
+
+  Widget welcomeTextWidget() {
+    return Container(
+      alignment: Alignment.topLeft,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                'Welcome to Glare,',
+                style: GoogleFonts.getFont(
+                  'Inter',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 20,
+                  height: 1.5,
+                  color: const Color(0xFF8FFA58),
+                ),
+              ),
+            ),
+          ),
+          Text(
+            'Register with your email address today.',
+            style: GoogleFonts.getFont(
+              'Inter',
+              fontWeight: FontWeight.w400,
+              fontSize: 16,
+              height: 1.5,
+              color: const Color(0xFFFFFFFF),
+            ),
           ),
         ],
       ),
@@ -178,61 +191,89 @@ class SignUpFore1 extends StatelessWidget {
     );
   }
 
-  Widget passwordField(String placeholder, String iconPath, TextEditingController controller) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(0, 0, 0, 24),
-      height: 56,
-      width: 322,
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF8FFA58)),
-        borderRadius: BorderRadius.circular(100),
-        color: const Color(0xFF1A1A1A),
-      ),
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(14, 2, 0, 0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: controller,
-                      decoration: InputDecoration(
-                        hintText: placeholder,
-                        hintStyle: GoogleFonts.getFont(
-                          'Inter',
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                          height: 1.5,
-                          color: const Color(0xFFFFFFFF),
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      style: GoogleFonts.getFont(
-                        'Inter',
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
-                        height: 1.5,
-                        color: const Color(0xFFFFFFFF),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 14, 0),
-                  child: Image.asset(iconPath),
-                  )
-                ],
-              ),
-            ),
-          ],
+
+
+Widget passwordField(String placeholder, TextEditingController controller) {
+  bool _obscureText = true;
+
+  return StatefulBuilder(
+    builder: (context, setState) {
+      return Container(
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 24),
+        height: 56,
+        width: 322,
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xFF8FFA58)),
+          borderRadius: BorderRadius.circular(100),
+          color: const Color(0xFF1A1A1A),
         ),
-      ),
-    );
-  }
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(14, 2, 0, 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  obscureText: _obscureText,
+                  decoration: InputDecoration(
+                    hintText: placeholder,
+                    hintStyle: GoogleFonts.getFont(
+                      'Inter',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                      height: 1.5,
+                      color: const Color(0xFFFFFFFF),
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  style: GoogleFonts.getFont(
+                    'Inter',
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16,
+                    height: 1.5,
+                    color: const Color(0xFFFFFFFF),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 14, 0),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _obscureText = !_obscureText;
+                    });
+                  },
+                  child: SizedBox(
+                    height: 37,
+                    width: 37,
+                    
+                    child: SvgPicture.asset(
+                      _obscureText
+                          ? 'assets/icons/eye-slash.svg'
+                          : 'assets/icons/Icon_eye.svg',
+                      color: const Color(0xFF8FFA58),
+                  
+                    ),
+                  
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+
+
+
+
+
   bool isValidEmail(String email) {
     bool emailValid = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
     return emailValid;

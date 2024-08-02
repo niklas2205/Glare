@@ -114,34 +114,34 @@ class VenueDetail extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      Container(
-                        width: widgetWidth,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: const Color(0xFF8FFA58), width: 2.0),
-                          borderRadius: BorderRadius.circular(30),
-                          color: const Color(0xFF1A1A1A),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.star, color: Color(0xFF8FFA58)),
-                            Icon(Icons.star, color: Color(0xFF8FFA58)),
-                            Icon(Icons.star, color: Color(0xFF8FFA58)),
-                            Icon(Icons.star, color: Color(0xFF8FFA58)),
-                            Icon(Icons.star, color: Color(0xFF8FFA58)),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        '5.0 Star Rating (52 Reviews) See Reviews',
-                        style: GoogleFonts.getFont(
-                          'Inter',
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                          color: const Color(0xFF8FFA58),
-                        ),
-                      ),
+                      // Container(
+                      //   width: widgetWidth,
+                      //   height: 50,
+                      //   decoration: BoxDecoration(
+                      //     border: Border.all(color: const Color(0xFF8FFA58), width: 2.0),
+                      //     borderRadius: BorderRadius.circular(30),
+                      //     color: const Color(0xFF1A1A1A),
+                      //   ),
+                      //   child: const Row(
+                      //     mainAxisAlignment: MainAxisAlignment.center,
+                      //     children: [
+                      //       Icon(Icons.star, color: Color(0xFF8FFA58)),
+                      //       Icon(Icons.star, color: Color(0xFF8FFA58)),
+                      //       Icon(Icons.star, color: Color(0xFF8FFA58)),
+                      //       Icon(Icons.star, color: Color(0xFF8FFA58)),
+                      //       Icon(Icons.star, color: Color(0xFF8FFA58)),
+                      //     ],
+                      //   ),
+                      // ),
+                      // Text(
+                      //   '5.0 Star Rating (52 Reviews) See Reviews',
+                      //   style: GoogleFonts.getFont(
+                      //     'Inter',
+                      //     fontWeight: FontWeight.w500,
+                      //     fontSize: 14,
+                      //     color: const Color(0xFF8FFA58),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -180,7 +180,7 @@ class VenueDetail extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 1),
+                const SizedBox(height: 10),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.09),
                   child: BlocBuilder<EventListByIdsBloc, EventListByIdsState>(
@@ -189,20 +189,20 @@ class VenueDetail extends StatelessWidget {
                         return const Center(child: CircularProgressIndicator());
                       } else if (state is EventListByIdsLoaded) {
                         final sortedEvents = state.events..sort((a, b) => a.date!.compareTo(b.date!));
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: sortedEvents.length,
-                          itemBuilder: (context, index) {
-                            final event = sortedEvents[index];
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: sortedEvents.map((event) {
                             final double cardWidth = screenWidth * 0.82;
                             final double cardHeight = MediaQuery.of(context).size.height * 0.132;
                             final double imageSize = cardHeight - 16;
-
+                            final bool isFirstOfDate = sortedEvents.indexOf(event) == 0 ||
+                                !_isSameDate(
+                                    sortedEvents[sortedEvents.indexOf(event) - 1].date!, event.date!);
+                            
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (index == 0 || !_isSameDate(sortedEvents[index - 1].date!, event.date!))
+                                if (isFirstOfDate)
                                   Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 4),
                                     child: Text(
@@ -219,12 +219,12 @@ class VenueDetail extends StatelessWidget {
                                   cardWidth: cardWidth,
                                   cardHeight: cardHeight,
                                   imageSize: imageSize,
-                                  isLiked:  state.likedEvents.contains(event.eventId),
+                                  isLiked: state.likedEvents.contains(event.eventId),
                                   likesCount: state.likesCount[event.eventId] ?? 0,
                                 ),
                               ],
                             );
-                          },
+                          }).toList(),
                         );
                       } else if (state is EventListByIdsError) {
                         return const Text(
@@ -265,8 +265,6 @@ class VenueDetail extends StatelessWidget {
            date1.day == date2.day;
   }
 }
-
-
 
 class CustomTitleWithButtons extends StatelessWidget {
   final String name;
@@ -388,5 +386,6 @@ class InformationBox extends StatelessWidget {
     );
   }
 }
+
 
 

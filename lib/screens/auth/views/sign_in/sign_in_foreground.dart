@@ -27,7 +27,7 @@ class SignInFore1 extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          welcomeTextWidget(),
+          headerWithBackButton(context),
           socialLoginButtons(),
           dividerWithText(),
           EmailAndPasswordFields(emailController, passwordController),
@@ -39,7 +39,28 @@ class SignInFore1 extends StatelessWidget {
     );
   }
 
-
+  Widget headerWithBackButton(BuildContext context) {
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Transform.rotate(
+            angle: 3.14159, // 180 degrees in radians
+            child: SvgPicture.asset(
+              'assets/icons/Profile_screen/ic_expand_more.svg',
+              width: 24,
+              height: 24,
+              color: Color(0xFF8FFA58),
+            ),
+          ),
+        ),
+        SizedBox(width: 10), // Adjust the spacing as needed
+        welcomeTextWidget(),
+      ],
+    );
+  }
 
   Widget welcomeTextWidget() {
     return Container(
@@ -75,6 +96,8 @@ class SignInFore1 extends StatelessWidget {
       ),
     );
   }
+
+
 
 
 
@@ -161,89 +184,109 @@ class SignInFore1 extends StatelessWidget {
 
 
 
+
 Widget EmailAndPasswordFields(TextEditingController emailController, TextEditingController passwordController) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.center,
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(23, 10, 20, 0), // Moved slightly to the left and down
-        child: Container(
-          width: 322,
-          height: 56,
-          decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF8FFA58), width: 1), // Added green border
-            borderRadius: BorderRadius.circular(100),
-          ),
-            child: TextField(
-              controller: emailController,
-              style: GoogleFonts.getFont(
-                'Inter',
-                fontWeight: FontWeight.w400,
-                fontSize: 16,
-                color: const Color(0xFFFFFFFF),
+  bool _obscureText = true;
+
+  return StatefulBuilder(
+    builder: (context, setState) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(23, 10, 20, 0), // Moved slightly to the left and down
+            child: Container(
+              width: 322,
+              height: 56,
+              decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xFF8FFA58), width: 1), // Added green border
+                borderRadius: BorderRadius.circular(100),
               ),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(100),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: const Color(0xFF1A1A1A),
-                hintText: 'Email address',
-                hintStyle: GoogleFonts.getFont(
+              child: TextField(
+                controller: emailController,
+                style: GoogleFonts.getFont(
                   'Inter',
                   fontWeight: FontWeight.w400,
                   fontSize: 16,
                   color: const Color(0xFFFFFFFF),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18), // Adjust content padding to center the text properly
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(100),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFF1A1A1A),
+                  hintText: 'Email address',
+                  hintStyle: GoogleFonts.getFont(
+                    'Inter',
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16,
+                    color: const Color(0xFFFFFFFF),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18), // Adjust content padding to center the text properly
+                ),
               ),
             ),
           ),
-      ),
-      Padding(
-        padding: const EdgeInsets.fromLTRB(23, 22, 20, 0), // Consistent padding as email field
-        child: Container(
-          width: 322,
-          height: 56,
-          decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF8FFA58), width: 1), // Added green border
-            borderRadius: BorderRadius.circular(100),
-          ),
-          child: TextField(
-            style: GoogleFonts.getFont(
-                'Inter',
-                fontWeight: FontWeight.w400,
-                fontSize: 16,
-                color: const Color(0xFFFFFFFF),
-              ),
-            controller: passwordController,
-            obscureText: true,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
+          Padding(
+            padding: const EdgeInsets.fromLTRB(23, 22, 20, 0), // Consistent padding as email field
+            child: Container(
+              width: 322,
+              height: 56,
+              decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xFF8FFA58), width: 1), // Added green border
                 borderRadius: BorderRadius.circular(100),
-                borderSide: BorderSide.none,
               ),
-              filled: true,
-              fillColor: const Color(0xFF1A1A1A),
-              hintText: 'Password',
-              hintStyle: GoogleFonts.getFont(
-                'Inter',
-                fontWeight: FontWeight.w400,
-                fontSize: 16,
-                color: const Color(0xFFFFFFFF),
+              child: TextField(
+                style: GoogleFonts.getFont(
+                  'Inter',
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16,
+                  color: const Color(0xFFFFFFFF),
+                ),
+                controller: passwordController,
+                obscureText: _obscureText,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(100),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFF1A1A1A),
+                  hintText: 'Password',
+                  hintStyle: GoogleFonts.getFont(
+                    'Inter',
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16,
+                    color: const Color(0xFFFFFFFF),
+                  ),
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
+                      child: SvgPicture.asset(
+                        _obscureText
+                            ? 'assets/icons/eye-slash.svg'
+                            : 'assets/icons/Icon_eye.svg',
+                        colorFilter: const ColorFilter.mode(Color(0xFF8FFA58), BlendMode.srcIn),
+                        
+                      ),
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18), // Adjust content padding to center the text properly
+                ),
               ),
-              suffixIcon: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                child: Image.asset('assets/icons/Icon_eye.png', height: 22.3),
-              ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18), // Adjust content padding to center the text properly
             ),
           ),
-        ),
-      ),
-    ],
+        ],
+      );
+    },
   );
 }
 

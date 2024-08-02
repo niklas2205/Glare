@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:event_repository/event_repository.dart';
+import 'package:glare/screens/home/blocs/get_event_bloc/get_event_bloc.dart';
 import 'package:glare/screens/home/views/New_Version/Event_Venue_Detail/Event_screen.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:intl/intl.dart';
@@ -35,6 +36,20 @@ class _EventListWidgetState extends State<EventListWidget> {
     });
   }
 
+  Future<void> _refreshEventsAndLikes(BuildContext context) async {
+    final getEventBloc = context.read<GetEventBloc>();
+    final userRepository = context.read<UserRepository>();
+
+    // Fetch and update events
+    getEventBloc.add(LoadEvents());
+
+    // Fetch and update liked events
+    final user = await userRepository.getCurrentUser();
+    if (user != null) {
+      _eventLikeBloc.add(LoadLikedEvents(user.userId));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final groupedEvents = _groupEventsByDate(widget.events);
@@ -59,13 +74,38 @@ class _EventListWidgetState extends State<EventListWidget> {
               final double cardWidth = MediaQuery.of(context).size.width * 0.82;
               final double cardHeight = MediaQuery.of(context).size.height * 0.132;
               final double imageSize = cardHeight - 16;
-              return EventCard(
-                event: group,
-                cardWidth: cardWidth,
-                cardHeight: cardHeight,
-                imageSize: imageSize,
-                isLiked: isLiked,
-                likesCount: likesCount,
+              return GestureDetector(
+                onTap: () async {
+                  final bool? result = await Navigator.push<bool>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EventDetail(
+                        name: group.eventname,
+                        venue: group.venue,
+                        description: group.description,
+                        pictureUrl: group.picture,
+                        age: group.age,
+                        eventId: group.eventId,
+                        venueId: group.venueId,
+                        eventTag: group.eventTag,
+                        location: group.location,
+                        price: group.price,
+                      ),
+                    ),
+                  );
+
+                  if (result == true) {
+                    _refreshEventsAndLikes(context);
+                  }
+                },
+                child: EventCard(
+                  event: group,
+                  cardWidth: cardWidth,
+                  cardHeight: cardHeight,
+                  imageSize: imageSize,
+                  isLiked: isLiked,
+                  likesCount: likesCount,
+                ),
               );
             }
             return const SizedBox.shrink();
