@@ -8,6 +8,7 @@ class VenueEntity {
   String website;
   int reviews;
   List<String> eventIds;
+  List<String> genres;
 
   VenueEntity({
     required this.venueId,
@@ -19,6 +20,7 @@ class VenueEntity {
     required this.website,
     required this.reviews,
     required this.eventIds,
+    required this.genres
   });
 
   Map<String, Object?> toDocument() {
@@ -32,6 +34,7 @@ class VenueEntity {
       'website': website,
       'reviews': reviews,
       'eventIds': eventIds,
+      'genres': genres,
     };
   }
 
@@ -45,7 +48,18 @@ class VenueEntity {
       instagram: doc['instagram'] ?? 'Default Instagram',
       website: doc['website'] ?? 'Default Website',
       reviews: doc['reviews'] ?? 0,
-      eventIds: (doc['eventIds'] != null ? List<String>.from(doc['eventIds']) : []),
+      eventIds: _convertToList(doc['eventIds']),
+      genres: _convertToList(doc['genres']),
     );
+  }
+
+  static List<String> _convertToList(dynamic data) {
+    if (data is List) {
+      return data.map((e) => e.toString()).toList();
+    } else if (data is String) {
+      return [data];
+    } else {
+      return [];
+    }
   }
 }

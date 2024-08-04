@@ -11,7 +11,8 @@ class Venue {
   String instagram;
   String website;
   int reviews; 
-  List<String> eventIds; // New field
+  List<String> eventIds;
+  List<String> genres; // New field
 
   Venue({
     required this.venueId,
@@ -22,7 +23,8 @@ class Venue {
     required this.instagram,
     required this.website,
     required this.reviews,
-    required this.eventIds, // Initialize the new field
+    required this.eventIds,
+    required this.genres, // Initialize the new field
   });
 
   VenueEntity toEntity() {
@@ -35,7 +37,8 @@ class Venue {
       instagram: instagram,
       website: website,
       reviews: reviews,
-      eventIds: eventIds, // Add the new field
+      eventIds: eventIds,
+      genres: genres // Add the new field
     );
   }
 
@@ -49,7 +52,8 @@ class Venue {
       instagram: entity.instagram,
       website: entity.website,
       reviews: entity.reviews,
-      eventIds: entity.eventIds, // Add the new field
+      eventIds: entity.eventIds,
+      genres: entity.genres, // Add the new field
     );
   }
 
@@ -63,5 +67,6 @@ class Venue {
         instagram = '',
         website = '',
         reviews = 0,
-        eventIds = [];
+        eventIds = [],
+        genres = [];
 }

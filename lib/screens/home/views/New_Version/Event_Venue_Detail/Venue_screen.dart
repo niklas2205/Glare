@@ -27,6 +27,7 @@ class VenueDetail extends StatelessWidget {
   final String instagram;
   final String website;
   final List<String> eventIds;
+  final List<String> genres;
 
   const VenueDetail({
     required this.name,
@@ -36,6 +37,7 @@ class VenueDetail extends StatelessWidget {
     required this.instagram,
     required this.website,
     required this.eventIds,
+    required this.genres,
     super.key,
   });
 
@@ -164,6 +166,7 @@ class VenueDetail extends StatelessWidget {
                         width: widgetWidth,
                         address: address,
                         description: description,
+                        genres: genres,
                       ),
                     ],
                   ),
@@ -296,11 +299,13 @@ class InformationBox extends StatelessWidget {
   final double width;
   final String address;
   final String description;
+  final List<String> genres;
 
   const InformationBox({
     required this.width,
     required this.address,
     required this.description,
+    required this.genres,
     Key? key,
   }) : super(key: key);
 
@@ -323,9 +328,9 @@ class InformationBox extends StatelessWidget {
     return Container(
       width: width,
       decoration: BoxDecoration(
-        border: Border.all(color: Color(0xFF8FFA58)),
+        border: Border.all(color: const Color(0xFF8FFA58)),
         borderRadius: BorderRadius.circular(8),
-        color: Color(0xFF1A1A1A),
+        color: const Color(0xFF1A1A1A),
       ),
       padding: const EdgeInsets.all(14),
       child: Column(
@@ -335,10 +340,31 @@ class InformationBox extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SvgPicture.asset(
+                'assets/icons/vector_521_x2.svg',
+                width: 24,
+                height: 24,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  genres.join(', '),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Color(0xFF8FFA58),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SvgPicture.asset(
                 'assets/icons/buliding_11_x2.svg',
                 width: 24,
                 height: 24,
-                color: Color(0xFF8FFA58),
+                color: const Color(0xFF8FFA58),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -354,11 +380,7 @@ class InformationBox extends StatelessWidget {
                   ),
                 ),
               ),
-              SvgPicture.asset(
-                'assets/icons/vector_521_x2.svg',
-                width: 24,
-                height: 24,
-              ),
+            
             ],
           ),
           const SizedBox(height: 10),
@@ -386,6 +408,3 @@ class InformationBox extends StatelessWidget {
     );
   }
 }
-
-
-

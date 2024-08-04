@@ -62,7 +62,7 @@ class EventListScreen extends StatelessWidget {
               child: BlocBuilder<SearchBloc, SearchState>(
                 builder: (context, state) {
                   if (state is SearchLoading) {
-                    return const Center(child: CircularProgressIndicator(color: Color(0xFF13B8A8)));
+                    return const Center(child: CircularProgressIndicator(color: Color(0xFF8FFA58)));
                   } else if (state is SearchSuccess) {
                     final sortedEvents = state.events..sort((a, b) => a.date!.compareTo(b.date!));
                     return EventListWidget(events: sortedEvents, scrollController: _scrollController);
@@ -75,7 +75,7 @@ class EventListScreen extends StatelessWidget {
                       return EventListWidget(events: sortedEvents, scrollController: _scrollController);
                     }
                   }
-                  return const Center(child: CircularProgressIndicator(color: Color(0xFF13B8A8)));
+                  return const Center(child: CircularProgressIndicator(color: Color(0xFF8FFA58)));
                 },
               ),
             ),

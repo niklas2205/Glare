@@ -9,5 +9,6 @@ abstract class EventRepo {
   Future<void> unlikeEvent(String eventId, String userId);
   Future<int> getEventLikesCount(String eventId);
   Future<List<Event>> getEventsByIds(List<String> eventIds);
-  Future<bool> isEventLikedByUser(String eventId, String userId); // New method
+  Future<bool> isEventLikedByUser(String eventId, String userId);
+  Future<List<Event>> getFutureEvents();
 }

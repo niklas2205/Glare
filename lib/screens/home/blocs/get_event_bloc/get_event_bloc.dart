@@ -14,7 +14,7 @@ class GetEventBloc extends Bloc<GetEventEvent, GetEventState> {
       if (event is LoadEvents) {
         emit(GetEventLoading());
         try {
-          List<Event> events = await _eventRepo.getEvents();
+          List<Event> events = await _eventRepo.getFutureEvents();
           emit(GetEventSuccess(events));
         } catch (e) {
           emit(GetEventFailure());

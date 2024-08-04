@@ -15,7 +15,7 @@ class DaySelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<DateTime> days = List.generate(7, (i) => DateTime.now().add(Duration(days: i)));
+    final List<DateTime> days = List.generate(10, (i) => DateTime.now().add(Duration(days: i)));
 
     return BlocBuilder<DaySelectorBloc, DaySelectorState>(
       builder: (context, state) {
@@ -32,7 +32,7 @@ class DaySelector extends StatelessWidget {
             itemBuilder: (context, index) {
               final day = days[index];
               final isSelected = selectedDate != null && _isSameDate(selectedDate, day);
-              final dayText = DateFormat('dd').format(day);
+              final dayText = DateFormat('dd.MM').format(day);
               final weekdayText = DateFormat('EEEE').format(day);
 
               return GestureDetector(

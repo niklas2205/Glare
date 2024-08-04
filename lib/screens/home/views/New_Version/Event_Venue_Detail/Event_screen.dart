@@ -251,6 +251,7 @@ class EventDetail extends StatelessWidget {
                             instagram: venue.instagram,
                             website: venue.website,
                             eventIds: venue.eventIds,
+                            genres: venue.genres,
                           ),
                         ),
                       ),

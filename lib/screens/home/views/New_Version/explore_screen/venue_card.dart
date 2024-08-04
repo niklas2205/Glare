@@ -56,6 +56,7 @@ class VenueCard extends StatelessWidget {
                       instagram: venue.instagram,
                       website: venue.website,
                       eventIds: venue.eventIds,
+                      genres: venue.genres,
                     ),
                   ),
                 ),
@@ -100,7 +101,16 @@ class VenueCard extends StatelessWidget {
                               Text(
                                 venue.address,
                                 style: const TextStyle(
-                                  color: Colors.white,
+                                  color: Color(0xFF8FFA58),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 10,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                venue.genres.join(', '),
+                                style: const TextStyle(
+                                  color: Color(0xFF8FFA58),
                                   fontWeight: FontWeight.w400,
                                   fontSize: 10,
                                 ),

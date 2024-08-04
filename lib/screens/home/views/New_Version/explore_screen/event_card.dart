@@ -54,7 +54,7 @@ class EventCard extends StatelessWidget {
                     price: event.price,
                   ),
                 ),
-              ) ?? false; // Default to false if the result is null
+              ) ?? false;
 
               if (result) {
                 context.read<EventLikeBloc>().add(LoadEventLikeCount(event.eventId));
@@ -117,7 +117,7 @@ class EventCard extends StatelessWidget {
                                   fontSize: 12,
                                 ),
                               ),
-                              const Spacer(), // Pushes the tags to the bottom
+                              const Spacer(),
                               Row(
                                 children: event.eventTag.map((tag) {
                                   return Padding(
@@ -139,7 +139,7 @@ class EventCard extends StatelessWidget {
                                   );
                                 }).toList(),
                               ),
-                              const SizedBox(height: 8), // Adjust the gap as needed
+                              const SizedBox(height: 8),
                             ],
                           ),
                         ),
@@ -167,26 +167,26 @@ class EventCard extends StatelessWidget {
                             height: 24,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: isLiked ? Color(0xFF8FFA58) : const Color(0xFF1A1A1A),
-                              border: isLiked ? null : Border.all(color: Color(0xFF8FFA58)),
+                              color: isLiked ? const Color(0xFF8FFA58) : const Color(0xFF1A1A1A),
+                              border: isLiked ? null : Border.all(color: const Color(0xFF8FFA58)),
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.all(4.0), // Adjust the padding as needed
+                              padding: const EdgeInsets.all(4.0),
                               child: SvgPicture.asset(
                                 'assets/icons/bx_party.svg',
-                                color: isLiked ? Color(0xFF1A1A1A) : Color(0xFF8FFA58),
+                                color: isLiked ? const Color(0xFF1A1A1A) : const Color(0xFF8FFA58),
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 10), // Adjust the gap as needed
+                        const SizedBox(height: 10),
                         Container(
                           width: 24,
                           height: 24,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: const Color(0xFF1A1A1A),
-                            border: Border.all(color: Color(0xFF8FFA58)),
+                            border: Border.all(color: const Color(0xFF8FFA58)),
                           ),
                           child: Center(
                             child: Text(

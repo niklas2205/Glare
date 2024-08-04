@@ -14,7 +14,6 @@ class FirebaseVenueRepo implements VenueRepo {
       final querySnapshot = await venueCollection.get();
       return querySnapshot.docs.map((doc) {
         final data = doc.data();
-        data['eventIds'] = (data['eventIds'] as List<dynamic>).map((e) => e.toString()).toList();
         return Venue.fromEntity(VenueEntity.fromDocument(data));
       }).toList();
     } catch (e) {

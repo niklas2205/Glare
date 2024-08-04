@@ -46,7 +46,7 @@ class FirebaseEventRepo implements EventRepo {
     } else {
       throw Exception("Event does not exist.");
     }
-  }              
+  }
 
   @override
   Future<void> unlikeEvent(String eventId, String userId) async {
@@ -97,8 +97,24 @@ class FirebaseEventRepo implements EventRepo {
     return false;
   }
 
+  @override
+  Future<List<Event>> getFutureEvents() async {
+    try {
+      final DateTime now = DateTime.now().subtract(Duration(hours: 12));
+      return await eventCollection
+          .get()
+          .then((value) => value.docs
+              .map((e) => Event.fromEntity(EventEntity.fromDocument(e.data())))
+              .where((event) => event.date.isAfter(now))
+              .toList());
+    } catch (e) {
+      print(e.toString());
+      rethrow;
+    }
+  }
+
   // New method to reload events
   Future<void> reloadEvents() async {
-    await getEvents();
+    await getFutureEvents();
   }
 }

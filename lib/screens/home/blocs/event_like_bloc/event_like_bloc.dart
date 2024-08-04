@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:event_repository/event_repository.dart';
@@ -9,6 +11,7 @@ part 'event_like_state.dart';
 class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
   final UserRepository userRepository;
   final EventRepo eventRepository;
+  Timer? _periodicSync;
 
   EventLikeBloc({
     required this.userRepository,
@@ -24,6 +27,23 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
         add(LoadLikedEvents(user.userId));
       }
     });
+
+    _startPeriodicSync();
+  }
+
+  void _startPeriodicSync() {
+    _periodicSync = Timer.periodic(const Duration(minutes: 30), (timer) async {
+      final user = await userRepository.getCurrentUser();
+      if (user != null) {
+        add(LoadLikedEvents(user.userId));
+      }
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _periodicSync?.cancel();
+    return super.close();
   }
 
   Future<void> _onLikeEvent(LikeEvent event, Emitter<EventLikeState> emit) async {
@@ -39,6 +59,8 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
         likesCountMap[event.eventId] = (likesCountMap[event.eventId] ?? 0) + 1;
 
         emit(EventLikeSuccess(likedEvents, likesCountMap));
+      } else {
+        emit(EventLikeSuccess([event.eventId], {event.eventId: 1}));
       }
     } catch (e) {
       emit(EventLikeFailure(e.toString()));
@@ -58,6 +80,8 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
         likesCountMap[event.eventId] = (likesCountMap[event.eventId] ?? 1) - 1;
 
         emit(EventLikeSuccess(likedEvents, likesCountMap));
+      } else {
+        emit(EventLikeSuccess([], {event.eventId: 0}));
       }
     } catch (e) {
       emit(EventLikeFailure(e.toString()));
@@ -67,19 +91,18 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
   Future<void> _onLoadLikedEvents(LoadLikedEvents event, Emitter<EventLikeState> emit) async {
     try {
       final likedEvents = await userRepository.getLikedEvents(event.userId);
+      final futureEvents = await eventRepository.getFutureEvents();
+      final futureEventIds = futureEvents.map((e) => e.eventId).toSet();
+
+      final validLikedEvents = likedEvents.where(futureEventIds.contains).toList();
       final likesCountMap = <String, int>{};
-      for (var eventId in likedEvents) {
+
+      for (var eventId in validLikedEvents) {
         final count = await eventRepository.getEventLikesCount(eventId);
         likesCountMap[eventId] = count;
       }
 
-      if (state is EventLikeSuccess) {
-        final currentLikesCountMap = Map<String, int>.from((state as EventLikeSuccess).likesCount);
-        final mergedLikesCountMap = {...currentLikesCountMap, ...likesCountMap};
-        emit(EventLikeSuccess(likedEvents, mergedLikesCountMap));
-      } else {
-        emit(EventLikeSuccess(likedEvents, likesCountMap));
-      }
+      emit(EventLikeSuccess(validLikedEvents, likesCountMap));
     } catch (e) {
       emit(EventLikeFailure(e.toString()));
     }

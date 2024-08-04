@@ -18,12 +18,15 @@ class EventListByIdsBloc extends Bloc<EventListByIdsEvent, EventListByIdsState> 
     emit(EventListByIdsLoading());
     try {
       final events = await eventRepo.getEventsByIds(event.eventIds);
+      final now = DateTime.now().subtract(const Duration(hours: 12));
+      final futureEvents = events.where((e) => e.date.isAfter(now)).toList();
+      
       final likedEvents = <String>{};
       final likesCount = <String, int>{};
 
       final user = await userRepository.getCurrentUser();
       if (user != null) {
-        for (var event in events) {
+        for (var event in futureEvents) {
           final count = await eventRepo.getEventLikesCount(event.eventId);
           likesCount[event.eventId] = count;
 
@@ -34,7 +37,7 @@ class EventListByIdsBloc extends Bloc<EventListByIdsEvent, EventListByIdsState> 
         }
       }
 
-      emit(EventListByIdsLoaded(events, likedEvents, likesCount));
+      emit(EventListByIdsLoaded(futureEvents, likedEvents, likesCount));
     } catch (error) {
       emit(EventListByIdsError(error.toString()));
     }
