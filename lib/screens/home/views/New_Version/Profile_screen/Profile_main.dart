@@ -127,39 +127,17 @@ class ProfilePictureWidget extends StatelessWidget {
     return Column(
       children: [
         CustomPaint(
-          painter: DottedBorderPainter(color: Color(0xFF8FFA58), strokeWidth: 2),
+          painter: DottedBorderPainter(color: const Color(0xFF8FFA58), strokeWidth: 2),
           child: Container(
             width: MediaQuery.of(context).size.width * 0.33,
             height: MediaQuery.of(context).size.width * 0.33,
-            child: Stack(
-              children: [
-                ClipOval(
-                  child: Image.asset(
-                    'assets/images/IMG.png', // Ensure the file name and path are correct
-                    fit: BoxFit.cover,
-                    width: MediaQuery.of(context).size.width * 0.33,
-                    height: MediaQuery.of(context).size.width * 0.33,
-                  ),
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.33,
-                  height: MediaQuery.of(context).size.width * 0.33,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.black.withOpacity(0.7), // 70% black overlay
-                  ),
-                  child: const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.camera_alt, color: Colors.white, size: 24),
-                        SizedBox(height: 4),
-                        Text('Update photo', style: TextStyle(color: Colors.white)),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+            child: ClipOval(
+              child: Image.asset(
+                'assets/images/glare.png', // Updated image path
+                fit: BoxFit.cover,
+                width: MediaQuery.of(context).size.width * 0.33,
+                height: MediaQuery.of(context).size.width * 0.33,
+              ),
             ),
           ),
         ),
@@ -183,6 +161,7 @@ class ProfilePictureWidget extends StatelessWidget {
     );
   }
 }
+
 
 
 
@@ -246,26 +225,26 @@ class SettingsContainer extends StatelessWidget {
                 
                 },
               ),
-              _buildSettingsOption(
-                context,
-                icon: 'assets/icons/Profile_screen/people.svg',
-                text: 'Manage Friends',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ManageFriends(),
-                    ),
-                  );
+              // _buildSettingsOption(
+              //   context,
+              //   icon: 'assets/icons/Profile_screen/people.svg',
+              //   text: 'Manage Friends',
+              //   onTap: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => ManageFriends(),
+              //       ),
+              //     );
                 
-                },
-              ),
-              _buildSettingsOption(
-                context,
-                icon: 'assets/icons/Profile_screen/direct.svg',
-                text: 'Inbox',
-                onTap: () {},
-              ),
+              //   },
+              // ),
+              // _buildSettingsOption(
+              //   context,
+              //   icon: 'assets/icons/Profile_screen/direct.svg',
+              //   text: 'Inbox',
+              //   onTap: () {},
+              // ),
             ],
           ),
           _buildSectionTitle(context, 'Information'),

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/svg.dart';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 class SignUpFore1 extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
@@ -20,10 +24,12 @@ class SignUpFore1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double horizontalPadding = screenWidth * 0.05;
+
     return Container(
-      margin: const EdgeInsets.fromLTRB(14, 81, 0, 0),
+      margin: EdgeInsets.fromLTRB(horizontalPadding, 81, horizontalPadding, 0),
       height: 759,
-      width: 362,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -191,88 +197,78 @@ class SignUpFore1 extends StatelessWidget {
     );
   }
 
+  Widget passwordField(String placeholder, TextEditingController controller) {
+    bool _obscureText = true;
 
-
-Widget passwordField(String placeholder, TextEditingController controller) {
-  bool _obscureText = true;
-
-  return StatefulBuilder(
-    builder: (context, setState) {
-      return Container(
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 24),
-        height: 56,
-        width: 322,
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFF8FFA58)),
-          borderRadius: BorderRadius.circular(100),
-          color: const Color(0xFF1A1A1A),
-        ),
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(14, 2, 0, 0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: controller,
-                  obscureText: _obscureText,
-                  decoration: InputDecoration(
-                    hintText: placeholder,
-                    hintStyle: GoogleFonts.getFont(
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return Container(
+          margin: const EdgeInsets.fromLTRB(0, 0, 0, 24),
+          height: 56,
+          width: 322,
+          decoration: BoxDecoration(
+            border: Border.all(color: const Color(0xFF8FFA58)),
+            borderRadius: BorderRadius.circular(100),
+            color: const Color(0xFF1A1A1A),
+          ),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(14, 2, 0, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: controller,
+                    obscureText: _obscureText,
+                    decoration: InputDecoration(
+                      hintText: placeholder,
+                      hintStyle: GoogleFonts.getFont(
+                        'Inter',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16,
+                        height: 1.5,
+                        color: const Color(0xFFFFFFFF),
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    style: GoogleFonts.getFont(
                       'Inter',
                       fontWeight: FontWeight.w400,
                       fontSize: 16,
                       height: 1.5,
                       color: const Color(0xFFFFFFFF),
                     ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  style: GoogleFonts.getFont(
-                    'Inter',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 16,
-                    height: 1.5,
-                    color: const Color(0xFFFFFFFF),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 14, 0),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _obscureText = !_obscureText;
-                    });
-                  },
-                  child: SizedBox(
-                    height: 37,
-                    width: 37,
-                    
-                    child: SvgPicture.asset(
-                      _obscureText
-                          ? 'assets/icons/eye-slash.svg'
-                          : 'assets/icons/Icon_eye.svg',
-                      color: const Color(0xFF8FFA58),
-                  
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 14, 0),
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                    child: SizedBox(
+                      height: 37,
+                      width: 37,
+                      child: SvgPicture.asset(
+                        _obscureText
+                            ? 'assets/icons/eye-slash.svg'
+                            : 'assets/icons/Icon_eye.svg',
+                        color: const Color(0xFF8FFA58),
+                      ),
                     ),
-                  
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
-
-
-
-
-
+        );
+      },
+    );
+  }
 
   bool isValidEmail(String email) {
     bool emailValid = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
@@ -280,14 +276,11 @@ Widget passwordField(String placeholder, TextEditingController controller) {
   }
 
   bool isValidPassword(String password) {
- 
-  bool lengthValid = password.length >= 7 && password.length <= 25;
-
-  bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
-  bool hasNumber = password.contains(RegExp(r'[0-9]'));
-
-  return lengthValid && hasUppercase && hasNumber;
-}
+    bool lengthValid = password.length >= 7 && password.length <= 25;
+    bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
+    bool hasNumber = password.contains(RegExp(r'[0-9]'));
+    return lengthValid && hasUppercase && hasNumber;
+  }
 
   Widget termsAndPrivacy() {
     return Container(
@@ -346,7 +339,7 @@ Widget passwordField(String placeholder, TextEditingController controller) {
     );
   }
 
-    Widget loginPrompt(VoidCallback controller) {
+  Widget loginPrompt(VoidCallback controller) {
     return Container(
       margin: const EdgeInsets.fromLTRB(0.5, 0, 0, 0),
       child: RichText(

@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/svg.dart';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 class SignInFore1 extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
@@ -21,8 +25,11 @@ class SignInFore1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double horizontalPadding = screenWidth * 0.05;
+
     return Container(
-      margin: const EdgeInsets.fromLTRB(14, 81, 0, 0),
+      margin: EdgeInsets.fromLTRB(horizontalPadding, 81, horizontalPadding, 0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,10 +104,6 @@ class SignInFore1 extends StatelessWidget {
     );
   }
 
-
-
-
-
   Widget socialLoginButtons() {
     return Container(
       width: 322,
@@ -141,9 +144,6 @@ class SignInFore1 extends StatelessWidget {
     );
   }
 
-
-// Additional classes like DividerWithText, EmailAndPasswordFields, LoginButton, and RegisterText would be defined similarly.
-
   Widget dividerWithText() {
     return Container(
       width: 322,
@@ -182,118 +182,111 @@ class SignInFore1 extends StatelessWidget {
     );
   }
 
+  Widget EmailAndPasswordFields(TextEditingController emailController, TextEditingController passwordController) {
+    bool _obscureText = true;
 
-
-
-Widget EmailAndPasswordFields(TextEditingController emailController, TextEditingController passwordController) {
-  bool _obscureText = true;
-
-  return StatefulBuilder(
-    builder: (context, setState) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(23, 10, 20, 0), // Moved slightly to the left and down
-            child: Container(
-              width: 322,
-              height: 56,
-              decoration: BoxDecoration(
-                border: Border.all(color: const Color(0xFF8FFA58), width: 1), // Added green border
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: TextField(
-                controller: emailController,
-                style: GoogleFonts.getFont(
-                  'Inter',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                  color: const Color(0xFFFFFFFF),
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(23, 10, 20, 0), // Moved slightly to the left and down
+              child: Container(
+                width: 322,
+                height: 56,
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xFF8FFA58), width: 1), // Added green border
+                  borderRadius: BorderRadius.circular(100),
                 ),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(100),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: const Color(0xFF1A1A1A),
-                  hintText: 'Email address',
-                  hintStyle: GoogleFonts.getFont(
+                child: TextField(
+                  controller: emailController,
+                  style: GoogleFonts.getFont(
                     'Inter',
                     fontWeight: FontWeight.w400,
                     fontSize: 16,
                     color: const Color(0xFFFFFFFF),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18), // Adjust content padding to center the text properly
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(100),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: const Color(0xFF1A1A1A),
+                    hintText: 'Email address',
+                    hintStyle: GoogleFonts.getFont(
+                      'Inter',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                      color: const Color(0xFFFFFFFF),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18), // Adjust content padding to center the text properly
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(23, 22, 20, 0), // Consistent padding as email field
-            child: Container(
-              width: 322,
-              height: 56,
-              decoration: BoxDecoration(
-                border: Border.all(color: const Color(0xFF8FFA58), width: 1), // Added green border
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: TextField(
-                style: GoogleFonts.getFont(
-                  'Inter',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                  color: const Color(0xFFFFFFFF),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(23, 22, 20, 0), // Consistent padding as email field
+              child: Container(
+                width: 322,
+                height: 56,
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xFF8FFA58), width: 1), // Added green border
+                  borderRadius: BorderRadius.circular(100),
                 ),
-                controller: passwordController,
-                obscureText: _obscureText,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(100),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: const Color(0xFF1A1A1A),
-                  hintText: 'Password',
-                  hintStyle: GoogleFonts.getFont(
+                child: TextField(
+                  style: GoogleFonts.getFont(
                     'Inter',
                     fontWeight: FontWeight.w400,
                     fontSize: 16,
                     color: const Color(0xFFFFFFFF),
                   ),
-                  suffixIcon: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _obscureText = !_obscureText;
-                        });
-                      },
-                      child: SvgPicture.asset(
-                        _obscureText
-                            ? 'assets/icons/eye-slash.svg'
-                            : 'assets/icons/Icon_eye.svg',
-                        colorFilter: const ColorFilter.mode(Color(0xFF8FFA58), BlendMode.srcIn),
-                        
+                  controller: passwordController,
+                  obscureText: _obscureText,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(100),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: const Color(0xFF1A1A1A),
+                    hintText: 'Password',
+                    hintStyle: GoogleFonts.getFont(
+                      'Inter',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                      color: const Color(0xFFFFFFFF),
+                    ),
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
+                        child: SvgPicture.asset(
+                          _obscureText
+                              ? 'assets/icons/eye-slash.svg'
+                              : 'assets/icons/Icon_eye.svg',
+                          colorFilter: const ColorFilter.mode(Color(0xFF8FFA58), BlendMode.srcIn),
+                        ),
                       ),
                     ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18), // Adjust content padding to center the text properly
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18), // Adjust content padding to center the text properly
                 ),
               ),
             ),
-          ),
-        ],
-      );
-    },
-  );
-}
+          ],
+        );
+      },
+    );
+  }
 
-
-
-
-  Widget loginButton (VoidCallback controller) {
+  Widget loginButton(VoidCallback controller) {
     return Container(
       width: 322,
       height: 48,
@@ -318,7 +311,6 @@ Widget EmailAndPasswordFields(TextEditingController emailController, TextEditing
       ),
     );
   }
-
 
   Widget registerbutton(VoidCallback controller) {
     return Padding(

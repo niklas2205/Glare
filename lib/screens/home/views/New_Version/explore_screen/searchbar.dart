@@ -71,8 +71,8 @@ class CustomSearchBar extends StatelessWidget {
           SizedBox(
             width: 24,
             height: 24,
-            child: Image.asset(
-              'assets/icons/setting-5.png', // Replace with your icon path
+            child: SvgPicture.asset(
+              'assets/icons/setting-5.svg', // Replace with your icon path
               width: 24,
               height: 24,
             ),

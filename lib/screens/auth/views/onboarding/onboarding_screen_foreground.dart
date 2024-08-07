@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:glare/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:user_repository/user_repository.dart';
 
 import '../../blocs/onboarding_bloc/onboarding_bloc.dart';
@@ -20,7 +21,7 @@ class _OnboardingScreenForegroundState extends State<OnboardingScreenForeground>
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-  final TextEditingController ageController = TextEditingController();
+  final TextEditingController dobController = TextEditingController();
   final List<String> genders = ['Male', 'Female', 'Diverse', 'Rather not say'];
   String? selectedGender;
 
@@ -37,7 +38,7 @@ class _OnboardingScreenForegroundState extends State<OnboardingScreenForeground>
           buildInputField('First Name', firstNameController),
           buildInputField('Last Name', lastNameController),
           buildInputField('Phone', phoneController),
-          buildInputField('Age', ageController),
+          buildDatePickerField('Date of Birth', dobController),
           buildDropdownField(context),
           buildNavigationRow(context),
           buildSkipForNowButton(context),
@@ -110,6 +111,54 @@ class _OnboardingScreenForegroundState extends State<OnboardingScreenForeground>
               fontSize: 16,
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildDatePickerField(String label, TextEditingController controller) {
+    return Container(
+      width: 322,
+      height: 56,
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0xFF8FFA58)),
+        borderRadius: BorderRadius.circular(100),
+        color: const Color(0xFF1A1A1A),
+      ),
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Center(
+        child: TextFormField(
+          controller: controller,
+          readOnly: true,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w400,
+            fontSize: 16,
+            color: Colors.white,
+          ),
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: label,
+            contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 2),
+            hintStyle: GoogleFonts.inter(
+              color: Colors.white.withOpacity(0.5),
+              fontSize: 16,
+            ),
+          ),
+          onTap: () async {
+            DateTime? pickedDate = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(1900),
+              lastDate: DateTime.now(),
+            );
+            if (pickedDate != null) {
+              String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
+              setState(() {
+                controller.text = formattedDate;
+              });
+            }
+          },
         ),
       ),
     );
@@ -189,7 +238,7 @@ class _OnboardingScreenForegroundState extends State<OnboardingScreenForeground>
             userId: context.read<AuthenticationBloc>().state.user!.userId,
             email: context.read<AuthenticationBloc>().state.user!.email,
             name: firstNameController.text + ' ' + lastNameController.text,
-            age: int.tryParse(ageController.text),
+            dob: DateFormat('dd/MM/yyyy').parse(dobController.text),
             phoneNumber: phoneController.text,
             gender: selectedGender,
           );

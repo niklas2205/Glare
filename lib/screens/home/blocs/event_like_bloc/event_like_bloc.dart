@@ -50,14 +50,13 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
     try {
       await userRepository.likeEvent(event.userId, event.eventId);
       await eventRepository.likeEvent(event.eventId, event.userId);
+      final likesCount = await eventRepository.getEventLikesCount(event.eventId);
 
       if (state is EventLikeSuccess) {
         final likedEvents = List<String>.from((state as EventLikeSuccess).likedEvents);
-        final likesCountMap = Map<String, int>.from((state as EventLikeSuccess).likesCount);
-
         likedEvents.add(event.eventId);
-        likesCountMap[event.eventId] = (likesCountMap[event.eventId] ?? 0) + 1;
-
+        final likesCountMap = Map<String, int>.from((state as EventLikeSuccess).likesCount);
+        likesCountMap[event.eventId] = likesCount;
         emit(EventLikeSuccess(likedEvents, likesCountMap));
       } else {
         emit(EventLikeSuccess([event.eventId], {event.eventId: 1}));
@@ -71,14 +70,13 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
     try {
       await userRepository.unlikeEvent(event.userId, event.eventId);
       await eventRepository.unlikeEvent(event.eventId, event.userId);
+      final likesCount = await eventRepository.getEventLikesCount(event.eventId);
 
       if (state is EventLikeSuccess) {
         final likedEvents = List<String>.from((state as EventLikeSuccess).likedEvents);
-        final likesCountMap = Map<String, int>.from((state as EventLikeSuccess).likesCount);
-
         likedEvents.remove(event.eventId);
-        likesCountMap[event.eventId] = (likesCountMap[event.eventId] ?? 1) - 1;
-
+        final likesCountMap = Map<String, int>.from((state as EventLikeSuccess).likesCount);
+        likesCountMap[event.eventId] = likesCount;
         emit(EventLikeSuccess(likedEvents, likesCountMap));
       } else {
         emit(EventLikeSuccess([], {event.eventId: 0}));
@@ -102,7 +100,13 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
         likesCountMap[eventId] = count;
       }
 
-      emit(EventLikeSuccess(validLikedEvents, likesCountMap));
+      if (state is EventLikeSuccess) {
+        final currentLikesCountMap = Map<String, int>.from((state as EventLikeSuccess).likesCount);
+        final mergedLikesCountMap = {...currentLikesCountMap, ...likesCountMap};
+        emit(EventLikeSuccess(validLikedEvents, mergedLikesCountMap));
+      } else {
+        emit(EventLikeSuccess(validLikedEvents, likesCountMap));
+      }
     } catch (e) {
       emit(EventLikeFailure(e.toString()));
     }

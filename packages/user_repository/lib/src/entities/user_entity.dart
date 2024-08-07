@@ -2,7 +2,7 @@ class MyUserEntity {
   String userId;
   String email;
   String? name;
-  int? age;
+  DateTime? dob; // Changed from int? age to DateTime? dob
   List<String>? favoriteGenres;
   String? phoneNumber;
   String? gender;
@@ -13,7 +13,7 @@ class MyUserEntity {
     required this.userId,
     required this.email,
     required this.name,
-    required this.age,
+    required this.dob,
     this.favoriteGenres,
     this.phoneNumber,
     this.gender,
@@ -26,7 +26,7 @@ class MyUserEntity {
       'userId': userId,
       'email': email,
       'name': name,
-      'age': age,
+      'dob': dob?.toIso8601String(), // Convert DateTime to String
       'favoriteGenres': favoriteGenres,
       'phoneNumber': phoneNumber,
       'gender': gender,
@@ -40,7 +40,7 @@ class MyUserEntity {
       userId: doc['userId'],
       email: doc['email'],
       name: doc['name'],
-      age: doc['age'],
+      dob: doc['dob'] != null ? DateTime.parse(doc['dob']) : null, // Convert String to DateTime
       favoriteGenres: List<String>.from(doc['favoriteGenres'] ?? []),
       phoneNumber: doc['phoneNumber'],
       gender: doc['gender'],

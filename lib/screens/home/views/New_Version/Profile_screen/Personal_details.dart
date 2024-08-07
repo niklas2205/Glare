@@ -5,11 +5,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:glare/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:glare/screens/home/blocs/user_bloc/user_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:user_repository/user_repository.dart';
 
 import '../../../../background_screen/background_screen.dart';
 import '../../../blocs/user_update_bloc/user_update_bloc.dart';
-
 
 
 class PersonalDetails extends StatefulWidget {
@@ -23,7 +23,7 @@ class _PersonalDetailsState extends State<PersonalDetails> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-  final TextEditingController ageController = TextEditingController();
+  final TextEditingController dobController = TextEditingController();
   final List<String> genders = ['Male', 'Female', 'Diverse', 'Rather not say'];
   String? selectedGender;
 
@@ -36,8 +36,27 @@ class _PersonalDetailsState extends State<PersonalDetails> {
       nameController.text = user.name ?? '';
       emailController.text = user.email;
       phoneController.text = user.phoneNumber ?? '';
-      ageController.text = user.age?.toString() ?? '';
+      dobController.text = user.dob != null ? DateFormat('dd/MM/yyyy').format(user.dob!) : '';
       selectedGender = user.gender ?? genders.last;
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime initialDate = DateTime.now().subtract(Duration(days: 365 * 18)); // default to 18 years ago
+    if (dobController.text.isNotEmpty) {
+      initialDate = DateFormat('dd/MM/yyyy').parse(dobController.text);
+    }
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        dobController.text = DateFormat('dd/MM/yyyy').format(picked);
+      });
     }
   }
 
@@ -92,7 +111,7 @@ class _PersonalDetailsState extends State<PersonalDetails> {
                           buildInputField('Name', nameController),
                           buildInputField('Email', emailController),
                           buildInputField('Phone', phoneController),
-                          buildInputField('Age', ageController),
+                          buildDateField(context, 'Date of Birth', dobController, _selectDate),
                           buildDropdownField(context),
                           buildUpdateButton(context),
                         ],
@@ -147,6 +166,60 @@ class _PersonalDetailsState extends State<PersonalDetails> {
                   hintStyle: GoogleFonts.inter(
                     color: Colors.white.withOpacity(0.5),
                     fontSize: 16,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildDateField(BuildContext context, String label, TextEditingController controller, Future<void> Function(BuildContext) selectDate) {
+    return Container(
+      width: 322,
+      height: 82, // Increased height to include the title
+      margin: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8),
+          GestureDetector(
+            onTap: () => selectDate(context),
+            child: AbsorbPointer(
+              child: Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xFF8FFA58)),
+                  borderRadius: BorderRadius.circular(100),
+                  color: const Color(0xFF1A1A1A),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Center(
+                  child: TextFormField(
+                    controller: controller,
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 2),
+                      hintStyle: GoogleFonts.inter(
+                        color: Colors.white.withOpacity(0.5),
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -238,7 +311,7 @@ class _PersonalDetailsState extends State<PersonalDetails> {
             'name': nameController.text,
             'email': emailController.text,
             'phoneNumber': phoneController.text,
-            'age': int.tryParse(ageController.text),
+            'dob': dobController.text.isNotEmpty ? DateFormat('dd/MM/yyyy').parse(dobController.text).toIso8601String() : null,
             'gender': selectedGender,
           };
           context.read<UserUpdateBloc>().add(UpdateUserDetails(updatedUser));

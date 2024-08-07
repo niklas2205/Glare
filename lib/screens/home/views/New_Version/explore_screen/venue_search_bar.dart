@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter/material.dart';
@@ -7,8 +8,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 class CustomVenueSearchBar extends StatelessWidget {
   final ValueChanged<String> onChanged;
+  final VoidCallback onFilterPressed;
 
-  const CustomVenueSearchBar({Key? key, required this.onChanged}) : super(key: key);
+  const CustomVenueSearchBar({Key? key, required this.onChanged, required this.onFilterPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -70,13 +72,16 @@ class CustomVenueSearchBar extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          SizedBox(
-            width: 24,
-            height: 24,
-            child: Image.asset(
-              'assets/icons/setting-5.png',
+          GestureDetector(
+            onTap: onFilterPressed,
+            child: SizedBox(
               width: 24,
               height: 24,
+              child: SvgPicture.asset(
+                'assets/icons/setting-5.svg',
+                width: 24,
+                height: 24,
+              ),
             ),
           ),
         ],
@@ -84,3 +89,68 @@ class CustomVenueSearchBar extends StatelessWidget {
     );
   }
 }
+class FilterModal extends StatefulWidget {
+  final Function(List<String>, bool) onFilterApply;
+
+  const FilterModal({Key? key, required this.onFilterApply}) : super(key: key);
+
+  @override
+  _FilterModalState createState() => _FilterModalState();
+}
+
+class _FilterModalState extends State<FilterModal> {
+  List<String> selectedGenres = [];
+  bool filterLikedVenues = false;
+
+  final List<String> genres = [
+    'Charts', 'Hip Hop', 'House', 'Techno', 'Pop', 'Electronic', 'R&B', 'Soul',
+    'Disco', 'Trap', 'Live Music', 'Indie Rock', '80s', 'Alternative'
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CheckboxListTile(
+            title: Text('Liked Venues'),
+            value: filterLikedVenues,
+            onChanged: (bool? value) {
+              setState(() {
+                filterLikedVenues = value!;
+              });
+            },
+          ),
+          Expanded(
+            child: ListView(
+              children: genres.map((genre) {
+                return CheckboxListTile(
+                  title: Text(genre),
+                  value: selectedGenres.contains(genre),
+                  onChanged: (bool? value) {
+                    setState(() {
+                      if (value!) {
+                        selectedGenres.add(genre);
+                      } else {
+                        selectedGenres.remove(genre);
+                      }
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              widget.onFilterApply(selectedGenres, filterLikedVenues);
+              Navigator.of(context).pop();
+            },
+            child: Text('Apply Filters'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+

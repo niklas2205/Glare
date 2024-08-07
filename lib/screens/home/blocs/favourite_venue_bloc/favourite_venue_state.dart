@@ -8,7 +8,11 @@ class FavoritesLoaded extends FavouriteVenueState {
   final List<String> favoriteVenueIds;
 
   FavoritesLoaded(this.favoriteVenueIds);
+
+  @override
+  List<Object> get props => [favoriteVenueIds];
 }
+
 
 class FavoriteAdded extends FavouriteVenueState {}
 

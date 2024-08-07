@@ -19,7 +19,8 @@ import '../../../blocs/event_list_by_Ids_bloc/event_list_by_ids_bloc.dart';
 
 
 
-class VenueDetail extends StatelessWidget {
+
+class VenueDetail extends StatefulWidget {
   final String name;
   final String address;
   final String description;
@@ -40,6 +41,19 @@ class VenueDetail extends StatelessWidget {
     required this.genres,
     super.key,
   });
+
+  @override
+  _VenueDetailState createState() => _VenueDetailState();
+}
+
+class _VenueDetailState extends State<VenueDetail> {
+  bool _isExpanded = false;
+
+  void _toggleReadMore() {
+    setState(() {
+      _isExpanded = !_isExpanded;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +78,7 @@ class VenueDetail extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: const Color(0xFFE0E0E0),
                         image: DecorationImage(
-                          image: NetworkImage(pictureUrl),
+                          image: NetworkImage(widget.pictureUrl),
                           fit: BoxFit.cover,
                           alignment: Alignment.center,
                         ),
@@ -95,58 +109,9 @@ class VenueDetail extends StatelessWidget {
                 const SizedBox(height: 10),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.09),
-                  child: CustomTitleWithButtons(name: name),
+                  child: CustomTitleWithButtons(name: widget.name),
                 ),
                 const SizedBox(height: 10),
-                Center(
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildIconButtonWithBorder(
-                            icon: Icons.favorite_border,
-                            onPressed: () {},
-                          ),
-                          const SizedBox(width: 10),
-                          _buildIconButtonWithBorder(
-                            icon: Icons.share,
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      // Container(
-                      //   width: widgetWidth,
-                      //   height: 50,
-                      //   decoration: BoxDecoration(
-                      //     border: Border.all(color: const Color(0xFF8FFA58), width: 2.0),
-                      //     borderRadius: BorderRadius.circular(30),
-                      //     color: const Color(0xFF1A1A1A),
-                      //   ),
-                      //   child: const Row(
-                      //     mainAxisAlignment: MainAxisAlignment.center,
-                      //     children: [
-                      //       Icon(Icons.star, color: Color(0xFF8FFA58)),
-                      //       Icon(Icons.star, color: Color(0xFF8FFA58)),
-                      //       Icon(Icons.star, color: Color(0xFF8FFA58)),
-                      //       Icon(Icons.star, color: Color(0xFF8FFA58)),
-                      //       Icon(Icons.star, color: Color(0xFF8FFA58)),
-                      //     ],
-                      //   ),
-                      // ),
-                      // Text(
-                      //   '5.0 Star Rating (52 Reviews) See Reviews',
-                      //   style: GoogleFonts.getFont(
-                      //     'Inter',
-                      //     fontWeight: FontWeight.w500,
-                      //     fontSize: 14,
-                      //     color: const Color(0xFF8FFA58),
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                ),
                 const SizedBox(height: 10),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.09),
@@ -164,9 +129,11 @@ class VenueDetail extends StatelessWidget {
                       const SizedBox(height: 5),
                       InformationBox(
                         width: widgetWidth,
-                        address: address,
-                        description: description,
-                        genres: genres,
+                        address: widget.address,
+                        description: widget.description,
+                        genres: widget.genres,
+                        isExpanded: _isExpanded,
+                        onToggleReadMore: _toggleReadMore,
                       ),
                     ],
                   ),
@@ -248,20 +215,6 @@ class VenueDetail extends StatelessWidget {
     );
   }
 
-  Widget _buildIconButtonWithBorder({required IconData icon, required VoidCallback onPressed}) {
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: const Color(0xFF1A1A1A),
-        border: Border.all(color: const Color(0xFF8FFA58), width: 2.0),
-      ),
-      child: IconButton(
-        icon: Icon(icon, color: const Color(0xFF8FFA58)),
-        onPressed: onPressed,
-      ),
-    );
-  }
-
   bool _isSameDate(DateTime date1, DateTime date2) {
     return date1.year == date2.year &&
            date1.month == date2.month &&
@@ -278,7 +231,6 @@ class CustomTitleWithButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 35),
-      height: 56.0,
       child: Center(
         child: Text(
           name,
@@ -289,6 +241,8 @@ class CustomTitleWithButtons extends StatelessWidget {
             color: Colors.white,
           ),
           textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 2,
         ),
       ),
     );
@@ -300,12 +254,16 @@ class InformationBox extends StatelessWidget {
   final String address;
   final String description;
   final List<String> genres;
+  final bool isExpanded;
+  final VoidCallback onToggleReadMore;
 
   const InformationBox({
     required this.width,
     required this.address,
     required this.description,
     required this.genres,
+    required this.isExpanded,
+    required this.onToggleReadMore,
     Key? key,
   }) : super(key: key);
 
@@ -325,6 +283,9 @@ class InformationBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final words = description.split(' ');
+    final displayDescription = isExpanded ? description : words.take(20).join(' ') + (words.length > 20 ? '...' : '');
+
     return Container(
       width: width,
       decoration: BoxDecoration(
@@ -380,7 +341,6 @@ class InformationBox extends StatelessWidget {
                   ),
                 ),
               ),
-            
             ],
           ),
           const SizedBox(height: 10),
@@ -395,7 +355,7 @@ class InformationBox extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  description,
+                  displayDescription,
                   style: const TextStyle(
                     color: Colors.white,
                   ),
@@ -403,6 +363,14 @@ class InformationBox extends StatelessWidget {
               ),
             ],
           ),
+          if (words.length > 20)
+            TextButton(
+              onPressed: onToggleReadMore,
+              child: Text(
+                isExpanded ? 'Read less' : 'Read more',
+                style: const TextStyle(color: Color(0xFF8FFA58)),
+              ),
+            ),
         ],
       ),
     );

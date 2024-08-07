@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glare/screens/auth/blocs/sign_in_bloc/sign_in_bloc.dart';
+import 'package:glare/screens/home/blocs/favourite_venue_bloc/favourite_venue_bloc.dart';
 import 'package:glare/screens/home/blocs/home_screen_bloc/home_screen_bloc.dart';
 import 'package:glare/screens/home/blocs/user_bloc/user_bloc.dart';
 import 'package:glare/screens/home/views/New_Version/explore_screen/EventList_screen.dart';
@@ -96,7 +97,10 @@ class ExploreScreen extends StatelessWidget {
                             );
                           } else if (homeState.view == HomeScreenView.venues) {
                             return BlocProvider(
-                              create: (context) => VenueSearchBloc(context.read<GetVenueBloc>()),
+                              create: (context) => VenueSearchBloc(
+                                context.read<GetVenueBloc>(),
+                                context.read<FavouriteVenueBloc>(),
+                              ),
                               child: VenueListScreen(),
                             );
                           } else {

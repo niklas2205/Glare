@@ -179,7 +179,7 @@ class FirebaseUserRepo implements UserRepository {
 
   // Friend request and friends management methods
 
-   @override
+  @override
   Future<void> sendFriendRequest(String userId, String friendId) async {
     final friendRef = _firestore.collection('users').doc(friendId);
 

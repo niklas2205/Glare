@@ -30,6 +30,7 @@ import 'screens/home/blocs/friends_bloc/friends_bloc.dart';
 import 'screens/home/blocs/search_venue_bloc/search_venue_bloc.dart';
 import 'screens/home/blocs/user_bloc/user_bloc.dart';
 import 'screens/home/blocs/user_update_bloc/user_update_bloc.dart';
+import 'screens/home/blocs/venue_impressions_bloc/venue_impressions_bloc.dart';
 
 class MainAppView extends StatelessWidget {
   final UserRepository userRepository;
@@ -45,6 +46,9 @@ class MainAppView extends StatelessWidget {
         ),
         RepositoryProvider<EventRepo>(
           create: (_) => FirebaseEventRepo(),
+        ),
+        RepositoryProvider<VenueRepo>(
+          create: (_) => FirebaseVenueRepo(),
         ),
       ],
       child: MultiBlocProvider(
@@ -65,7 +69,7 @@ class MainAppView extends StatelessWidget {
             create: (context) => HomeScreenBloc(),
           ),
           BlocProvider<GetVenueBloc>(
-            create: (context) => GetVenueBloc(FirebaseVenueRepo())..add(GetVenue()),
+            create: (context) => GetVenueBloc(context.read<VenueRepo>())..add(GetVenue()),
           ),
           BlocProvider<UserBloc>(
             create: (context) => UserBloc(userRepository: userRepository),
@@ -100,6 +104,15 @@ class MainAppView extends StatelessWidget {
           BlocProvider<FriendsBloc>(
             create: (context) => FriendsBloc(userRepository: userRepository),
           ),
+          BlocProvider<VenueImpressionBloc>(
+            create: (context) => VenueImpressionBloc(venueRepo: context.read<VenueRepo>()),
+          ),
+          BlocProvider<VenueSearchBloc>(
+          create: (context) => VenueSearchBloc(
+            context.read<GetVenueBloc>(),
+            context.read<FavouriteVenueBloc>(),
+          ),
+        ),
         ],
         child: MaterialApp(
           title: 'Glare Events',

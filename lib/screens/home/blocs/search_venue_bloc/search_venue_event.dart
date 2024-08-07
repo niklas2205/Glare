@@ -15,3 +15,13 @@ class VenueSearchQueryChanged extends VenueSearchEvent {
   @override
   List<Object> get props => [query];
 }
+class VenueFilterChanged extends VenueSearchEvent {
+  final String query;
+  final List<String> genres;
+  final bool filterLiked;
+
+  const VenueFilterChanged({required this.query, required this.genres, required this.filterLiked});
+
+  @override
+  List<Object> get props => [query, genres, filterLiked];
+}

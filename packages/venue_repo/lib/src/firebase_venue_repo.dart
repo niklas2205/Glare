@@ -21,5 +21,17 @@ class FirebaseVenueRepo implements VenueRepo {
       rethrow;
     }
   }
-}
 
+  @override
+  Future<void> updateVenueImpressions(String venueId, int count) async {
+    try {
+      final venueDoc = venueCollection.doc(venueId);
+      await venueDoc.update({
+        'impressions': FieldValue.increment(count),
+      });
+    } catch (e) {
+      print('Error updating venue impressions: $e');
+      rethrow;
+    }
+  }
+}

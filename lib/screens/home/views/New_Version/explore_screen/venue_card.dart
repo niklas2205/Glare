@@ -10,6 +10,15 @@ import '../../../blocs/event_list_by_Ids_bloc/event_list_by_ids_bloc.dart';
 import '../../../blocs/favourite_venue_bloc/favourite_venue_bloc.dart';
 import '../../../blocs/user_bloc/user_bloc.dart';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../blocs/venue_impressions_bloc/venue_impressions_bloc.dart';
+
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+
 class VenueCard extends StatelessWidget {
   final Venue venue;
   final bool isFavorite;
@@ -30,6 +39,9 @@ class VenueCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Split the address to get the street name and number
+    final String streetAddress = venue.address.split(',')[0];
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
@@ -40,6 +52,7 @@ class VenueCard extends StatelessWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(10),
             onTap: () {
+              context.read<VenueImpressionBloc>().add(IncrementVenueImpression(venue.venueId));
               Navigator.push(
                 context,
                 MaterialPageRoute<void>(
@@ -99,7 +112,7 @@ class VenueCard extends StatelessWidget {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                venue.address,
+                                streetAddress, // Use the street name and number
                                 style: const TextStyle(
                                   color: Color(0xFF8FFA58),
                                   fontWeight: FontWeight.w600,

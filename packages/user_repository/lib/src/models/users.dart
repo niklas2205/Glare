@@ -4,7 +4,7 @@ class MyUser {
   String userId;
   String email;
   String? name;
-  int? age;
+  DateTime? dob; // Changed from int? age to DateTime? dob
   List<String>? favoriteGenres;
   String? phoneNumber;
   String? gender;
@@ -15,7 +15,7 @@ class MyUser {
     required this.userId,
     required this.email,
     this.name,
-    this.age,
+    this.dob,
     this.favoriteGenres,
     this.phoneNumber,
     this.gender,
@@ -27,7 +27,7 @@ class MyUser {
     userId: '',
     email: '',
     name: '',
-    age: 0,
+    dob: null, // Changed from age: 0 to dob: null
     favoriteGenres: [],
     gender: '',
     friendRequests: [],
@@ -39,7 +39,7 @@ class MyUser {
       userId: userId,
       email: email,
       name: name,
-      age: age,
+      dob: dob,
       favoriteGenres: favoriteGenres,
       phoneNumber: phoneNumber,
       gender: gender,
@@ -53,7 +53,7 @@ class MyUser {
       userId: entity.userId,
       email: entity.email,
       name: entity.name,
-      age: entity.age,
+      dob: entity.dob,
       favoriteGenres: entity.favoriteGenres,
       phoneNumber: entity.phoneNumber,
       gender: entity.gender,
@@ -66,7 +66,7 @@ class MyUser {
     String? userId,
     String? email,
     String? name,
-    int? age,
+    DateTime? dob,
     List<String>? favoriteGenres,
     String? phoneNumber,
     String? gender,
@@ -77,7 +77,7 @@ class MyUser {
       userId: userId ?? this.userId,
       email: email ?? this.email,
       name: name ?? this.name,
-      age: age ?? this.age,
+      dob: dob ?? this.dob,
       favoriteGenres: favoriteGenres ?? this.favoriteGenres,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       gender: gender ?? this.gender,
@@ -86,9 +86,8 @@ class MyUser {
     );
   }
 
-
-   @override
+  @override
   String toString() {
-    return 'MyUser: $userId, $email, $name, $age, $favoriteGenres, $gender, $friendRequests, $friends';
+    return 'MyUser: $userId, $email, $name, $dob, $favoriteGenres, $gender, $friendRequests, $friends';
   }
 }

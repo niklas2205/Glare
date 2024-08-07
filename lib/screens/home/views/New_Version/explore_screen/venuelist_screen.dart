@@ -21,6 +21,21 @@ class VenueListScreen extends StatelessWidget {
             onChanged: (query) {
               context.read<VenueSearchBloc>().add(VenueSearchQueryChanged(query));
             },
+            onFilterPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return FilterModal(
+                    onFilterApply: (selectedGenres, filterLiked) {
+                      final query = (context.read<VenueSearchBloc>().state is VenueSearchSuccess) 
+                        ? (context.read<VenueSearchBloc>().state as VenueSearchSuccess).venues.first.venuename
+                        : "";
+                      context.read<VenueSearchBloc>().add(VenueFilterChanged(query: query, genres: selectedGenres, filterLiked: filterLiked));
+                    },
+                  );
+                },
+              );
+            },
           ),
         ),
         Expanded(
