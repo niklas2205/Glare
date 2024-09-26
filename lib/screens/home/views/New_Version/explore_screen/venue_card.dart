@@ -1,7 +1,6 @@
 import 'package:event_repository/event_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:glare/screens/home/views/New_Version/Event_Venue_Detail/Venue_screen.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:venue_repository/venue_repository.dart';
@@ -135,7 +134,7 @@ class VenueCard extends StatelessWidget {
                       },
                       icon: Icon(
                         isFavorite ? Icons.star : Icons.star_border,
-                        color: isFavorite ? Color(0xFF8FFA58) : Colors.white,
+                        color: isFavorite ? const Color(0xFF8FFA58) : Colors.white,
                       ),
                       iconSize: 24,
                     ),

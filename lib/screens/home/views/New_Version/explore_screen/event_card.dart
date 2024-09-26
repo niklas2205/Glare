@@ -25,9 +25,23 @@ class EventCard extends StatelessWidget {
     required this.isLiked,
     required this.likesCount,
   }) : super(key: key);
+  String _truncateWithEllipsis(int cutoff, String text) {
+    return (text.length <= cutoff) ? text : '${text.substring(0, cutoff)}...';
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Print statements to check which properties are null
+    print('EventCard: event.eventname = ${event.eventname}');
+    print('EventCard: event.venue = ${event.venue}');
+    print('EventCard: event.eventTag = ${event.eventTag}');
+    print('EventCard: event.age = ${event.age}');
+    print('EventCard: event.eventId = ${event.eventId}');
+    print('EventCard: event.description = ${event.description}');
+    print('EventCard: event.price = ${event.price}');
+    print('EventCard: event.location = ${event.location}');
+    print('EventCard: event.venueId = ${event.venueId}');
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
@@ -39,25 +53,28 @@ class EventCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             onTap: () async {
               final bool result = await Navigator.push<bool>(
-                context,
-                MaterialPageRoute<bool>(
-                  builder: (BuildContext context) => EventDetail(
-                    name: event.eventname,
-                    venue: event.venue,
-                    description: event.description,
-                    pictureUrl: event.picture,
-                    age: event.age,
-                    eventId: event.eventId,
-                    venueId: event.venueId,
-                    eventTag: event.eventTag,
-                    location: event.location,
-                    price: event.price,
-                  ),
-                ),
-              ) ?? false;
+                    context,
+                    MaterialPageRoute<bool>(
+                      builder: (BuildContext context) => EventDetail(
+                        name: event.eventname ?? 'Default Event Name',
+                        venue: event.venue ?? 'Default Venue',
+                        description: event.description ?? 'No description available.',
+                        pictureUrl: event.picture ?? 'https://via.placeholder.com/150', // Provide a default URL // Leaving picture as is
+                        age: event.age ?? 0,
+                        eventId: event.eventId ?? 'No Event ID',
+                        venueId: event.venueId ?? 'No Venue ID',
+                        eventTag: event.eventTag ?? [],
+                        location: event.location ?? 'No location specified.',
+                        price: event.price ?? 'No price information.',
+                      ),
+                    ),
+                  ) ??
+                  false;
 
               if (result) {
-                context.read<EventLikeBloc>().add(LoadEventLikeCount(event.eventId));
+                if (event.eventId != null) {
+                  context.read<EventLikeBloc>().add(LoadEventLikeCount(event.eventId!));
+                }
                 final user = await context.read<UserRepository>().getCurrentUser();
                 if (user != null) {
                   context.read<EventLikeBloc>().add(LoadLikedEvents(user.userId));
@@ -72,27 +89,39 @@ class EventCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
+                      // Image section (left as is)
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            event.picture,
+                          child: 
+                           Image.network(
+                            event.picture ?? 'https://via.placeholder.com/150', // Default placeholder image
                             width: imageSize,
                             height: imageSize,
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/images/default_event.png', // Local placeholder image
+                                width: imageSize,
+                                height: imageSize,
+                                fit: BoxFit.cover,
+                              );
+                            },
                           ),
                         ),
                       ),
+                      // Event details
                       Expanded(
+                        
                         child: Padding(
                           padding: const EdgeInsets.only(left: 10, top: 8),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
+                              // Event name
                               Text(
-                                event.eventname,
+                                _truncateWithEllipsis(16, event.eventname ?? 'Default Event Name'),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w600,
@@ -100,8 +129,9 @@ class EventCard extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 2),
+                              // Venue name
                               Text(
-                                event.venue,
+                                event.venue ?? 'Default Venue',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w400,
@@ -109,6 +139,7 @@ class EventCard extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 2),
+                              // Likes count
                               Text(
                                 '$likesCount Going',
                                 style: const TextStyle(
@@ -118,8 +149,9 @@ class EventCard extends StatelessWidget {
                                 ),
                               ),
                               const Spacer(),
+                              // Event tags
                               Row(
-                                children: event.eventTag.map((tag) {
+                                children: (event.eventTag ?? []).map((tag) {
                                   return Padding(
                                     padding: const EdgeInsets.only(right: 4.0),
                                     child: Container(
@@ -146,6 +178,7 @@ class EventCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                  // Like and Age widgets
                   Positioned(
                     top: cardHeight * 0.24,
                     right: cardWidth * 0.06,
@@ -154,11 +187,11 @@ class EventCard extends StatelessWidget {
                         GestureDetector(
                           onTap: () async {
                             final user = await context.read<UserRepository>().getCurrentUser();
-                            if (user != null) {
+                            if (user != null && event.eventId != null) {
                               if (isLiked) {
-                                context.read<EventLikeBloc>().add(UnlikeEvent(userId: user.userId, eventId: event.eventId));
+                                context.read<EventLikeBloc>().add(UnlikeEvent(userId: user.userId, eventId: event.eventId!));
                               } else {
-                                context.read<EventLikeBloc>().add(LikeEvent(userId: user.userId, eventId: event.eventId));
+                                context.read<EventLikeBloc>().add(LikeEvent(userId: user.userId, eventId: event.eventId!));
                               }
                             }
                           },
@@ -190,7 +223,7 @@ class EventCard extends StatelessWidget {
                           ),
                           child: Center(
                             child: Text(
-                              '${event.age}+',
+                              '${event.age ?? 'N/A'}+',
                               style: const TextStyle(
                                 color: Color(0xFF8FFA58),
                                 fontSize: 10,

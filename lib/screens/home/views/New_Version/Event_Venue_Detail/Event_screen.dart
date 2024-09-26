@@ -344,12 +344,12 @@ class EventDetail extends StatelessWidget {
 class CustomTitleWithButtons extends StatelessWidget {
   final String name;
   final String eventId;
-  final List<String> eventTag; // Add this line
+  final List<String> eventTag;
 
   const CustomTitleWithButtons({
     required this.name,
     required this.eventId,
-    required this.eventTag, // Add this line
+    required this.eventTag,
     Key? key,
   }) : super(key: key);
 
@@ -360,88 +360,100 @@ class CustomTitleWithButtons extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Adjusted layout to handle long event names
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                name,
-                style: GoogleFonts.getFont(
-                  'Inter',
-                  fontWeight: FontWeight.normal,
-                  fontSize: 30,
-                  color: Colors.white,
+              // Event Name
+              Expanded(
+                child: Text(
+                  name,
+                  style: GoogleFonts.getFont(
+                    'Inter',
+                    fontWeight: FontWeight.normal,
+                    fontSize: 30,
+                    color: Colors.white,
+                  ),
+                  softWrap: true,
                 ),
               ),
-              Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFF1A1A1A),
-                      border: Border.all(color: Color(0xFF8FFA58)),
+              const SizedBox(width: 10),
+              // Like Button
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF1A1A1A),
+                  border: Border.all(
+                    color: const Color(0xFF8FFA58),
+                    width: 0.5
                     ),
-                    child: BlocBuilder<EventLikeBloc, EventLikeState>(
-                      builder: (context, state) {
-                        bool isLiked = false;
-                        if (state is EventLikeSuccess) {
-                          isLiked = state.likedEvents.contains(eventId);
-                        }
-                        return IconButton(
-                          icon: Icon(
-                            isLiked ? Icons.favorite : Icons.favorite_border,
-                            color: isLiked ? Color(0xFF8FFA58) : Colors.white,
-                          ),
-                          onPressed: () {
-                            final userRepository = context.read<UserRepository>();
-                            userRepository.getCurrentUser().then((user) {
-                              if (user != null) {
-                                if (isLiked) {
-                                  context.read<EventLikeBloc>().add(UnlikeEvent(userId: user.userId, eventId: eventId));
-                                } else {
-                                  context.read<EventLikeBloc>().add(LikeEvent(userId: user.userId, eventId: eventId));
-                                }
-                              }
-                            });
-                          },
-                        );
+                ),
+                child: BlocBuilder<EventLikeBloc, EventLikeState>(
+                  builder: (context, state) {
+                    bool isLiked = false;
+                    if (state is EventLikeSuccess) {
+                      isLiked = state.likedEvents.contains(eventId);
+                    }
+                    return GestureDetector(
+                      onTap: () {
+                        final userRepository = context.read<UserRepository>();
+                        userRepository.getCurrentUser().then((user) {
+                          if (user != null) {
+                            if (isLiked) {
+                              context.read<EventLikeBloc>().add(
+                                  UnlikeEvent(userId: user.userId, eventId: eventId));
+                            } else {
+                              context.read<EventLikeBloc>().add(
+                                  LikeEvent(userId: user.userId, eventId: eventId));
+                            }
+                          }
+                        });
                       },
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFF1A1A1A),
-                      border: Border.all(color: Color(0xFF8FFA58)),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.share, color: Colors.white),
-                      onPressed: () {},
-                    ),
-                  ),
-                ],
+                      child: Container(
+                        width: 45,
+                        height: 45,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isLiked ? const Color(0xFF8FFA58) : const Color(0xFF1A1A1A),
+                          border: isLiked ? null : Border.all(color: const Color(0xFF8FFA58)),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SvgPicture.asset(
+                            'assets/icons/bx_party.svg',
+                            color: isLiked ? const Color(0xFF1A1A1A) : const Color(0xFF8FFA58),
+                            width: 25,
+                            height: 25,
+                            
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
               ),
             ],
           ),
           const SizedBox(height: 4),
-          Row(
+          // Event Tags
+          Wrap(
+            spacing: 4.0,
+            runSpacing: 4.0,
             children: eventTag.map((tag) {
-              return Padding(
-               padding: const EdgeInsets.only(right: 4.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color.fromRGBO(0, 0, 0, 0.23), // Black color with 76% transparency
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
-                    child: Text(
-                      tag,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 10,
-                      ),
-                    ),
+              return Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromRGBO(0, 0, 0, 0.23),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
+                child: Text(
+                  tag,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 10,
                   ),
+                ),
               );
             }).toList(),
           ),
@@ -454,6 +466,7 @@ class CustomTitleWithButtons extends StatelessWidget {
 
 
 
+
 class InformationBox extends StatefulWidget {
   final double width;
   final String description;
@@ -461,7 +474,14 @@ class InformationBox extends StatefulWidget {
   final String location;
   final String price;
 
-  const InformationBox({required this.width, Key? key, required this.description, required this.age, required this.location, required this.price}) : super(key: key);
+  const InformationBox({
+    required this.width,
+    required this.description,
+    required this.age,
+    required this.location,
+    required this.price,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _InformationBoxState createState() => _InformationBoxState();
@@ -476,98 +496,116 @@ class _InformationBoxState extends State<InformationBox> {
     });
   }
 
+  Future<void> _launchMapsUrl(String query) async {
+    final googleMapsUrl = Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
+    final appleMapsUrl = Uri.parse('https://maps.apple.com/?q=$query');
+
+    if (await canLaunchUrl(googleMapsUrl)) {
+      await launchUrl(googleMapsUrl);
+    } else if (await canLaunchUrl(appleMapsUrl)) {
+      await launchUrl(appleMapsUrl);
+    } else {
+      // Handle the case when neither URL can be launched
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not launch map for the address.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Determine whether to show the price and description rows
+    final bool showPrice = widget.price.isNotEmpty;
+    final bool showDescription = widget.description.isNotEmpty;
+
+    // Check if description is longer than 100 characters
+    final bool isLongDescription = widget.description.length > 100;
+
+    // Determine the text to display based on the expanded state
+    final String displayText = isExpanded || !isLongDescription
+        ? widget.description
+        : '${widget.description.substring(0, 100)}...';
+
     return Container(
       width: widget.width,
       decoration: BoxDecoration(
-        border: Border.all(color: Color(0xFF8FFA58)),
+        border: Border.all(color: const Color(0xFF8FFA58)),
         borderRadius: BorderRadius.circular(8),
-        color: Color(0xFF1A1A1A),
+        color: const Color(0xFF1A1A1A),
       ),
-      padding: const EdgeInsets.fromLTRB(8, 14, 8, 42),
+      padding: const EdgeInsets.all(14), // Consistent padding with Venue's InformationBox
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Age Row (Always Displayed)
           InfoRow(
             iconPath: 'assets/icons/user_8_x2.svg',
             text: '${widget.age}+',
           ),
-          InfoRow(
-            iconPath: 'assets/icons/dollar_circle_2_x2.svg',
-            text: '€' + widget.price,
-          ),
-          AddressRow(
-            address: widget.location,
+          // Price Row (Conditionally Displayed)
+          if (showPrice)
+            InfoRow(
+              iconPath: 'assets/icons/dollar_circle_2_x2.svg',
+              text: '€${widget.price}',
+            ),
+          // Location Row (Always Displayed)
+          LocationRow(
+            location: widget.location,
             iconPath: 'assets/icons/buliding_11_x2.svg',
           ),
-          Container(
-            margin: const EdgeInsets.fromLTRB(0, 0, 13.8, 0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(right: 10),
-                  width: 24,
-                  height: 24,
-                  child: SvgPicture.asset(
-                    'assets/icons/Vector.svg',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                Expanded(
-                  child: RichText(
-                    text: TextSpan(
-                      style: GoogleFonts.getFont(
-                        'Public Sans',
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w100,
-                        fontSize: 16,
-                        height: 1.8,
-                        color: const Color(0xFFBDBDBD),
-                      ),
-                      children: [
-                        TextSpan(
-                          text: isExpanded
-                              ? widget.description
-                              : widget.description.length > 100
-                                  ? widget.description.substring(0, 100) + '...'
-                                  : widget.description,
-                          style: GoogleFonts.getFont(
-                            'Inter',
-                            fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                            height: 1.3,
-                          ),
-                        ),
-                        if (widget.description.length > 100 && !isExpanded)
-                          TextSpan(
-                            text: ' Read More...',
-                            style: GoogleFonts.getFont(
-                              'Inter',
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              height: 1.3,
-                              color: Color(0xFF8FFA58),
-                            ),
-                            recognizer: TapGestureRecognizer()..onTap = toggleDescription,
-                          ),
-                      ],
+          // Description Row (Conditionally Displayed)
+          if (showDescription)
+            Container(
+              margin: const EdgeInsets.fromLTRB(0, 0, 13.8, 0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Icon
+                  Container(
+                    margin: const EdgeInsets.only(right: 10),
+                    width: 24,
+                    height: 24,
+                    child: SvgPicture.asset(
+                      'assets/icons/Vector.svg',
+                      fit: BoxFit.contain,
                     ),
                   ),
-                ),
-              ],
+                  // Description Text and Read More/Show Less Button
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(
+                        style: GoogleFonts.getFont(
+                          'Inter',
+                          fontWeight: FontWeight.w400,
+                          fontSize: 16,
+                          height: 1.5,
+                          color: Colors.white,
+                        ),
+                        children: [
+                          TextSpan(text: displayText),
+                          if (isLongDescription)
+                            TextSpan(
+                              text: isExpanded ? ' Show Less' : ' Read More',
+                              style: GoogleFonts.getFont(
+                                'Inter',
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                                color: const Color(0xFF8FFA58), // App's green color
+                              ),
+                              recognizer: TapGestureRecognizer()..onTap = toggleDescription,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );
   }
 }
-
-
 
 class InfoRow extends StatelessWidget {
   final String iconPath;
@@ -578,12 +616,12 @@ class InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(0, 0, 0, 18),
+      margin: const EdgeInsets.only(bottom: 8), // Consistent bottom margin
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            margin: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+            margin: const EdgeInsets.only(right: 8), // Consistent right margin
             width: 24,
             height: 24,
             child: SvgPicture.asset(
@@ -595,12 +633,12 @@ class InfoRow extends StatelessWidget {
             child: Text(
               text,
               style: GoogleFonts.getFont(
-                'Inter',
+                'Inter', // Consistent font
                 fontWeight: FontWeight.w400,
                 fontSize: 16,
                 height: 1.5,
                 letterSpacing: 0.1,
-                color: Color(0xFF8FFA58),
+                color: const Color(0xFF8FFA58),
               ),
             ),
           ),
@@ -610,35 +648,39 @@ class InfoRow extends StatelessWidget {
   }
 }
 
-class AddressRow extends StatelessWidget {
-  final String address;
+class LocationRow extends StatelessWidget {
+  final String location;
   final String iconPath;
 
-  const AddressRow({required this.address, required this.iconPath, Key? key}) : super(key: key);
+  const LocationRow({required this.location, required this.iconPath, Key? key}) : super(key: key);
 
   Future<void> _launchMapsUrl(String query) async {
-    final googleMapsUrl = Uri.parse('comgooglemaps://?q=$query');
+    final googleMapsUrl = Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
     final appleMapsUrl = Uri.parse('https://maps.apple.com/?q=$query');
-    final webUrl = Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
 
     if (await canLaunchUrl(googleMapsUrl)) {
       await launchUrl(googleMapsUrl);
     } else if (await canLaunchUrl(appleMapsUrl)) {
       await launchUrl(appleMapsUrl);
     } else {
-      await launchUrl(webUrl);
+      // Handle the case when neither URL can be launched
+      // You might want to show a Snackbar or another form of feedback
+      // For example:
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text('Could not launch maps')),
+      // );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(0, 0, 0, 18),
+      margin: const EdgeInsets.only(bottom: 8), // Consistent bottom margin
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            margin: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+            margin: const EdgeInsets.only(right: 8), // Consistent right margin
             width: 24,
             height: 24,
             child: SvgPicture.asset(
@@ -648,18 +690,18 @@ class AddressRow extends StatelessWidget {
           ),
           Expanded(
             child: InkWell(
-              onTap: () => _launchMapsUrl(address),
+              onTap: () => _launchMapsUrl(location),
               child: Text(
-                address,
+                location,
                 style: GoogleFonts.getFont(
-                  'Public Sans',
+                  'Inter', // Consistent font
                   fontWeight: FontWeight.w400,
                   fontSize: 16,
                   decoration: TextDecoration.underline,
                   height: 1.5,
                   letterSpacing: 0.1,
-                  color: Color(0xFF8FFA58),
-                  decorationColor: Color(0xFF8FFA58),
+                  color: const Color(0xFF8FFA58),
+                  decorationColor: const Color(0xFF8FFA58),
                 ),
               ),
             ),

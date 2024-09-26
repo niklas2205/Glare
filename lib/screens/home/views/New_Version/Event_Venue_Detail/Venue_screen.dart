@@ -1,4 +1,5 @@
 import 'package:event_repository/event_repository.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:glare/screens/home/views/New_Version/explore_screen/event_card.dart';
@@ -56,6 +57,7 @@ class VenueDetail extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Top Image with Overlay and Back Button
                 Stack(
                   children: [
                     Container(
@@ -93,11 +95,13 @@ class VenueDetail extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 10),
+                // Venue Name with Buttons
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.09),
                   child: CustomTitleWithButtons(name: name),
                 ),
                 const SizedBox(height: 10),
+                // Action Buttons (Favorite, Share)
                 Center(
                   child: Column(
                     children: [
@@ -116,38 +120,42 @@ class VenueDetail extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      // Container(
-                      //   width: widgetWidth,
-                      //   height: 50,
-                      //   decoration: BoxDecoration(
-                      //     border: Border.all(color: const Color(0xFF8FFA58), width: 2.0),
-                      //     borderRadius: BorderRadius.circular(30),
-                      //     color: const Color(0xFF1A1A1A),
-                      //   ),
-                      //   child: const Row(
-                      //     mainAxisAlignment: MainAxisAlignment.center,
-                      //     children: [
-                      //       Icon(Icons.star, color: Color(0xFF8FFA58)),
-                      //       Icon(Icons.star, color: Color(0xFF8FFA58)),
-                      //       Icon(Icons.star, color: Color(0xFF8FFA58)),
-                      //       Icon(Icons.star, color: Color(0xFF8FFA58)),
-                      //       Icon(Icons.star, color: Color(0xFF8FFA58)),
-                      //     ],
-                      //   ),
-                      // ),
-                      // Text(
-                      //   '5.0 Star Rating (52 Reviews) See Reviews',
-                      //   style: GoogleFonts.getFont(
-                      //     'Inter',
-                      //     fontWeight: FontWeight.w500,
-                      //     fontSize: 14,
-                      //     color: const Color(0xFF8FFA58),
-                      //   ),
-                      // ),
+                      // Uncomment and customize the Star Rating if needed
+                      /*
+                      Container(
+                        width: widgetWidth,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: const Color(0xFF8FFA58), width: 2.0),
+                          borderRadius: BorderRadius.circular(30),
+                          color: const Color(0xFF1A1A1A),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.star, color: Color(0xFF8FFA58)),
+                            Icon(Icons.star, color: Color(0xFF8FFA58)),
+                            Icon(Icons.star, color: Color(0xFF8FFA58)),
+                            Icon(Icons.star, color: Color(0xFF8FFA58)),
+                            Icon(Icons.star, color: Color(0xFF8FFA58)),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        '5.0 Star Rating (52 Reviews) See Reviews',
+                        style: GoogleFonts.getFont(
+                          'Inter',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          color: const Color(0xFF8FFA58),
+                        ),
+                      ),
+                      */
                     ],
                   ),
                 ),
                 const SizedBox(height: 10),
+                // About The Venue
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.09),
                   child: Column(
@@ -172,6 +180,7 @@ class VenueDetail extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
+                // Upcoming Events
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.09),
                   child: const Text(
@@ -191,12 +200,13 @@ class VenueDetail extends StatelessWidget {
                       if (state is EventListByIdsLoading) {
                         return const Center(child: CircularProgressIndicator());
                       } else if (state is EventListByIdsLoaded) {
-                        final sortedEvents = state.events..sort((a, b) => a.date!.compareTo(b.date!));
+                        final sortedEvents = state.events
+                          ..sort((a, b) => a.date!.compareTo(b.date!));
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: sortedEvents.map((event) {
                             final double cardWidth = screenWidth * 0.82;
-                            final double cardHeight = MediaQuery.of(context).size.height * 0.132;
+                            final double cardHeight = 100;
                             final double imageSize = cardHeight - 16;
                             final bool isFirstOfDate = sortedEvents.indexOf(event) == 0 ||
                                 !_isSameDate(
@@ -268,7 +278,6 @@ class VenueDetail extends StatelessWidget {
            date1.day == date2.day;
   }
 }
-
 class CustomTitleWithButtons extends StatelessWidget {
   final String name;
 
@@ -277,8 +286,7 @@ class CustomTitleWithButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 35),
-      height: 56.0,
+      padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 10), // Added vertical padding
       child: Center(
         child: Text(
           name,
@@ -289,13 +297,14 @@ class CustomTitleWithButtons extends StatelessWidget {
             color: Colors.white,
           ),
           textAlign: TextAlign.center,
+          softWrap: true,
         ),
       ),
     );
   }
 }
 
-class InformationBox extends StatelessWidget {
+class InformationBox extends StatefulWidget {
   final double width;
   final String address;
   final String description;
@@ -308,6 +317,19 @@ class InformationBox extends StatelessWidget {
     required this.genres,
     Key? key,
   }) : super(key: key);
+
+  @override
+  _InformationBoxState createState() => _InformationBoxState();
+}
+
+class _InformationBoxState extends State<InformationBox> {
+  bool _isExpanded = false;
+
+  void _toggleDescription() {
+    setState(() {
+      _isExpanded = !_isExpanded;
+    });
+  }
 
   Future<void> _launchMapsUrl(String query) async {
     final googleMapsUrl = Uri.parse('comgooglemaps://?q=$query');
@@ -325,8 +347,13 @@ class InformationBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLongDescription = widget.description.length > 100;
+    final displayedDescription = _isExpanded || !isLongDescription
+        ? widget.description
+        : widget.description.substring(0, 100) + '... ';
+
     return Container(
-      width: width,
+      width: widget.width,
       decoration: BoxDecoration(
         border: Border.all(color: const Color(0xFF8FFA58)),
         borderRadius: BorderRadius.circular(8),
@@ -336,6 +363,7 @@ class InformationBox extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Genres Row
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -347,7 +375,7 @@ class InformationBox extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  genres.join(', '),
+                  widget.genres.join(', '),
                   style: const TextStyle(
                     fontSize: 16,
                     color: Color(0xFF8FFA58),
@@ -357,6 +385,7 @@ class InformationBox extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
+          // Address Row
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -369,9 +398,9 @@ class InformationBox extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: InkWell(
-                  onTap: () => _launchMapsUrl(address),
+                  onTap: () => _launchMapsUrl(widget.address),
                   child: Text(
-                    address,
+                    widget.address,
                     style: const TextStyle(
                       fontSize: 16,
                       color: Color(0xFF8FFA58),
@@ -380,10 +409,10 @@ class InformationBox extends StatelessWidget {
                   ),
                 ),
               ),
-            
             ],
           ),
           const SizedBox(height: 10),
+          // Description Row with Read more / Show less
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -394,10 +423,24 @@ class InformationBox extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(
-                  description,
-                  style: const TextStyle(
-                    color: Colors.white,
+                child: RichText(
+                  text: TextSpan(
+                    style: GoogleFonts.getFont(
+                          'Inter',
+                          fontWeight: FontWeight.w400,
+                          fontSize: 16,
+                          height: 1.5,
+                          color: Colors.white,
+                        ),
+                    children: [
+                      TextSpan(text: displayedDescription),
+                      if (isLongDescription)
+                        TextSpan(
+                          text: _isExpanded ? 'Show less' : 'Read more',
+                          style: const TextStyle(color: Color(0xFF8FFA58)),
+                          recognizer: TapGestureRecognizer()..onTap = _toggleDescription,
+                        ),
+                    ],
                   ),
                 ),
               ),

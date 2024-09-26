@@ -19,23 +19,28 @@ class EventListByIdsBloc extends Bloc<EventListByIdsEvent, EventListByIdsState> 
     try {
       final events = await eventRepo.getEventsByIds(event.eventIds);
       final now = DateTime.now().subtract(const Duration(hours: 12));
-      final futureEvents = events.where((e) => e.date.isAfter(now)).toList();
+      final futureEvents = events.where((e) => e.date != null && e.date!.isAfter(now)).toList();
       
       final likedEvents = <String>{};
       final likesCount = <String, int>{};
 
       final user = await userRepository.getCurrentUser();
-      if (user != null) {
-        for (var event in futureEvents) {
-          final count = await eventRepo.getEventLikesCount(event.eventId);
-          likesCount[event.eventId] = count;
+        if (user != null) {
+          for (var event in futureEvents) {
+            if (event.eventId != null) {
+              final count = await eventRepo.getEventLikesCount(event.eventId!);
+              likesCount[event.eventId!] = count;
 
-          final isLiked = await eventRepo.isEventLikedByUser(event.eventId, user.userId);
-          if (isLiked) {
-            likedEvents.add(event.eventId);
+              final isLiked = await eventRepo.isEventLikedByUser(event.eventId!, user.userId);
+              if (isLiked) {
+                likedEvents.add(event.eventId!);
+              }
+            } else {
+              // Handle the case where eventId is null
+              print('Warning: eventId is null for event: ${event.eventname ?? 'Unnamed Event'}');
+            }
           }
         }
-      }
 
       emit(EventListByIdsLoaded(futureEvents, likedEvents, likesCount));
     } catch (error) {

@@ -1,17 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:glare/screens/home/views/New_Version/Event_Venue_Detail/Venue_screen.dart';
 import 'package:venue_repository/venue_repository.dart';
 
 
-import '../../auth/blocs/sign_in_bloc/sign_in_bloc.dart';
-import '../blocs/favourite_venue_bloc/favourite_venue_bloc.dart';
 import '../blocs/user_bloc/user_bloc.dart';
-
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'New_Version/explore_screen/venue_card.dart';
 
 class VenueListWidget extends StatelessWidget {
@@ -26,7 +19,7 @@ class VenueListWidget extends StatelessWidget {
         if (userState is UserLoaded) {
           final double screenWidth = MediaQuery.of(context).size.width;
           final double cardWidth = screenWidth * 0.82;
-          final double cardHeight = MediaQuery.of(context).size.height * 0.12;
+          final double cardHeight = 100;
           final double imageSize = cardHeight - 16;
 
           return ListView.builder(

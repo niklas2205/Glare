@@ -26,6 +26,7 @@ class ExploreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double toppadding = MediaQuery.of(context).size.height * 0.08;
     context.read<UserBloc>().add(LoadUserData());
 
     return BlocListener<UserBloc, UserState>(
@@ -44,7 +45,7 @@ class ExploreScreen extends StatelessWidget {
             children: [
               BackgroundScreen(),
               Padding(
-                padding: const EdgeInsets.only(top: 60.0),
+                padding: EdgeInsets.only(top:toppadding),
                 child: Column(
                   children: [
                     Container(
@@ -52,25 +53,24 @@ class ExploreScreen extends StatelessWidget {
                       color: Colors.transparent,
                       child: Column(
                         children: [
-                          const Text(
-                            'Current Location',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 1),
-                          const Text(
-                            'Munich, Germany',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 25),
+                          // const Text(
+                          //   'Current Location',
+                          //   style: TextStyle(
+                          //     color: Colors.white,
+                          //     fontSize: 16,
+                          //     fontWeight: FontWeight.bold,
+                          //   ),
+                          //   textAlign: TextAlign.center,
+                          // ),
+                          // const SizedBox(height: 1),
+                          // const Text(
+                          //   'Munich, Germany',
+                          //   style: TextStyle(
+                          //     color: Colors.white,
+                          //     fontSize: 18,
+                          //   ),
+                          //   textAlign: TextAlign.center,
+                          // ),
                           BlocBuilder<HomeScreenBloc, HomeScreenState>(
                             builder: (context, state) {
                               return CustomToggleButton(

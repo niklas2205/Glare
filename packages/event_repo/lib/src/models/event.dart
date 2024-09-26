@@ -5,32 +5,32 @@ import 'package:event_repository/event_repository.dart';
 import 'package:event_repository/event_repository.dart';
 
 class Event {
-  String eventId;
-  String eventname;
-  String picture;
-  String description;
-  String venue;
-  String dj;
-  int age;
-  DateTime date;
-  String venueId;
-  List<String> eventTag;
-  String location;
-  String price;
+  final String? eventId;
+  final String? eventname;
+  final String? picture;
+  final String? description;
+  final String? venue;
+  final String? dj;
+  final int? age;
+  final DateTime? date;
+  final String? venueId;
+  final List<String>? eventTag;
+  final String? location;
+  final String? price;
 
   Event({
-    required this.eventId,
-    required this.eventname,
-    required this.picture,
-    required this.description,
-    required this.venue,
-    required this.dj,
-    required this.age,
-    required this.date,
-    required this.venueId,
-    required this.eventTag,
-    required this.location,
-    required this.price,
+    this.eventId,
+    this.eventname,
+    this.picture,
+    this.description,
+    this.venue,
+    this.dj,
+    this.age,
+    this.date,
+    this.venueId,
+    this.eventTag,
+    this.location,
+    this.price,
   });
 
   EventEntity toEntity() {

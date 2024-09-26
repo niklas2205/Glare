@@ -14,6 +14,9 @@ class AdditionalDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double verticalSpacing = screenHeight * 0.02;
+
     return BlocBuilder<OnboardingBloc, OnboardingState>(
       builder: (context, state) {
         List<String> selectedGenres = state is GenresUpdated ? state.genres : [];
@@ -27,6 +30,7 @@ class AdditionalDetailsScreen extends StatelessWidget {
               buildTitle(context),
               buildTellUs(),
               buildGenreGrid(context, selectedGenres),
+              SizedBox(height: verticalSpacing),
               buildNextButton(context),
               buildBackButton(context),
             ],

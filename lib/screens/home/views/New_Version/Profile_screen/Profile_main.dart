@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:glare/screens/background_screen/background_screen.dart';
 import 'package:glare/screens/home/views/New_Version/Profile_screen/Manage_friends.dart';
 import 'package:glare/screens/home/views/New_Version/Profile_screen/My_account.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,81 +14,96 @@ import 'package:user_repository/user_repository.dart';
 
 
 import '../../../../auth/blocs/sign_in_bloc/sign_in_bloc.dart';
-import '../../../../background_screen/background_screen.dart';
+
 import '../../../blocs/user_bloc/user_bloc.dart';
 
  // Import your BackgroundScreen file
-
 class ProfileMain extends StatelessWidget {
   const ProfileMain({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final double profilePictureTopPadding = MediaQuery.of(context).size.height * 0.115;
+    final double imageHeight = MediaQuery.of(context).size.height * 0.26;
+    final double profilePictureTopPadding = MediaQuery.of(context).size.height * 0.13;
+    final double profilePicturePosition = MediaQuery.of(context).size.height * 0.175;
+
     return Scaffold(
       body: Stack(
         children: [
-          BackgroundScreen(), // Background is at the back
-          Column(
-            children: [
-              Stack(
+          // Background is at the back, filling the entire screen
+          BackgroundScreen(),
+          // Unsplash image and overlay, positioned at the top
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SizedBox(
+              height: imageHeight,
+              child: Stack(
                 children: [
                   Image.asset(
-                    'assets/images/antoine-j-A_0C42zmz1Q-unsplash.png', // Ensure the file name and path are correct
+                    'assets/images/antoine-j-A_0C42zmz1Q-unsplash.png',
                     width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.26,
+                    height: imageHeight,
                     fit: BoxFit.cover,
                   ),
                   Container(
                     width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.26,
+                    height: imageHeight,
                     color: Colors.black.withOpacity(0.2), // 20% black overlay
                   ),
                 ],
               ),
-              SizedBox(height: profilePictureTopPadding),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SettingsContainer(),
-                          LogoutButton(), // Added the new logout button
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-          BlocBuilder<UserBloc, UserState>(
-            builder: (context, state) {
-              if (state is UserLoaded) {
-                final user = state.user;
-                return Positioned(
-                  top: MediaQuery.of(context).size.height * 0.18, // Adjust the position as needed
-                 
-                  child: Column(
+          // Profile picture overlaying the image and background
+          Positioned(
+            top: profilePicturePosition,
+            left: 0,
+            right: 0,
+            child: BlocBuilder<UserBloc, UserState>(
+              builder: (context, state) {
+                if (state is UserLoaded) {
+                  final user = state.user;
+                  return Column(
                     children: [
                       ProfilePictureWidget(name: user.name ?? 'User'),
                       const SizedBox(height: 10),
                     ],
-                  ),
-                );
-              }
-              return const Center(child: CircularProgressIndicator());
-            },
+                  );
+                }
+                return const Center(child: CircularProgressIndicator());
+              },
+            ),
           ),
-
+          // The scrollable content, positioned below the image and profile picture
+          Positioned(
+            top: imageHeight + profilePictureTopPadding + 10 ,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SingleChildScrollView(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SettingsContainer(),
+                      LogoutButton(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 }
+
+
 
 class LogoutButton extends StatelessWidget {
   @override
@@ -124,46 +141,35 @@ class ProfilePictureWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double imageSize = MediaQuery.of(context).size.height * 0.15;
+    double borderSize = imageSize + 12; // Slightly larger than image size for the gap
+    double gap = imageSize * 0.1;
+
     return Column(
       children: [
-        CustomPaint(
-          painter: DottedBorderPainter(color: Color(0xFF8FFA58), strokeWidth: 2),
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.33,
-            height: MediaQuery.of(context).size.width * 0.33,
-            child: Stack(
-              children: [
-                ClipOval(
-                  child: Image.asset(
-                    'assets/images/IMG.png', // Ensure the file name and path are correct
-                    fit: BoxFit.cover,
-                    width: MediaQuery.of(context).size.width * 0.33,
-                    height: MediaQuery.of(context).size.width * 0.33,
-                  ),
+        SizedBox(
+          width: borderSize,
+          height: borderSize,
+          child: CustomPaint(
+            painter: DottedCirclePainter(
+              color: const Color(0xFF8FFA58),
+              strokeWidth: 2,
+              gapSize: 3,
+              dashSize: 6,
+            ),
+            child: Center(
+              child: ClipOval(
+                child: SvgPicture.asset(
+                  'assets/images/glare_logo.svg', // Ensure the file name and path are correct
+                  width: imageSize,
+                  height: imageSize,
+                  fit: BoxFit.cover,
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.33,
-                  height: MediaQuery.of(context).size.width * 0.33,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.black.withOpacity(0.7), // 70% black overlay
-                  ),
-                  child: const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.camera_alt, color: Colors.white, size: 24),
-                        SizedBox(height: 4),
-                        Text('Update photo', style: TextStyle(color: Colors.white)),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: gap),
         Center(
           child: Container(
             width: MediaQuery.of(context).size.width, // Full width of the screen
@@ -184,38 +190,59 @@ class ProfilePictureWidget extends StatelessWidget {
   }
 }
 
-
-
-
-
-class DottedBorderPainter extends CustomPainter {
+class DottedCirclePainter extends CustomPainter {
   final Color color;
   final double strokeWidth;
+  final double gapSize;
+  final double dashSize;
 
-  DottedBorderPainter({required this.color, required this.strokeWidth});
+  DottedCirclePainter({
+    required this.color,
+    this.strokeWidth = 2.0,
+    this.gapSize = 3.0,
+    this.dashSize = 6.0,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
+    // Create a paint object
+    final Paint paint = Paint()
       ..color = color
       ..strokeWidth = strokeWidth
       ..style = PaintingStyle.stroke;
 
-    double dashWidth = 5.0, dashSpace = 3.0;
-    final path = Path();
-    path.addOval(Rect.fromLTWH(0, 0, size.width, size.height)); // Extend the radius to cover more area
-    final PathMetric pathMetric = path.computeMetrics().first;
-    for (double i = 0; i < pathMetric.length; i += dashWidth + dashSpace) {
-      final extractPath = pathMetric.extractPath(i, i + dashWidth);
-      canvas.drawPath(extractPath, paint);
+    // Calculate the radius
+    double radius = (size.width / 2) - (strokeWidth / 2);
+
+    // Calculate the circumference
+    final circumference = 2 * pi * radius;
+
+    // Calculate the number of dashes that can fit
+    final totalDashLength = dashSize + gapSize;
+    final dashCount = (circumference / totalDashLength).floor();
+
+    // Calculate the angle between each dash
+    final dashAngle = (2 * pi) / dashCount;
+
+    // Draw the dashes
+    for (int i = 0; i < dashCount; i++) {
+      final startAngle = i * dashAngle;
+      final sweepAngle = (dashSize / circumference) * 2 * pi;
+      canvas.drawArc(
+        Rect.fromCircle(center: Offset(size.width / 2, size.height / 2), radius: radius),
+        startAngle,
+        sweepAngle,
+        false,
+        paint,
+      );
     }
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return false;
-  }
+  bool shouldRepaint(DottedCirclePainter oldDelegate) => false;
 }
+
+
 
 class SettingsContainer extends StatelessWidget {
   const SettingsContainer({Key? key}) : super(key: key);

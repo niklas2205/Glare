@@ -32,7 +32,7 @@ class _EventListWidgetState extends State<EventListWidget> {
 
     // Fetch initial like counts for all events
     widget.events.forEach((event) {
-      _eventLikeBloc.add(LoadEventLikeCount(event.eventId));
+      _eventLikeBloc.add(LoadEventLikeCount(event.eventId ?? ''));
     });
   }
 
@@ -72,7 +72,7 @@ class _EventListWidgetState extends State<EventListWidget> {
                 likesCount = state.likesCount[group.eventId] ?? 0;
               }
               final double cardWidth = MediaQuery.of(context).size.width * 0.82;
-              final double cardHeight = MediaQuery.of(context).size.height * 0.132;
+              final double cardHeight = 100;
               final double imageSize = cardHeight - 16;
               return GestureDetector(
                 onTap: () async {
@@ -80,16 +80,16 @@ class _EventListWidgetState extends State<EventListWidget> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => EventDetail(
-                        name: group.eventname,
-                        venue: group.venue,
-                        description: group.description,
-                        pictureUrl: group.picture,
-                        age: group.age,
-                        eventId: group.eventId,
-                        venueId: group.venueId,
-                        eventTag: group.eventTag,
-                        location: group.location,
-                        price: group.price,
+                        name: group.eventname ?? 'No Event Name',
+                        venue: group.venue ?? 'No Venue',
+                        description: group.description ?? 'No Description',
+                        pictureUrl: group.picture ?? 'https://via.placeholder.com/150',
+                        age: group.age ?? 0,
+                        eventId: group.eventId ?? '',
+                        venueId: group.venueId ?? '',
+                        eventTag: group.eventTag ?? [],
+                        location: group.location ?? 'No Location',
+                        price: group.price ?? 'No Price',
                       ),
                     ),
                   );

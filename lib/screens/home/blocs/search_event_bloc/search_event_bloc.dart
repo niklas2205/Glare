@@ -23,7 +23,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         final eventState = getEventBloc.state;
         if (eventState is GetEventSuccess) {
           final filteredEvents = eventState.events.where((e) {
-            return e.eventname.toLowerCase().contains(event.query.toLowerCase());
+            return (e.eventname ?? '').toLowerCase().contains(event.query.toLowerCase());
           }).toList();
           emit(SearchSuccess(filteredEvents));
         } else {

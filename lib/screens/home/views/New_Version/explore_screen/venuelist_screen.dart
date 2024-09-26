@@ -27,15 +27,15 @@ class VenueListScreen extends StatelessWidget {
           child: BlocBuilder<VenueSearchBloc, VenueSearchState>(
             builder: (context, state) {
               if (state is VenueSearchLoading) {
-                return const Center(child: CircularProgressIndicator(color: Color(0xFF13B8A8)));
+                return const Center(child: CircularProgressIndicator(color: Color(0xFF8FFA58)));
               } else if (state is VenueSearchSuccess) {
                 return VenueListWidget(venues: state.venues);
               } else if (state is VenueSearchFailure) {
                 return Center(child: Text(state.error));
               } else if (state is VenueSearchInitial) {
-                return const Center(child: CircularProgressIndicator(color: Color(0xFF13B8A8)));
+                return const Center(child: CircularProgressIndicator(color: Color(0xFF8FFA58)));
               }
-              return const Center(child: CircularProgressIndicator(color: Color(0xFF13B8A8)));
+              return const Center(child: CircularProgressIndicator(color: Color(0xFF8FFA58)));
             },
           ),
         ),

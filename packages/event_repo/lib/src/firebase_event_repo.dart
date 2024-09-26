@@ -105,13 +105,14 @@ class FirebaseEventRepo implements EventRepo {
           .get()
           .then((value) => value.docs
               .map((e) => Event.fromEntity(EventEntity.fromDocument(e.data())))
-              .where((event) => event.date.isAfter(now))
+              .where((event) => event.date != null && event.date!.isAfter(now))
               .toList());
     } catch (e) {
       print(e.toString());
       rethrow;
     }
   }
+
 
   // New method to reload events
   Future<void> reloadEvents() async {
