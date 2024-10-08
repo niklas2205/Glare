@@ -10,6 +10,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
   UserBloc({required this.userRepository}) : super(UserInitial()) {
     on<LoadUserData>(_onLoadUserData);
+    on<FetchUserData>(_onFetchUserData); // Add this line
     on<UpdateFavoriteVenues>(_onUpdateFavoriteVenues);
     on<RefreshUserFavorites>(_onRefreshUserFavorites);
     // ... other event handlers ...
@@ -21,6 +22,20 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       final user = await userRepository.getCurrentUser();
       if (user != null) {
         // Now that we've checked user is not null, it's safe to access userId
+        final favoriteVenueIds = await userRepository.fetchFavoriteVenueIds(user.userId);
+        emit(UserLoaded(user, favoriteVenueIds));
+      } else {
+        emit(UserError("User not found"));
+      }
+    } catch (e) {
+      emit(UserError(e.toString()));
+    }
+  }
+
+  Future<void> _onFetchUserData(FetchUserData event, Emitter<UserState> emit) async {
+    try {
+      final user = await userRepository.getCurrentUser();
+      if (user != null) {
         final favoriteVenueIds = await userRepository.fetchFavoriteVenueIds(user.userId);
         emit(UserLoaded(user, favoriteVenueIds));
       } else {

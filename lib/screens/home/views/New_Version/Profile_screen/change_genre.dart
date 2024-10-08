@@ -21,6 +21,7 @@ class ChangeGenreScreen extends StatelessWidget {
     return BlocProvider.value(
       value: BlocProvider.of<onboarding.OnboardingBloc>(context)..add(onboarding.LoadUserGenres()),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
             BackgroundScreen(),
@@ -95,7 +96,7 @@ class ChangeGenreScreen extends StatelessWidget {
   }
 
   Widget buildGenreGrid(BuildContext context, List<String> selectedGenres) {
-    final genres = ['Rock', 'Jazz', 'Pop', 'Classical', 'Electronic'];
+    final genres = ['EDM','Techno','House','Disco','Hip-Hop/Rap','Afrobeats','Charts','Latin'];
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GridView.count(

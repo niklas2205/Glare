@@ -4,18 +4,18 @@ class MyUser {
   String userId;
   String email;
   String? name;
-  int? age;
+  DateTime? dateOfBirth; // Changed from int? age to DateTime? dateOfBirth
   List<String>? favoriteGenres;
   String? phoneNumber;
   String? gender;
-  List<String>? friendRequests; // List of userIds who sent friend requests
-  List<String>? friends; // List of userIds who are friends
+  List<String>? friendRequests;
+  List<String>? friends;
 
   MyUser({
     required this.userId,
     required this.email,
     this.name,
-    this.age,
+    this.dateOfBirth,
     this.favoriteGenres,
     this.phoneNumber,
     this.gender,
@@ -27,7 +27,7 @@ class MyUser {
     userId: '',
     email: '',
     name: '',
-    age: 0,
+    dateOfBirth: null,
     favoriteGenres: [],
     gender: '',
     friendRequests: [],
@@ -39,7 +39,7 @@ class MyUser {
       userId: userId,
       email: email,
       name: name,
-      age: age,
+      dateOfBirth: dateOfBirth,
       favoriteGenres: favoriteGenres,
       phoneNumber: phoneNumber,
       gender: gender,
@@ -53,7 +53,7 @@ class MyUser {
       userId: entity.userId,
       email: entity.email,
       name: entity.name,
-      age: entity.age,
+      dateOfBirth: entity.dateOfBirth,
       favoriteGenres: entity.favoriteGenres,
       phoneNumber: entity.phoneNumber,
       gender: entity.gender,
@@ -66,7 +66,7 @@ class MyUser {
     String? userId,
     String? email,
     String? name,
-    int? age,
+    DateTime? dateOfBirth,
     List<String>? favoriteGenres,
     String? phoneNumber,
     String? gender,
@@ -77,7 +77,7 @@ class MyUser {
       userId: userId ?? this.userId,
       email: email ?? this.email,
       name: name ?? this.name,
-      age: age ?? this.age,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       favoriteGenres: favoriteGenres ?? this.favoriteGenres,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       gender: gender ?? this.gender,
@@ -89,6 +89,6 @@ class MyUser {
 
    @override
   String toString() {
-    return 'MyUser: $userId, $email, $name, $age, $favoriteGenres, $gender, $friendRequests, $friends';
+    return 'MyUser: $userId, $email, $name, $dateOfBirth, $favoriteGenres, $gender, $friendRequests, $friends';
   }
 }

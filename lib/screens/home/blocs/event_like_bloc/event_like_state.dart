@@ -19,9 +19,20 @@ class EventLikeSuccess extends EventLikeState {
 
   const EventLikeSuccess(this.likedEvents, this.likesCount);
 
+  EventLikeSuccess copyWith({
+    List<String>? likedEvents,
+    Map<String, int>? likesCount,
+  }) {
+    return EventLikeSuccess(
+      likedEvents ?? this.likedEvents,
+      likesCount ?? this.likesCount,
+    );
+  }
+
   @override
   List<Object> get props => [likedEvents, likesCount];
 }
+
 
 class EventLikeFailure extends EventLikeState {
   final String error;

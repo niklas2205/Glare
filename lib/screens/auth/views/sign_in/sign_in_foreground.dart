@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart'; // For TapGestureRecognizer
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class SignInFore1 extends StatefulWidget {
   final TextEditingController emailController;
@@ -14,6 +15,7 @@ class SignInFore1 extends StatefulWidget {
   final VoidCallback loginWithEmail;
   final VoidCallback registerWithEmail;
   final VoidCallback forgotPasswordbutton;
+  final VoidCallback onContinueWithApple;
 
   const SignInFore1({
     Key? key,
@@ -22,6 +24,7 @@ class SignInFore1 extends StatefulWidget {
     required this.loginWithEmail,
     required this.registerWithEmail,
     required this.forgotPasswordbutton,
+    required this.onContinueWithApple,
   }) : super(key: key);
 
   @override
@@ -46,7 +49,7 @@ class _SignInFore1State extends State<SignInFore1> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // headerWithBackButton(context),
+          // headerWithBackButton(context), // Uncomment if needed
           welcomeTextWidget(context),
           socialLoginButtons(context),
           dividerWithText(context),
@@ -58,33 +61,6 @@ class _SignInFore1State extends State<SignInFore1> {
       ),
     );
   }
-
-  // Widget headerWithBackButton(BuildContext context) {
-  //   final double screenWidth = MediaQuery.of(context).size.width;
-  //   final double spacing = screenWidth * 0.02; // 2% of screen width
-
-  //   return Row(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       GestureDetector(
-  //         onTap: () {
-  //           Navigator.pop(context);
-  //         },
-  //         child: Transform.rotate(
-  //           angle: 3.14159, // 180 degrees in radians
-  //           child: SvgPicture.asset(
-  //             'assets/icons/Profile_screen/ic_expand_more.svg',
-  //             width: 24,
-  //             height: 24,
-  //             color: const Color(0xFF8FFA58),
-  //           ),
-  //         ),
-  //       ),
-  //       SizedBox(width: spacing),
-  //       welcomeTextWidget(context),
-  //     ],
-  //   );
-  // }
 
   Widget welcomeTextWidget(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -122,20 +98,25 @@ class _SignInFore1State extends State<SignInFore1> {
   }
 
   Widget socialLoginButtons(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
-    final double buttonWidth = (screenWidth * 0.85 - 16) / 2; // Subtracting spacing between buttons
-    final double buttonHeight = 48; // Or adjust based on screenHeight
-    final double horizontalMargin = screenWidth * 0.05; // 5% of screen width
-    final double topMargin = screenHeight * 0.04; // 4% of screen height
-    final double spacing = 16.0;
+  final double screenWidth = MediaQuery.of(context).size.width;
+  final double screenHeight = MediaQuery.of(context).size.height;
+  final double buttonWidth = (screenWidth * 0.85 - 16) / 2; // Adjusted width for two buttons
+  final double buttonHeight = 48;
+  final double horizontalMargin = screenWidth * 0.05; // 5% of screen width
+  final double topMargin = screenHeight * 0.04; // 4% of screen height
+  final double spacing = 16.0;
 
-    return Container(
-      margin: EdgeInsets.fromLTRB(horizontalMargin, topMargin, horizontalMargin, 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
+  return Container(
+    margin: EdgeInsets.fromLTRB(horizontalMargin, topMargin, horizontalMargin, 8),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // Google Sign-In Button
+        GestureDetector(
+          onTap: () {
+            // Implement your Google Sign-In logic here
+          },
+          child: Container(
             height: buttonHeight,
             width: buttonWidth,
             decoration: BoxDecoration(
@@ -146,8 +127,12 @@ class _SignInFore1State extends State<SignInFore1> {
             alignment: Alignment.center,
             child: Image.asset('assets/icons/ic_google.png', width: 24, height: 24),
           ),
-          SizedBox(width: spacing),
-          Container(
+        ),
+        SizedBox(width: spacing),
+        // Custom Apple Sign-In Button with only SVG logo
+        GestureDetector(
+          onTap: widget.onContinueWithApple,
+          child: Container(
             height: buttonHeight,
             width: buttonWidth,
             decoration: BoxDecoration(
@@ -156,12 +141,18 @@ class _SignInFore1State extends State<SignInFore1> {
               color: const Color(0xFF1A1A1A),
             ),
             alignment: Alignment.center,
-            child: Image.asset('assets/icons/apple.png', width: 24, height: 24),
+            child: SvgPicture.asset(
+              'assets/icons/apple.svg',
+              width: 24,
+              height: 24,
+              color: Colors.white, // Optional: if you want the icon to be white
+            ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
   Widget dividerWithText(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;

@@ -13,8 +13,6 @@ class EventCard extends StatelessWidget {
   final double cardWidth;
   final double cardHeight;
   final double imageSize;
-  final bool isLiked;
-  final int likesCount;
 
   const EventCard({
     Key? key,
@@ -22,26 +20,14 @@ class EventCard extends StatelessWidget {
     required this.cardWidth,
     required this.cardHeight,
     required this.imageSize,
-    required this.isLiked,
-    required this.likesCount,
   }) : super(key: key);
+
   String _truncateWithEllipsis(int cutoff, String text) {
     return (text.length <= cutoff) ? text : '${text.substring(0, cutoff)}...';
   }
 
   @override
   Widget build(BuildContext context) {
-    // Print statements to check which properties are null
-    print('EventCard: event.eventname = ${event.eventname}');
-    print('EventCard: event.venue = ${event.venue}');
-    print('EventCard: event.eventTag = ${event.eventTag}');
-    print('EventCard: event.age = ${event.age}');
-    print('EventCard: event.eventId = ${event.eventId}');
-    print('EventCard: event.description = ${event.description}');
-    print('EventCard: event.price = ${event.price}');
-    print('EventCard: event.location = ${event.location}');
-    print('EventCard: event.venueId = ${event.venueId}');
-
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
@@ -53,23 +39,26 @@ class EventCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             onTap: () async {
               final bool result = await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute<bool>(
-                      builder: (BuildContext context) => EventDetail(
-                        name: event.eventname ?? 'Default Event Name',
-                        venue: event.venue ?? 'Default Venue',
-                        description: event.description ?? 'No description available.',
-                        pictureUrl: event.picture ?? 'https://via.placeholder.com/150', // Provide a default URL // Leaving picture as is
-                        age: event.age ?? 0,
-                        eventId: event.eventId ?? 'No Event ID',
-                        venueId: event.venueId ?? 'No Venue ID',
-                        eventTag: event.eventTag ?? [],
-                        location: event.location ?? 'No location specified.',
-                        price: event.price ?? 'No price information.',
-                      ),
+                context,
+                MaterialPageRoute<bool>(
+                  builder: (BuildContext context) => BlocProvider.value(
+                    value: context.read<EventLikeBloc>(),
+                    child: EventDetail(
+                      name: event.eventname ?? 'Default Event Name',
+                      venue: event.venue ?? 'Default Venue',
+                      description: event.description ?? 'No description available.',
+                      pictureUrl: event.picture ?? 'https://via.placeholder.com/150',
+                      age: event.age ?? 0,
+                      eventId: event.eventId ?? 'No Event ID',
+                      venueId: event.venueId ?? 'No Venue ID',
+                      eventTag: event.eventTag ?? [],
+                      location: event.location ?? 'No location specified.',
+                      price: event.price ?? 'No price information.',
+                      ticket: event.ticket ?? '',
                     ),
-                  ) ??
-                  false;
+                  ),
+                ),
+              ) ?? false;
 
               if (result) {
                 if (event.eventId != null) {
@@ -89,20 +78,19 @@ class EventCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      // Image section (left as is)
+                      // Image section
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: 
-                           Image.network(
-                            event.picture ?? 'https://via.placeholder.com/150', // Default placeholder image
+                          child: Image.network(
+                            event.picture ?? 'https://via.placeholder.com/150',
                             width: imageSize,
                             height: imageSize,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Image.asset(
-                                'assets/images/default_event.png', // Local placeholder image
+                                'assets/images/default_event.png',
                                 width: imageSize,
                                 height: imageSize,
                                 fit: BoxFit.cover,
@@ -113,7 +101,6 @@ class EventCard extends StatelessWidget {
                       ),
                       // Event details
                       Expanded(
-                        
                         child: Padding(
                           padding: const EdgeInsets.only(left: 10, top: 8),
                           child: Column(
@@ -140,13 +127,23 @@ class EventCard extends StatelessWidget {
                               ),
                               const SizedBox(height: 2),
                               // Likes count
-                              Text(
-                                '$likesCount Going',
-                                style: const TextStyle(
-                                  color: Color(0xFF8FFA58),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 12,
-                                ),
+                              BlocBuilder<EventLikeBloc, EventLikeState>(
+                                builder: (context, state) {
+                                  bool isLiked = false;
+                                  int likesCount = 0;
+                                  if (state is EventLikeSuccess) {
+                                    isLiked = state.likedEvents.contains(event.eventId);
+                                    likesCount = state.likesCount[event.eventId] ?? 0;
+                                  }
+                                  return Text(
+                                    '$likesCount Going',
+                                    style: const TextStyle(
+                                      color: Color(0xFF8FFA58),
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 12,
+                                    ),
+                                  );
+                                },
                               ),
                               const Spacer(),
                               // Event tags
@@ -184,33 +181,41 @@ class EventCard extends StatelessWidget {
                     right: cardWidth * 0.06,
                     child: Column(
                       children: [
-                        GestureDetector(
-                          onTap: () async {
-                            final user = await context.read<UserRepository>().getCurrentUser();
-                            if (user != null && event.eventId != null) {
-                              if (isLiked) {
-                                context.read<EventLikeBloc>().add(UnlikeEvent(userId: user.userId, eventId: event.eventId!));
-                              } else {
-                                context.read<EventLikeBloc>().add(LikeEvent(userId: user.userId, eventId: event.eventId!));
-                              }
+                        BlocBuilder<EventLikeBloc, EventLikeState>(
+                          builder: (context, state) {
+                            bool isLiked = false;
+                            if (state is EventLikeSuccess) {
+                              isLiked = state.likedEvents.contains(event.eventId);
                             }
-                          },
-                          child: Container(
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: isLiked ? const Color(0xFF8FFA58) : const Color(0xFF1A1A1A),
-                              border: isLiked ? null : Border.all(color: const Color(0xFF8FFA58)),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: SvgPicture.asset(
-                                'assets/icons/bx_party.svg',
-                                color: isLiked ? const Color(0xFF1A1A1A) : const Color(0xFF8FFA58),
+                            return GestureDetector(
+                              onTap: () async {
+                                final user = await context.read<UserRepository>().getCurrentUser();
+                                if (user != null && event.eventId != null) {
+                                  if (isLiked) {
+                                    context.read<EventLikeBloc>().add(UnlikeEvent(userId: user.userId, eventId: event.eventId!));
+                                  } else {
+                                    context.read<EventLikeBloc>().add(LikeEvent(userId: user.userId, eventId: event.eventId!));
+                                  }
+                                }
+                              },
+                              child: Container(
+                                width: 24,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isLiked ? const Color(0xFF8FFA58) : const Color(0xFF1A1A1A),
+                                  border: isLiked ? null : Border.all(color: const Color(0xFF8FFA58)),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: SvgPicture.asset(
+                                    'assets/icons/bx_party.svg',
+                                    color: isLiked ? const Color(0xFF1A1A1A) : const Color(0xFF8FFA58),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         ),
                         const SizedBox(height: 10),
                         Container(

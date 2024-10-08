@@ -28,6 +28,7 @@ class ProfileMain extends StatelessWidget {
     final double profilePicturePosition = MediaQuery.of(context).size.height * 0.175;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           // Background is at the back, filling the entire screen

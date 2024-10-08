@@ -1,6 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
+
 class WelcomeFrontend extends StatelessWidget {
   final VoidCallback onContinueWithEmail;
   final VoidCallback onContinueWithGoogle;
@@ -153,44 +156,23 @@ class WelcomeFrontend extends StatelessWidget {
     );
   }
 
-  Widget _buildAppleButton(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double buttonWidth = screenWidth * 0.85;
-    final double screenHeight = MediaQuery.of(context).size.height;
-    final double buttonHeight = 48;
+ Widget _buildAppleButton(BuildContext context) {
+  final double screenWidth = MediaQuery.of(context).size.width;
+  final double buttonWidth = screenWidth * 0.85; // 85% of screen width
+  final double screenHeight = MediaQuery.of(context).size.height;
+  final double buttonHeight = 48; // Fixed button height
 
-    return Container(
-      width: buttonWidth,
-      height: buttonHeight,
-      margin: EdgeInsets.only(bottom: screenHeight * 0.012),
-      child: ElevatedButton(
-        onPressed: onContinueWithApple,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF1A1A1A),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset('assets/icons/apple.png', height: 24),
-            const SizedBox(width: 10),
-            Text(
-              'Continue with Apple',
-              style: GoogleFonts.inter(
-                fontWeight: FontWeight.w600,
-                fontSize: 15,
-                height: 1.7,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  return Container(
+    width: buttonWidth,
+    height: buttonHeight,
+    margin: EdgeInsets.only(bottom: screenHeight * 0.012),
+    child: SignInWithAppleButton(
+      onPressed: onContinueWithApple,
+      style: SignInWithAppleButtonStyle.black, // Use black style as per guidelines
+      borderRadius: BorderRadius.circular(100),
+    ),
+  );
+}
 
   Widget _loginPrompt(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;

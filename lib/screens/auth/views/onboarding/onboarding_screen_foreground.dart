@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:glare/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:user_repository/user_repository.dart';
 
 import '../../blocs/onboarding_bloc/onboarding_bloc.dart';
@@ -20,9 +21,11 @@ class _OnboardingScreenForegroundState extends State<OnboardingScreenForeground>
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-  final TextEditingController ageController = TextEditingController();
+  // Removed ageController
   final List<String> genders = ['Male', 'Female', 'Diverse', 'Rather not say'];
   String? selectedGender;
+
+  DateTime? selectedDateOfBirth; // Added this variable
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +40,7 @@ class _OnboardingScreenForegroundState extends State<OnboardingScreenForeground>
           buildInputField('First Name', firstNameController),
           buildInputField('Last Name', lastNameController),
           buildInputField('Phone', phoneController),
-          buildInputField('Age', ageController),
+          buildDateOfBirthField(context), // Replaced age field with date of birth field
           buildDropdownField(context),
           buildNavigationRow(context),
           buildSkipForNowButton(context),
@@ -115,6 +118,58 @@ class _OnboardingScreenForegroundState extends State<OnboardingScreenForeground>
     );
   }
 
+  // New method for Date of Birth field
+  Widget buildDateOfBirthField(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _selectDate(context),
+      child: Container(
+        width: 322,
+        height: 56,
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xFF8FFA58)),
+          borderRadius: BorderRadius.circular(100),
+          color: const Color(0xFF1A1A1A),
+        ),
+        margin: const EdgeInsets.only(bottom: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        alignment: Alignment.centerLeft,
+        child: Text(
+          selectedDateOfBirth != null
+              ? DateFormat('yyyy-MM-dd').format(selectedDateOfBirth!)
+              : 'Date of Birth',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w400,
+            fontSize: 16,
+            color: selectedDateOfBirth != null
+                ? Colors.white
+                : Colors.white.withOpacity(0.5),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Method to display the date picker
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().subtract(Duration(days: 365 * 18)), // Default to 18 years ago
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.dark(), // Customize as needed
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != selectedDateOfBirth) {
+      setState(() {
+        selectedDateOfBirth = picked;
+      });
+    }
+  }
+
   Widget buildDropdownField(BuildContext context) {
     return Container(
       width: 322,
@@ -147,7 +202,8 @@ class _OnboardingScreenForegroundState extends State<OnboardingScreenForeground>
           setState(() {
             selectedGender = newValue;
           });
-          BlocProvider.of<OnboardingBloc>(context).add(GenderChanged(newValue!));
+          // Removed the event addition to OnboardingBloc
+          // Since we handle gender on form submission
         },
         items: genders.map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
@@ -184,13 +240,30 @@ class _OnboardingScreenForegroundState extends State<OnboardingScreenForeground>
           ),
           padding: MaterialStateProperty.all(EdgeInsets.zero),
         ),
-        onPressed: () {
+        onPressed: () async {
+          // Validation: Ensure date of birth is selected
+          if (selectedDateOfBirth == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Please select your date of birth')),
+            );
+            return;
+          }
+
+          // Retrieve the current user to get userId and email
+          final MyUser? currentUser = await context.read<UserRepository>().getCurrentUser();
+          final String userId = currentUser?.userId ?? '';
+          final String email = currentUser?.email ?? '';
+
+          final String firstName = firstNameController.text.trim();
+          final String lastName = lastNameController.text.trim();
+          final String fullName = '$firstName $lastName'.trim();
+
           final updatedUser = MyUser(
-            userId: context.read<AuthenticationBloc>().state.user!.userId,
-            email: context.read<AuthenticationBloc>().state.user!.email,
-            name: firstNameController.text + ' ' + lastNameController.text,
-            age: int.tryParse(ageController.text),
-            phoneNumber: phoneController.text,
+            userId: userId,
+            email: email,
+            name: fullName,
+            dateOfBirth: selectedDateOfBirth, // Updated field
+            phoneNumber: phoneController.text.trim(),
             gender: selectedGender,
           );
           BlocProvider.of<OnboardingBloc>(context).add(OnboardingInfoSubmitted(updatedUser));

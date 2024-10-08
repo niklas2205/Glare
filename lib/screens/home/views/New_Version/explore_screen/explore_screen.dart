@@ -40,6 +40,7 @@ class ExploreScreen extends StatelessWidget {
       child: BlocProvider<HomeScreenBloc>(
         create: (context) => HomeScreenBloc(),
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
           backgroundColor: Theme.of(context).colorScheme.background,
           body: Stack(
             children: [

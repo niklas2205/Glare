@@ -12,7 +12,7 @@ class CustomSearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double containerWidth = screenWidth * 0.82;
-    final double searchWidth = screenWidth * 0.713;
+    final double searchWidth = screenWidth * 0.82;
 
     return SizedBox(
       width: containerWidth,
@@ -67,16 +67,16 @@ class CustomSearchBar extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 16), // Space between the search bar and the icon
-          SizedBox(
-            width: 24,
-            height: 24,
-            child: Image.asset(
-              'assets/icons/setting-5.png', // Replace with your icon path
-              width: 24,
-              height: 24,
-            ),
-          ),
+          // const SizedBox(width: 16), // Space between the search bar and the icon
+          // SizedBox(
+          //   width: 24,
+          //   height: 24,
+          //   child: Image.asset(
+          //     // 'assets/icons/setting-5.png', // Replace with your icon path
+          //     width: 24,
+          //     height: 24,
+          //   ),
+          // ),
         ],
       ),
     );

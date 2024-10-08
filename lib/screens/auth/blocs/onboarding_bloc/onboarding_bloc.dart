@@ -19,44 +19,95 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<GenreSelected>(_onGenreSelected);
     on<SubmitGenres>(_onSubmitGenres);
     on<LoadUserGenres>(_onLoadUserGenres);
+    on<GenderChanged>(_onGenderChanged);
   }
 
-  void _onSkipOnboarding(SkipOnboarding event, Emitter<OnboardingState> emit) {
-    userRepository.updateUserData({
-      'age': 0,
+  
+
+  void _onSkipOnboarding(SkipOnboarding event, Emitter<OnboardingState> emit) async {
+  try {
+    // Ensure updatedUser has the latest user data
+    final MyUser? user = await userRepository.getCurrentUser();
+    if (user != null) {
+      updatedUser = user;
+    }
+
+    // Generate the default name using the first four characters of the user ID
+    String defaultName = 'User ${updatedUser.userId.substring(0, 4)}';
+
+    // Update the user data with the default name
+    await userRepository.updateUserData({
       'userId': updatedUser.userId,
+      'name': defaultName,
     });
+
     emit(OnboardingCompletionSuccess());
+  } catch (e) {
+    emit(OnboardingFailure(e.toString()));
   }
+}
 
   Future<void> _onStarted(OnboardingStarted event, Emitter<OnboardingState> emit) async {
-    try {
-      final MyUser? user = await userRepository.getCurrentUser();
-      if (user != null && user.age != null) {
-        updatedUser = user;
+  print('OnboardingBloc: Processing OnboardingStarted event');
+  emit(OnboardingLoadInProgress());
+  try {
+    final MyUser? user = await userRepository.getCurrentUser();
+    print('OnboardingBloc: Fetched user data: $user');
+
+    if (user != null) {
+      updatedUser = user;
+      bool isComplete = true;
+
+      if (user.name == "") {
+        isComplete = false;
+        print("OnboardingBloc: Age is incomplete.");
+      }
+
+
+
+      if (isComplete) {
+        print("OnboardingBloc: Onboarding complete, emitting OnboardingCompletionSuccess.");
         emit(OnboardingCompletionSuccess());
       } else {
-        updatedUser = user ?? MyUser.empty;
+        print("OnboardingBloc: Onboarding required, emitting OnboardingRequired.");
         emit(OnboardingRequired());
       }
-    } catch (e) {
-      emit(OnboardingFailure(e.toString()));
+    } else {
+      updatedUser = MyUser.empty;
+      emit(OnboardingRequired());
     }
+  } catch (e) {
+    print("OnboardingBloc: Error during onboarding check: $e");
+    emit(OnboardingFailure(e.toString()));
   }
+}
+
 
   void _onInfoSubmitted(OnboardingInfoSubmitted event, Emitter<OnboardingState> emit) async {
-    emit(OnboardingLoadInProgress());
-    try {
-      updatedUser = event.updatedUser.copyWith(
-        userId: updatedUser.userId,
-        email: updatedUser.email, // Ensure email is retained
-      );
-      await userRepository.setUserData(updatedUser);
-      emit(OnboardingDataSubmitted(updatedUser));
-    } catch (e) {
-      emit(OnboardingFailure(e.toString()));
+  emit(OnboardingLoadInProgress());
+  try {
+    // Check if the name is empty or contains only whitespace
+     String fullName = (event.updatedUser.name ?? "").trim();
+    if (fullName.isEmpty) {
+      // Generate the default name using the first four characters of the user ID
+      String defaultName = 'User ${event.updatedUser.userId.substring(0, 4)}';
+      fullName = defaultName;
     }
+
+    // Create an updated user with the name
+    updatedUser = event.updatedUser.copyWith(
+      userId: updatedUser.userId,
+      email: updatedUser.email, // Ensure email is retained
+      name: fullName, // Use the default or provided name
+    );
+
+    await userRepository.setUserData(updatedUser);
+    emit(OnboardingDataSubmitted(updatedUser));
+  } catch (e) {
+    emit(OnboardingFailure(e.toString()));
   }
+}
+
 
   void _onCompleted(OnboardingCompleted event, Emitter<OnboardingState> emit) async {
     try {
@@ -65,7 +116,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         'gender': updatedUser.gender,
         'userId': updatedUser.userId, // Ensure userId is passed
         'name': updatedUser.name,
-        'age': updatedUser.age,
+        'dateOfBirth': updatedUser.dateOfBirth,
         'phoneNumber': updatedUser.phoneNumber,
       });
       emit(OnboardingCompletionSuccess());
@@ -119,6 +170,13 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     emit(OnboardingFailure(e.toString()));
   }
 }
+void _onGenderChanged(GenderChanged event, Emitter<OnboardingState> emit) {
+  // Update the gender in the updatedUser object
+  updatedUser = updatedUser.copyWith(gender: event.gender);
+}
+
+
+
 
 
 

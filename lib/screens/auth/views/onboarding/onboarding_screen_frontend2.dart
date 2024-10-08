@@ -50,7 +50,7 @@ class AdditionalDetailsScreen extends StatelessWidget {
         mainAxisSpacing: 10,
         childAspectRatio: 3,
         physics: const NeverScrollableScrollPhysics(),
-        children: ['Rock', 'Jazz', 'Pop', 'Classical', 'Electronic']
+        children: ['EDM','Techno','House','Disco','Hip-Hop/Rap','Afrobeats','Charts','Latin']
             .map((genre) => genreButton(context, genre, selectedGenres.contains(genre)))
             .toList(),
       ),

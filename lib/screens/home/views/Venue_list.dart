@@ -20,7 +20,7 @@ class VenueListWidget extends StatelessWidget {
           final double screenWidth = MediaQuery.of(context).size.width;
           final double cardWidth = screenWidth * 0.82;
           final double cardHeight = 100;
-          final double imageSize = cardHeight - 16;
+          final double imageSize = cardHeight -16 ;
 
           return ListView.builder(
             padding: EdgeInsets.zero, // Ensure no padding at the start

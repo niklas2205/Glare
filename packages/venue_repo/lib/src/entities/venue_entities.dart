@@ -9,6 +9,7 @@ class VenueEntity {
   int reviews;
   List<String> eventIds;
   List<String> genres;
+  final int? prio; // Add Prio field to entity
 
   VenueEntity({
     required this.venueId,
@@ -20,7 +21,8 @@ class VenueEntity {
     required this.website,
     required this.reviews,
     required this.eventIds,
-    required this.genres
+    required this.genres,
+    this.prio, // Add the new field
   });
 
   Map<String, Object?> toDocument() {
@@ -35,6 +37,7 @@ class VenueEntity {
       'reviews': reviews,
       'eventIds': eventIds,
       'genres': genres,
+      'prio': prio, // Include the new field in the document map
     };
   }
 
@@ -50,6 +53,7 @@ class VenueEntity {
       reviews: doc['reviews'] ?? 0,
       eventIds: _convertToList(doc['eventIds']),
       genres: _convertToList(doc['genres']),
+      prio: doc['prio'] ?? 0, // Fetch prio field
     );
   }
 

@@ -50,6 +50,7 @@ class VenueDetail extends StatelessWidget {
     final double widgetWidth = screenWidth * 0.82;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           BackgroundScreen(),
@@ -102,59 +103,59 @@ class VenueDetail extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 // Action Buttons (Favorite, Share)
-                Center(
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildIconButtonWithBorder(
-                            icon: Icons.favorite_border,
-                            onPressed: () {},
-                          ),
-                          const SizedBox(width: 10),
-                          _buildIconButtonWithBorder(
-                            icon: Icons.share,
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      // Uncomment and customize the Star Rating if needed
-                      /*
-                      Container(
-                        width: widgetWidth,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: const Color(0xFF8FFA58), width: 2.0),
-                          borderRadius: BorderRadius.circular(30),
-                          color: const Color(0xFF1A1A1A),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.star, color: Color(0xFF8FFA58)),
-                            Icon(Icons.star, color: Color(0xFF8FFA58)),
-                            Icon(Icons.star, color: Color(0xFF8FFA58)),
-                            Icon(Icons.star, color: Color(0xFF8FFA58)),
-                            Icon(Icons.star, color: Color(0xFF8FFA58)),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        '5.0 Star Rating (52 Reviews) See Reviews',
-                        style: GoogleFonts.getFont(
-                          'Inter',
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                          color: const Color(0xFF8FFA58),
-                        ),
-                      ),
-                      */
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
+                // Center(
+                //   child: Column(
+                //     children: [
+                //       Row(
+                //         mainAxisAlignment: MainAxisAlignment.center,
+                //         children: [
+                //           _buildIconButtonWithBorder(
+                //             icon: Icons.favorite_border,
+                //             onPressed: () {},
+                //           ),
+                //           const SizedBox(width: 10),
+                //           _buildIconButtonWithBorder(
+                //             icon: Icons.share,
+                //             onPressed: () {},
+                //           ),
+                //         ],
+                //       ),
+                //       const SizedBox(height: 10),
+                //       // Uncomment and customize the Star Rating if needed
+                //       /*
+                //       Container(
+                //         width: widgetWidth,
+                //         height: 50,
+                //         decoration: BoxDecoration(
+                //           border: Border.all(color: const Color(0xFF8FFA58), width: 2.0),
+                //           borderRadius: BorderRadius.circular(30),
+                //           color: const Color(0xFF1A1A1A),
+                //         ),
+                //         child: const Row(
+                //           mainAxisAlignment: MainAxisAlignment.center,
+                //           children: [
+                //             Icon(Icons.star, color: Color(0xFF8FFA58)),
+                //             Icon(Icons.star, color: Color(0xFF8FFA58)),
+                //             Icon(Icons.star, color: Color(0xFF8FFA58)),
+                //             Icon(Icons.star, color: Color(0xFF8FFA58)),
+                //             Icon(Icons.star, color: Color(0xFF8FFA58)),
+                //           ],
+                //         ),
+                //       ),
+                //       Text(
+                //         '5.0 Star Rating (52 Reviews) See Reviews',
+                //         style: GoogleFonts.getFont(
+                //           'Inter',
+                //           fontWeight: FontWeight.w500,
+                //           fontSize: 14,
+                //           color: const Color(0xFF8FFA58),
+                //         ),
+                //       ),
+                //       */
+                //     ],
+                //   ),
+                // ),
+                // const SizedBox(height: 10),
                 // About The Venue
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.09),
@@ -232,8 +233,8 @@ class VenueDetail extends StatelessWidget {
                                   cardWidth: cardWidth,
                                   cardHeight: cardHeight,
                                   imageSize: imageSize,
-                                  isLiked: state.likedEvents.contains(event.eventId),
-                                  likesCount: state.likesCount[event.eventId] ?? 0,
+                                  // isLiked: state.likedEvents.contains(event.eventId),
+                                  // likesCount: state.likesCount[event.eventId] ?? 0,
                                 ),
                               ],
                             );

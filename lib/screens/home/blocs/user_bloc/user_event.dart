@@ -24,3 +24,7 @@ class RefreshUserFavorites extends UserEvent {
   @override
   List<Object> get props => [userId];
 }
+
+
+
+class FetchUserData extends UserEvent {}

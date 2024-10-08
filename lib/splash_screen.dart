@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glare/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:glare/screens/auth/blocs/onboarding_bloc/onboarding_bloc.dart';
+import 'package:glare/screens/auth/views/onboarding/onboarding_screen.dart';
+
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -50,3 +54,4 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
+

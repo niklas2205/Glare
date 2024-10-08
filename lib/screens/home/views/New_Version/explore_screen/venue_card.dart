@@ -97,8 +97,10 @@ class VenueCard extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 2),
-                              Text(
-                                venue.address,
+                               Text(
+                                venue.address.length > 23 
+                                    ? '${venue.address.substring(0, 23)}...' 
+                                    : venue.address,
                                 style: const TextStyle(
                                   color: Color(0xFF8FFA58),
                                   fontWeight: FontWeight.w600,

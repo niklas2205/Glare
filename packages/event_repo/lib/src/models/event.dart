@@ -17,6 +17,8 @@ class Event {
   final List<String>? eventTag;
   final String? location;
   final String? price;
+  final String? ticket;
+  final int? prio; // Add this line
 
   Event({
     this.eventId,
@@ -31,6 +33,8 @@ class Event {
     this.eventTag,
     this.location,
     this.price,
+    this.ticket,
+    this.prio, // Add this line
   });
 
   EventEntity toEntity() {
@@ -47,6 +51,8 @@ class Event {
       eventTag: eventTag,
       location: location,
       price: price,
+      ticket: ticket,
+      prio: prio, // Add this line
     );
   }
 
@@ -64,6 +70,8 @@ class Event {
       eventTag: entity.eventTag,
       location: entity.location,
       price: entity.price,
+      ticket: entity.ticket,
+      prio: entity.prio, // Add this line
     );
   }
 }

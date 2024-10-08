@@ -50,7 +50,7 @@ class CachingService {
   }
 
   void startPeriodicSync() {
-    _timer = Timer.periodic(Duration(minutes: 5), (timer) async {
+    _timer = Timer.periodic(Duration(minutes: 60), (timer) async {
       await cacheData();
     });
   }

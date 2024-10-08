@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'dart:developer';
 import '../user_repository.dart';
 
@@ -26,19 +27,30 @@ class FirebaseUserRepo implements UserRepository {
   })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
         _firestore = firestore ?? FirebaseFirestore.instance;
 
-  @override
-  Future<void> updateUserData(Map<String, dynamic> userData) async {
-    var currentUser = _firebaseAuth.currentUser;
-    if (currentUser == null) {
-      throw Exception("No user signed in.");
-    }
-    try {
-      await usersCollection.doc(currentUser.uid).update(userData);
-    } catch (e) {
-      log('Error updating user data: ${e.toString()}');
-      throw e; // Or handle more gracefully
-    }
+ @override
+Future<void> updateUserData(Map<String, dynamic> userData) async {
+  var currentUser = _firebaseAuth.currentUser;
+  if (currentUser == null) {
+    throw Exception("No user signed in.");
   }
+  try {
+    // Convert DateTime fields to Timestamp
+    Map<String, dynamic> processedData = userData.map((key, value) {
+      if (value is DateTime) {
+        return MapEntry(key, Timestamp.fromDate(value));
+      } else {
+        return MapEntry(key, value);
+      }
+    });
+    await usersCollection.doc(currentUser.uid).update(processedData);
+  } catch (e) {
+    log('Error updating user data: ${e.toString()}');
+    rethrow; // Or handle more gracefully
+  }
+}
+
+
+
 
   @override
   Stream<MyUser?> get user {
@@ -125,7 +137,7 @@ class FirebaseUserRepo implements UserRepository {
       await usersCollection.doc(userId).update({'favoriteGenres': genres});
     } catch (e) {
       log('Failed to save user genres: ${e.toString()}');
-      throw e;  // Or handle more gracefully
+      rethrow;  // Or handle more gracefully
     }
   }
 
@@ -216,10 +228,10 @@ class FirebaseUserRepo implements UserRepository {
   Future<List<MyUser>> searchUsers(String query) async {
     final snapshot = await _firestore.collection('users')
         .where('name', isGreaterThanOrEqualTo: query)
-        .where('name', isLessThanOrEqualTo: query + '\uf8ff')
+        .where('name', isLessThanOrEqualTo: '$query\uf8ff')
         .get();
 
-    return snapshot.docs.map((doc) => MyUser.fromEntity(MyUserEntity.fromDocument(doc.data()!))).toList();
+    return snapshot.docs.map((doc) => MyUser.fromEntity(MyUserEntity.fromDocument(doc.data()))).toList();
   }
 
   @override
@@ -263,7 +275,7 @@ class FirebaseUserRepo implements UserRepository {
         .limit(limit)
         .get();
 
-    return snapshot.docs.map((doc) => MyUser.fromEntity(MyUserEntity.fromDocument(doc.data()!))).toList();
+    return snapshot.docs.map((doc) => MyUser.fromEntity(MyUserEntity.fromDocument(doc.data()))).toList();
   }
 
   // Getter for current user
@@ -279,4 +291,49 @@ class FirebaseUserRepo implements UserRepository {
     }
     return null;
   }
+
+
+  @override
+  Future<void> signInWithApple() async {
+    try {
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      // Sign in with Firebase
+      UserCredential userCredential = await _firebaseAuth.signInWithCredential(oauthCredential);
+
+      // Check if the user is new
+      bool isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
+
+      if (isNewUser) {
+        // Create a new MyUser object
+        MyUser myUser = MyUser(
+          userId: userCredential.user!.uid,
+          email: userCredential.user!.email ?? '',
+          name: '${appleCredential.givenName ?? ''} ${appleCredential.familyName ?? ''}'.trim(),
+          dateOfBirth: null, // To be set during onboarding
+          favoriteGenres: null, // To be set during onboarding
+          // Initialize other fields as necessary
+        );
+
+        // Save user data to Firestore
+        await setUserData(myUser);
+      }
+
+      // The AuthenticationBloc will pick up the user change via the stream
+    } catch (e) {
+      log('Error signing in with Apple: ${e.toString()}');
+      rethrow;
+    }
+  }
+
 }

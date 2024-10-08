@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "LaunchImage.png",
+      "filename" : "glare-3.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Splash.png",
+      "filename" : "glare-4.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Splash-2.png",
+      "filename" : "glare-5.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

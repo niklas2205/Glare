@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:event_repository/event_repository.dart';
 import 'package:glare/screens/home/blocs/get_event_bloc/get_event_bloc.dart';
-import 'package:glare/screens/home/views/New_Version/Event_Venue_Detail/Event_screen.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:intl/intl.dart';
 import '../blocs/event_like_bloc/event_like_bloc.dart';
@@ -32,8 +31,20 @@ class _EventListWidgetState extends State<EventListWidget> {
 
     // Fetch initial like counts for all events
     widget.events.forEach((event) {
-      _eventLikeBloc.add(LoadEventLikeCount(event.eventId ?? ''));
+      if (event.eventId != null) {
+        _eventLikeBloc.add(LoadEventLikeCount(event.eventId!));
+      }
     });
+
+    // Load liked events for the current user
+    _loadLikedEvents();
+  }
+
+  Future<void> _loadLikedEvents() async {
+    final user = await context.read<UserRepository>().getCurrentUser();
+    if (user != null) {
+      _eventLikeBloc.add(LoadLikedEvents(user.userId));
+    }
   }
 
   Future<void> _refreshEventsAndLikes(BuildContext context) async {
@@ -54,63 +65,26 @@ class _EventListWidgetState extends State<EventListWidget> {
   Widget build(BuildContext context) {
     final groupedEvents = _groupEventsByDate(widget.events);
 
-    return BlocBuilder<EventLikeBloc, EventLikeState>(
-      builder: (context, state) {
-        return ListView.builder(
-          controller: widget.scrollController,
-          padding: EdgeInsets.zero, // Ensure no padding at the start
-          itemCount: groupedEvents.length,
-          itemBuilder: (context, index) {
-            final group = groupedEvents[index];
-            if (group is DateTime) {
-              return _buildDateHeader(context, group);
-            } else if (group is Event) {
-              bool isLiked = false;
-              int likesCount = 0;
-              if (state is EventLikeSuccess) {
-                isLiked = state.likedEvents.contains(group.eventId);
-                likesCount = state.likesCount[group.eventId] ?? 0;
-              }
-              final double cardWidth = MediaQuery.of(context).size.width * 0.82;
-              final double cardHeight = 100;
-              final double imageSize = cardHeight - 16;
-              return GestureDetector(
-                onTap: () async {
-                  final bool? result = await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EventDetail(
-                        name: group.eventname ?? 'No Event Name',
-                        venue: group.venue ?? 'No Venue',
-                        description: group.description ?? 'No Description',
-                        pictureUrl: group.picture ?? 'https://via.placeholder.com/150',
-                        age: group.age ?? 0,
-                        eventId: group.eventId ?? '',
-                        venueId: group.venueId ?? '',
-                        eventTag: group.eventTag ?? [],
-                        location: group.location ?? 'No Location',
-                        price: group.price ?? 'No Price',
-                      ),
-                    ),
-                  );
-
-                  if (result == true) {
-                    _refreshEventsAndLikes(context);
-                  }
-                },
-                child: EventCard(
-                  event: group,
-                  cardWidth: cardWidth,
-                  cardHeight: cardHeight,
-                  imageSize: imageSize,
-                  isLiked: isLiked,
-                  likesCount: likesCount,
-                ),
-              );
-            }
-            return const SizedBox.shrink();
-          },
-        );
+    return ListView.builder(
+      controller: widget.scrollController,
+      padding: EdgeInsets.zero, // Ensure no padding at the start
+      itemCount: groupedEvents.length,
+      itemBuilder: (context, index) {
+        final group = groupedEvents[index];
+        if (group is DateTime) {
+          return _buildDateHeader(context, group);
+        } else if (group is Event) {
+          final double cardWidth = MediaQuery.of(context).size.width * 0.82;
+          final double cardHeight = 100;
+          final double imageSize = cardHeight - 16;
+          return EventCard(
+            event: group,
+            cardWidth: cardWidth,
+            cardHeight: cardHeight,
+            imageSize: imageSize,
+          );
+        }
+        return const SizedBox.shrink();
       },
     );
   }

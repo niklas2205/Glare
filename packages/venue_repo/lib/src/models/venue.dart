@@ -12,7 +12,8 @@ class Venue {
   String website;
   int reviews; 
   List<String> eventIds;
-  List<String> genres; // New field
+  List<String> genres;
+  final int? prio; // Prio field
 
   Venue({
     required this.venueId,
@@ -24,7 +25,8 @@ class Venue {
     required this.website,
     required this.reviews,
     required this.eventIds,
-    required this.genres, // Initialize the new field
+    required this.genres,
+    this.prio, // Initialize the new field
   });
 
   VenueEntity toEntity() {
@@ -38,7 +40,8 @@ class Venue {
       website: website,
       reviews: reviews,
       eventIds: eventIds,
-      genres: genres // Add the new field
+      genres: genres,
+      prio: prio, // Include prio field in entity
     );
   }
 
@@ -53,11 +56,12 @@ class Venue {
       website: entity.website,
       reviews: entity.reviews,
       eventIds: entity.eventIds,
-      genres: entity.genres, // Add the new field
+      genres: entity.genres,
+      prio: entity.prio, // Add the new field
     );
   }
 
-  // Add an empty constructor
+  // Empty constructor for default initialization
   Venue.empty()
       : venueId = '',
         venuename = '',
@@ -68,5 +72,6 @@ class Venue {
         website = '',
         reviews = 0,
         eventIds = [],
-        genres = [];
+        genres = [],
+        prio = 0;
 }

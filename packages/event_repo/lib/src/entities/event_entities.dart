@@ -13,6 +13,8 @@ class EventEntity {
   final List<String>? eventTag;
   final String? location;
   final String? price;
+  final String? ticket;
+  final int? prio;
 
   EventEntity({
     this.eventId,
@@ -27,6 +29,8 @@ class EventEntity {
     this.eventTag,
     this.location,
     this.price,
+    this.ticket,
+    this.prio,
   });
 
   Map<String, Object?> toDocument() {
@@ -43,6 +47,8 @@ class EventEntity {
       'eventTag': eventTag ?? [],
       'location': location ?? 'Default Location',
       'price': price ?? 'Default Price',
+      'ticket': ticket ,
+      'prio': prio ?? 3,
     };
   }
 
@@ -70,7 +76,7 @@ class EventEntity {
 
 
      static EventEntity fromDocument(Map<String, dynamic> doc) {
-    print("Document data: $doc");
+    // print("Document data: $doc");
 
     DateTime? date;
     if (doc['date'] is Timestamp) {
@@ -95,7 +101,9 @@ class EventEntity {
           ? List<String>.from(doc['eventTag'])
           : null,
       location: doc['location'] as String?,
-      price: parsePrice(doc['price']), // Use static method
+      price: parsePrice(doc['price']),
+      ticket: doc['ticket'], // Use static method
+      prio: doc['prio'] != null ? (doc['prio'] as num).toInt() : 3,
     );
   }
 }

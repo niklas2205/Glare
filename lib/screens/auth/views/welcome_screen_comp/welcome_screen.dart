@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glare/screens/auth/views/welcome_screen_comp/PostAuthScreen.dart';
 import 'package:glare/screens/auth/views/welcome_screen_comp/welcome_frontend.dart';
-import 'package:glare/screens/background_screen/background_screen.dart';
+import 'package:glare/splash_screen.dart';
+
+import 'package:user_repository/user_repository.dart';
 
 import 'welcome_backg.dart';
 
@@ -10,10 +13,9 @@ import '../../blocs/sign_in_bloc/sign_in_bloc.dart';
 import '../../blocs/sign_up_bloc/sign_up_bloc.dart';
 import '../sign_in/sign_in_screen.dart';
 import '../sign_up/sign_up_screen.dart';
-//import 'package:instax/screens/authentication/sign_in_screen.dart';
-//import 'package:instax/screens/authentication/sign_up_screen.dart';
 
-import 'package:google_fonts/google_fonts.dart';
+
+
 
 
 class WelcomeScreen extends StatefulWidget {
@@ -25,7 +27,7 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   void _onContinueWithEmailPressed() {
-    Navigator.of(context).push(
+    Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) {
           return BlocProvider<SignUpBloc>(
@@ -40,45 +42,75 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     print("Continue with Email Pressed");
   }
 
+
   void _onContinueWithGooglePressed() {
     // Handle continue with Google logic
     print("Continue with Google Pressed");
   }
 
-  void _onContinueWithApplePressed() {
-    // Handle continue with Apple logic
-    print("Continue with Apple Pressed");
+  void _onContinueWithApplePressed() async {
+    try {
+      print("Pressed on Apple");
+      await context.read<UserRepository>().signInWithApple();
+      // After signing in, navigate to PostAuthScreen to handle onboarding
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => PostAuthScreen()),
+      );
+    } catch (e) {
+      // Handle errors
+      print('Error signing in with Apple: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error signing in with Apple: $e')),
+      );
+    }
   }
 
   void _onContinueWithLogin() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return BlocProvider<SignInBloc>(
-            create: (_) => SignInBloc(
-              context.read<AuthenticationBloc>().userRepository,
-            ),
-            child: const SignInScreen(),
-          );
-        },
-      ),
-    );
-    print("Continue with Login Pressed");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          WelcomeBackground(), // Background widget
-          WelcomeFrontend(
-            onContinueWithEmail: _onContinueWithEmailPressed,
-            onContinueWithGoogle: _onContinueWithGooglePressed,
-            onContinueWithApple: _onContinueWithApplePressed,
-            onContinueWithLogin: _onContinueWithLogin,
+  Navigator.of(context).pushReplacement(
+    MaterialPageRoute(
+      builder: (context) {
+        return BlocProvider<SignInBloc>(
+          create: (_) => SignInBloc(
+            context.read<AuthenticationBloc>().userRepository,
           ),
-        ],
+          child: const SignInScreen(),
+        );
+      },
+    ),
+  );
+  print("Continue with Login Pressed");
+}
+
+
+   @override
+  Widget build(BuildContext context) {
+    
+    return BlocListener<AuthenticationBloc, AuthenticationState>(
+      
+      listener: (context, authState) {
+        if (authState.status == AuthenticationStatus.authenticated) {
+          print("Check authent");
+          // The authentication state has changed, navigate accordingly
+          // Since the MaterialApp will rebuild, we may not need to navigate here
+          // But to be safe, you can navigate to the SplashScreen or any screen you prefer
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => SplashScreen()),
+          );
+        }
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          children: [
+            WelcomeBackground(), // Background widget
+            WelcomeFrontend(
+              onContinueWithEmail: _onContinueWithEmailPressed,
+              onContinueWithGoogle: _onContinueWithGooglePressed,
+              onContinueWithApple: _onContinueWithApplePressed,
+              onContinueWithLogin: _onContinueWithLogin,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -41,6 +41,7 @@ class GenreSelected extends OnboardingEvent {
   List<Object> get props => [genre];
 }
 
+
 class SubmitGenres extends OnboardingEvent {}
 
 class LoadUserGenres extends OnboardingEvent {}

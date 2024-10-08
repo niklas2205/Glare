@@ -9,7 +9,7 @@ class FirebaseVenueRepo implements VenueRepo {
   final venueCollection = FirebaseFirestore.instance.collection('venues');
 
   @override
-  Future<List<Venue>> getVenue() async {
+  Future<List<Venue>> getVenues() async {
     try {
       final querySnapshot = await venueCollection.get();
       return querySnapshot.docs.map((doc) {

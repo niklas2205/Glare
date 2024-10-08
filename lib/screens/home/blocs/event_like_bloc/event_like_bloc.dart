@@ -58,7 +58,10 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
         likedEvents.add(event.eventId);
         likesCountMap[event.eventId] = (likesCountMap[event.eventId] ?? 0) + 1;
 
-        emit(EventLikeSuccess(likedEvents, likesCountMap));
+        emit((state as EventLikeSuccess).copyWith(
+          likedEvents: likedEvents,
+          likesCount: likesCountMap,
+        ));
       } else {
         emit(EventLikeSuccess([event.eventId], {event.eventId: 1}));
       }
@@ -79,7 +82,10 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
         likedEvents.remove(event.eventId);
         likesCountMap[event.eventId] = (likesCountMap[event.eventId] ?? 1) - 1;
 
-        emit(EventLikeSuccess(likedEvents, likesCountMap));
+        emit((state as EventLikeSuccess).copyWith(
+          likedEvents: likedEvents,
+          likesCount: likesCountMap,
+        ));
       } else {
         emit(EventLikeSuccess([], {event.eventId: 0}));
       }
@@ -95,14 +101,27 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
       final futureEventIds = futureEvents.map((e) => e.eventId).toSet();
 
       final validLikedEvents = likedEvents.where(futureEventIds.contains).toList();
-      final likesCountMap = <String, int>{};
+
+      Map<String, int> likesCountMap;
+      if (state is EventLikeSuccess) {
+        likesCountMap = Map<String, int>.from((state as EventLikeSuccess).likesCount);
+      } else {
+        likesCountMap = {};
+      }
 
       for (var eventId in validLikedEvents) {
         final count = await eventRepository.getEventLikesCount(eventId);
         likesCountMap[eventId] = count;
       }
 
-      emit(EventLikeSuccess(validLikedEvents, likesCountMap));
+      final newState = (state is EventLikeSuccess)
+          ? (state as EventLikeSuccess).copyWith(
+              likedEvents: validLikedEvents,
+              likesCount: likesCountMap,
+            )
+          : EventLikeSuccess(validLikedEvents, likesCountMap);
+
+      emit(newState);
     } catch (e) {
       emit(EventLikeFailure(e.toString()));
     }
@@ -112,10 +131,10 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
     try {
       final likesCount = await eventRepository.getEventLikesCount(event.eventId);
       if (state is EventLikeSuccess) {
-        final likedEvents = List<String>.from((state as EventLikeSuccess).likedEvents);
         final likesCountMap = Map<String, int>.from((state as EventLikeSuccess).likesCount);
         likesCountMap[event.eventId] = likesCount;
-        emit(EventLikeSuccess(likedEvents, likesCountMap));
+        final newState = (state as EventLikeSuccess).copyWith(likesCount: likesCountMap);
+        emit(newState);
       } else {
         emit(EventLikeSuccess([], {event.eventId: likesCount}));
       }
@@ -124,3 +143,4 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
     }
   }
 }
+

@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:glare/screens/home/blocs/user_bloc/user_bloc.dart';
 import 'package:glare/screens/home/views/New_Version/Profile_screen/change_genre.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -14,95 +16,126 @@ class MyAccount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          BackgroundScreen(),
-          Column(
-            children: [
-              const SizedBox(height: 60), // Space for the status bar
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
+    return BlocBuilder<UserBloc, UserState>(
+      builder: (context, state) {
+        if (state is UserLoaded) {
+          final user = state.user;
+
+          return Scaffold(
+            resizeToAvoidBottomInset: false,
+            body: Stack(
+              children: [
+                BackgroundScreen(),
+                Column(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Transform.rotate(
-                        angle: 3.14159, // 180 degrees in radians
-                        child: SvgPicture.asset(
-                          'assets/icons/Profile_screen/ic_expand_more.svg',
-                          width: 24,
-                          height: 24,
-                          color: Color(0xFF8FFA58),
-                        ),
+                    const SizedBox(height: 60), // Space for the status bar
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Transform.rotate(
+                              angle: 3.14159, // 180 degrees in radians
+                              child: SvgPicture.asset(
+                                'assets/icons/Profile_screen/ic_expand_more.svg',
+                                width: 24,
+                                height: 24,
+                                color: const Color(0xFF8FFA58),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            title,
+                            style: const TextStyle(
+                              color: Color(0xFF8FFA58),
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        color: Color(0xFF8FFA58),
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                    const SizedBox(height: 20), // Add some space below the title
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Display user information here if needed
+                            Text(
+                              'Hello, ${user.name ?? 'User'}',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            _buildCategoryBox(
+                              context,
+                              options: [
+                                _buildSettingsOption(
+                                  context,
+                                  icon: 'assets/icons/Profile_screen/user.svg',
+                                  text: 'Personal Details',
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const PersonalDetails(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                _buildSettingsOption(
+                                  context,
+                                  icon: 'assets/icons/Profile_screen/security-safe.svg',
+                                  text: 'Security Settings',
+                                  onTap: () {},
+                                ),
+                                _buildSettingsOption(
+                                  context,
+                                  icon: 'assets/icons/Profile_screen/music.svg',
+                                  text: 'My Favorite Genres',
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const ChangeGenreScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 20), // Add some space below the title
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildCategoryBox(
-                        context,
-                        options: [
-                          _buildSettingsOption(
-                            context,
-                            icon: 'assets/icons/Profile_screen/user.svg',
-                            text: 'Personal Details',
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const PersonalDetails(),
-                                ),
-                              );
-                            },
-                          ),
-                          _buildSettingsOption(
-                            context,
-                            icon: 'assets/icons/Profile_screen/security-safe.svg',
-                            text: 'Security Settings',
-                            onTap: () {},
-                          ),
-                          _buildSettingsOption(
-                            context,
-                            icon: 'assets/icons/Profile_screen/music.svg',
-                            text: 'My Favorite Genres',
-                            onTap: () {
-                               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const ChangeGenreScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+              ],
+            ),
+          );
+        } else if (state is UserLoading) {
+          return Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else if (state is UserError) {
+          return Scaffold(
+            body: Center(child: Text('Error: ${state.message}')),
+          );
+        } else {
+          // Initial or unknown state
+          return Scaffold(
+            body: Center(child: Text('Please log in.')),
+          );
+        }
+      },
     );
   }
 

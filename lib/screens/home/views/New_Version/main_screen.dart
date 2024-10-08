@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:glare/screens/home/views/New_Version/explore_screen/explore_screen.dart';
 
-import 'package:glare/screens/home/views/New_Version/home_screen.dart';
+import 'package:glare/screens/home/views/New_Version/home_screen/home_screen.dart';
 import '../../blocs/bottom_navigation_bloc/bottom_navigation_bloc.dart';
 
 
@@ -22,6 +22,7 @@ class MainScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => BottomNavigationBloc(),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: BlocBuilder<BottomNavigationBloc, BottomNavigationState>(
           builder: (context, state) {
             return IndexedStack(

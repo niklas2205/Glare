@@ -113,6 +113,21 @@ class FirebaseEventRepo implements EventRepo {
     }
   }
 
+  Future<List<Event>> getEventsWithPrio(int prio) async {
+    try {
+      final querySnapshot = await eventCollection
+          .where('prio', isEqualTo: prio)
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => Event.fromEntity(EventEntity.fromDocument(doc.data())))
+          .toList();
+    } catch (e) {
+      print('Error fetching events with Prio $prio: ${e.toString()}');
+      rethrow;
+    }
+  }
+
 
   // New method to reload events
   Future<void> reloadEvents() async {

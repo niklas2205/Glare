@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:glare/screens/home/views/New_Version/explore_screen/venue_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:glare/screens/background_screen/background_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:venue_repository/venue_repository.dart';
 
@@ -29,6 +31,7 @@ class EventDetail extends StatelessWidget {
   final List<String> eventTag;
   final String location; 
   final String price;
+  final String ticket;
 
   const EventDetail({
     required this.name,
@@ -41,6 +44,7 @@ class EventDetail extends StatelessWidget {
     required this.eventTag,
     required this.location,
     required this.price,
+    required this.ticket,
     super.key,
   });
 
@@ -56,6 +60,7 @@ class EventDetail extends StatelessWidget {
     context.read<EventLikeBloc>().add(LoadEventLikeCount(eventId));
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           BackgroundScreen(),
@@ -207,139 +212,78 @@ class EventDetail extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildVenueRow(BuildContext context, Venue venue) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double cardWidth = screenWidth * 0.82;
-    final double cardHeight = MediaQuery.of(context).size.height * 0.12;
-    final double imageSize = cardHeight - 16;
-
-    return BlocBuilder<UserBloc, UserState>(
-      builder: (context, userState) {
-        if (userState is UserLoaded) {
-          bool isFavorite = userState.favoriteVenueIds.contains(venue.venueId);
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Material(
-                elevation: 5,
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(10),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(10),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder: (BuildContext context) => BlocProvider(
-                          create: (context) => EventListByIdsBloc(
-                            context.read<EventRepo>(),
-                            context.read<UserRepository>(),
-                          )..add(FetchEventsByIds(venue.eventIds)),
-                          child: VenueDetail(
-                            name: venue.venuename,
-                            address: venue.address,
-                            description: venue.description,
-                            pictureUrl: venue.picture,
-                            instagram: venue.instagram,
-                            website: venue.website,
-                            eventIds: venue.eventIds,
-                            genres: venue.genres,
-                          ),
+                if (ticket.isNotEmpty)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.09),
+                  child: SizedBox(
+                    width: widgetWidth,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        // Launch the ticket URL
+                        final url = ticket;
+                        if (await canLaunchUrlString(url)) {
+                          await launchUrlString(url);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Could not open the ticket link.')),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF8FFA58), // Button color
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                    );
-                  },
-                  child: Container(
-                    width: cardWidth,
-                    height: cardHeight,
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    child: Stack(
-                      children: [
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image.network(
-                                  venue.picture,
-                                  width: imageSize,
-                                  height: imageSize,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 8),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      venue.venuename,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      venue.address,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
+                      child: const Text(
+                        'Buy Tickets',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: IconButton(
-                            onPressed: () {
-                              if (isFavorite) {
-                                context.read<FavouriteVenueBloc>().add(RemoveVenueFromFavorites(userState.user.userId, venue.venueId));
-                              } else {
-                                context.read<FavouriteVenueBloc>().add(AddVenueToFavorites(userState.user.userId, venue.venueId));
-                              }
-                              context.read<UserBloc>().add(RefreshUserFavorites(userState.user.userId));
-                            },
-                            icon: Icon(
-                              isFavorite ? Icons.star : Icons.star_border,
-                              color: isFavorite ? const Color(0xFF8FFA58) : Colors.white,
-                            ),
-                            iconSize: 24,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          );
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
-      },
-    );
-  }
+
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }
+
+ Widget _buildVenueRow(BuildContext context, Venue venue) {
+  final double screenWidth = MediaQuery.of(context).size.width;
+  final double cardWidth = screenWidth * 0.82;
+  final double cardHeight = MediaQuery.of(context).size.height * 0.12;
+  final double imageSize = cardHeight - 16;
+
+  return BlocBuilder<UserBloc, UserState>(
+    builder: (context, userState) {
+      if (userState is UserLoaded) {
+        bool isFavorite = userState.favoriteVenueIds.contains(venue.venueId);
+        String userId = userState.user.userId;
+
+        return VenueCard(
+          venue: venue,
+          isFavorite: isFavorite,
+          userId: userId,
+          cardWidth: cardWidth,
+          cardHeight: cardHeight,
+          imageSize: imageSize,
+        );
+      } else {
+        return const Center(child: CircularProgressIndicator());
+      }
+    },
+  );
+}
+}
+
 
 class CustomTitleWithButtons extends StatelessWidget {
   final String name;

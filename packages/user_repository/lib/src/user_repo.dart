@@ -25,6 +25,8 @@ abstract class UserRepository {
 
   Future<List<MyUser>> getFirstUsers(int limit); // Add this line
 
+  Future<void> signInWithApple();
+
   MyUser? get currentUser;
 }
 

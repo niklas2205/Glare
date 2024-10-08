@@ -17,7 +17,7 @@ class GetVenueBloc extends Bloc<GetVenueEvent, GetVenueState> {
   Future<void> _onGetVenue(GetVenue event, Emitter<GetVenueState> emit) async {
     emit(GetVenueLoading());
     try {
-      final venues = await venueRepo.getVenue();
+      final venues = await venueRepo.getVenues();
       emit(GetVenueSuccess(venues));
     } catch (e) {
       emit(GetVenueFailure());

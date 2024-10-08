@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:glare/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:glare/screens/home/blocs/user_bloc/user_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:user_repository/user_repository.dart';
 
 import '../../../../background_screen/background_screen.dart';
@@ -23,9 +24,11 @@ class _PersonalDetailsState extends State<PersonalDetails> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-  final TextEditingController ageController = TextEditingController();
+  // Removed ageController
   final List<String> genders = ['Male', 'Female', 'Diverse', 'Rather not say'];
   String? selectedGender;
+
+  DateTime? selectedDateOfBirth; // Added this variable
 
   @override
   void initState() {
@@ -36,14 +39,30 @@ class _PersonalDetailsState extends State<PersonalDetails> {
       nameController.text = user.name ?? '';
       emailController.text = user.email;
       phoneController.text = user.phoneNumber ?? '';
-      ageController.text = user.age?.toString() ?? '';
       selectedGender = user.gender ?? genders.last;
+      selectedDateOfBirth = user.dateOfBirth; // Initialize date of birth
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocListener<UserUpdateBloc, UserUpdateState>(
+    listener: (context, state) {
+      if (state is UserUpdateSuccess) {
+        // Dispatch event to refresh user data
+        context.read<UserBloc>().add(FetchUserData());
+
+        // Navigate back one screen
+        Navigator.pop(context);
+      } else if (state is UserUpdateFailure) {
+        // Show an error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update user data')),
+        );
+      }
+    },
+    child: Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           BackgroundScreen(),
@@ -92,7 +111,7 @@ class _PersonalDetailsState extends State<PersonalDetails> {
                           buildInputField('Name', nameController),
                           buildInputField('Email', emailController),
                           buildInputField('Phone', phoneController),
-                          buildInputField('Age', ageController),
+                          buildDateOfBirthField(context), // Replaced age field
                           buildDropdownField(context),
                           buildUpdateButton(context),
                         ],
@@ -105,7 +124,7 @@ class _PersonalDetailsState extends State<PersonalDetails> {
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget buildInputField(String label, TextEditingController controller) {
@@ -155,6 +174,75 @@ class _PersonalDetailsState extends State<PersonalDetails> {
         ],
       ),
     );
+  }
+
+  // New method for Date of Birth field
+  Widget buildDateOfBirthField(BuildContext context) {
+    return Container(
+      width: 322,
+      height: 82, // Increased height to include the title
+      margin: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Date of Birth',
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8),
+          GestureDetector(
+            onTap: () => _selectDate(context),
+            child: Container(
+              height: 50,
+              decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xFF8FFA58)),
+                borderRadius: BorderRadius.circular(100),
+                color: const Color(0xFF1A1A1A),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              alignment: Alignment.centerLeft,
+              child: Text(
+                selectedDateOfBirth != null
+                    ? DateFormat('yyyy-MM-dd').format(selectedDateOfBirth!)
+                    : 'Select Date of Birth',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16,
+                  color: selectedDateOfBirth != null
+                      ? Colors.white
+                      : Colors.white.withOpacity(0.5),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Method to display the date picker
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDateOfBirth ?? DateTime.now().subtract(Duration(days: 365 * 18)),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.dark(), // Customize as needed
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != selectedDateOfBirth) {
+      setState(() {
+        selectedDateOfBirth = picked;
+      });
+    }
   }
 
   Widget buildDropdownField(BuildContext context) {
@@ -235,10 +323,10 @@ class _PersonalDetailsState extends State<PersonalDetails> {
         ),
         onPressed: () {
           final updatedUser = {
-            'name': nameController.text,
-            'email': emailController.text,
-            'phoneNumber': phoneController.text,
-            'age': int.tryParse(ageController.text),
+            'name': nameController.text.trim(),
+            'email': emailController.text.trim(),
+            'phoneNumber': phoneController.text.trim(),
+            'dateOfBirth': selectedDateOfBirth, // Updated field
             'gender': selectedGender,
           };
           context.read<UserUpdateBloc>().add(UpdateUserDetails(updatedUser));
