@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter/material.dart';
@@ -35,15 +36,12 @@ class WelcomeBackground extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             Positioned(
-              left: screenWidth * (-0.0027), // Approximate -1 / 375
-              top: screenHeight * 0.049, // Approximate 40 / 812
-              child: Text(
-                'Glare',
-                style: GoogleFonts.majorMonoDisplay(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 30,
-                  color: const Color(0xFF8FFA58),
-                ),
+              left: screenWidth * (-0.1627), // Approximate -1 / 375
+              top: screenHeight * (-0.05), // Approximate 40 / 812
+              child: SvgPicture.asset(
+                'assets/images/glare-3.svg',
+                width: screenWidth * (0.3),  // Adjust as needed
+                height: screenHeight * 0.3, // Adjust as needed
               ),
             ),
             // Top fade overlay

@@ -1,4 +1,4 @@
-import 'dart:async';
+
 
 import 'package:event_repository/event_repository.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +7,8 @@ import 'package:glare/screens/home/blocs/event_like_bloc/event_like_bloc.dart';
 import 'package:glare/screens/home/views/New_Version/Event_Venue_Detail/Event_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
+// Make sure to import your EventLikeBloc and Event classes appropriately
 
 class PromotionEventCard extends StatelessWidget {
   final Event event;
@@ -21,10 +22,14 @@ class PromotionEventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // Get screen dimensions for dynamic sizing
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     final cardWidth = screenWidth * 0.6; // 60% of screen width
-    final cardHeight = cardWidth * 1.3; // Adjust as needed
+    final cardHeight = screenHeight * 0.35; // Adjust as needed
     final imageHeight = cardHeight * 0.6; // Image fills the top 60% of the card
     final imageMargin = cardWidth * 0.05; // 5% margin for the image
+
+    // Define the threshold height
+    final double thresholdHeight = 700.0; // Initial height threshold
 
     // Extract date info and format month as abbreviated
     final eventDate = event.date ?? DateTime.now();
@@ -213,35 +218,40 @@ class PromotionEventCard extends StatelessWidget {
                 },
               ),
             ),
-            // Event tags
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: cardWidth * 0.05, vertical: cardHeight * 0.01),
-              child: Wrap(
-                spacing: 4,
-                children: (event.eventTag ?? []).map((tag) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1A1A1A),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                    child: Text(
-                      tag,
-                      style: GoogleFonts.getFont(
-                        'Inter',
-                        fontSize: screenWidth * 0.03,
-                        color: const Color(0xFF8FFA58),
+            // Event tags (conditionally displayed)
+            if (screenHeight >= thresholdHeight) // Conditional check
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: cardWidth * 0.05,
+                  vertical: cardHeight * 0.01,
+                ),
+                child: Wrap(
+                  spacing: 4,
+                  children: (event.eventTag ?? []).map((tag) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1A1A1A),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    ),
-                  );
-                }).toList(),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 4,
+                        horizontal: 8,
+                      ),
+                      child: Text(
+                        tag,
+                        style: GoogleFonts.getFont(
+                          'Inter',
+                          fontSize: screenWidth * 0.03,
+                          color: const Color(0xFF8FFA58),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
-            ),
           ],
         ),
       ),
     );
   }
 }
-
-

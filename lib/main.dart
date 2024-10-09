@@ -11,11 +11,19 @@ import 'package:user_repository/user_repository.dart';
 //import 'firebase_options.dart'; // Adjust the import path if necessary
 
 
+import 'package:flutter/services.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
   await Firebase.initializeApp();
-  Bloc.observer = const SimpleBlocObserver();
 
+  // Set preferred orientations to portrait only
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+  Bloc.observer = const SimpleBlocObserver();
   final userRepository = FirebaseUserRepo();
   runApp(MainApp(userRepository));
 }

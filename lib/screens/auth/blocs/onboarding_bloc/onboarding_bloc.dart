@@ -58,9 +58,9 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       updatedUser = user;
       bool isComplete = true;
 
-      if (user.name == "") {
+      if (user.name == "" || user.name == null) {
         isComplete = false;
-        print("OnboardingBloc: Age is incomplete.");
+        print("OnboardingBloc: Name is incomplete.");
       }
 
 

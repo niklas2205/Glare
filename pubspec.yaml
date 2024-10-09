@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  dropdown_button2: ^2.3.9
   
   smooth_page_indicator: ^1.2.0
 

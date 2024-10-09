@@ -227,7 +227,7 @@ class _EventCarouselState extends State<EventCarousel> {
       children: [
         // Event PageView
         SizedBox(
-          height: screenHeight * 0.4, // Adjusted the height for the carousel
+          height: screenHeight * 0.35, // Adjusted the height for the carousel
           child: PageView.builder(
             controller: _pageController,
             itemCount: widget.events.length,
@@ -246,7 +246,7 @@ class _EventCarouselState extends State<EventCarousel> {
         ),
 
         // Adjusted gap between the carousel and the circular indicators
-        const SizedBox(height: 8),
+        SizedBox(height: screenHeight * 0.03),
 
         // Circular indicators for the PageView
         SmoothPageIndicator(

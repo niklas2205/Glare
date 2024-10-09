@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -170,50 +171,98 @@ class _OnboardingScreenForegroundState extends State<OnboardingScreenForeground>
     }
   }
 
-  Widget buildDropdownField(BuildContext context) {
-    return Container(
-      width: 322,
-      height: 56,
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF8FFA58)),
-        borderRadius: BorderRadius.circular(100),
-        color: const Color(0xFF1A1A1A),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      margin: const EdgeInsets.only(bottom: 24),
-      child: DropdownButtonFormField<String>(
+ Widget buildDropdownField(BuildContext context) {
+  return Container(
+    width: 322,
+    height: 56,
+    decoration: BoxDecoration(
+      border: Border.all(color: const Color(0xFF8FFA58)),
+      borderRadius: BorderRadius.circular(100),
+      color: const Color(0xFF1A1A1A),
+    ),
+    padding: EdgeInsets.zero,
+    margin: const EdgeInsets.only(bottom: 24),
+    child: DropdownButtonHideUnderline(
+      child: DropdownButton2<String>(
         value: selectedGender,
-        icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-        decoration: InputDecoration(
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.fromLTRB(0, 3, 0, 0),
-          hintText: 'Select Gender',
-          hintStyle: GoogleFonts.inter(
+        hint: Text(
+          'Gender',
+          style: GoogleFonts.inter(
             color: Colors.white.withOpacity(0.5),
             fontSize: 16,
           ),
         ),
-        style: GoogleFonts.inter(
-          color: Colors.white,
-          fontSize: 16,
-        ),
-        dropdownColor: const Color(0xFF1A1A1A),
+        items: genders.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                value,
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
         onChanged: (String? newValue) {
           setState(() {
             selectedGender = newValue;
           });
-          // Removed the event addition to OnboardingBloc
-          // Since we handle gender on form submission
         },
-        items: genders.map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
+        customButton: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: Text(
+                selectedGender ?? 'Gender',
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  color: selectedGender == null
+                      ? Colors.white.withOpacity(0.5)
+                      : Colors.white,
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(right: 8),
+              child: Icon(
+                Icons.arrow_drop_down,
+                color: Color(0xFF8FFA58),
+                size: 24,
+              ),
+            ),
+          ],
+        ),
+        buttonStyleData: ButtonStyleData(
+          height: 56,
+          padding: EdgeInsets.zero,  // Remove padding, handled by customButton
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100),
+            color: const Color(0xFF1A1A1A),
+          ),
+        ),
+        dropdownStyleData: DropdownStyleData(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: const Color(0xFF1A1A1A),
+            border: Border.all(color: const Color(0xFF8FFA58)),
+          ),
+          maxHeight: 200,
+        ),
+        menuItemStyleData: const MenuItemStyleData(
+          height: 48,
+          padding: EdgeInsets.symmetric(horizontal: 16),
+        ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+
 
   Widget buildNavigationRow(BuildContext context) {
     return Column(

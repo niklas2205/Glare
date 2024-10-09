@@ -53,7 +53,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         } else if (state is SignUpFailure) {
           // Display a SnackBar if registration fails
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Registration Failed! Please try again.'),
+            content: Text('Registration Failed! Email taken.'),
             backgroundColor: Colors.red,
           ));
         }
@@ -66,6 +66,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Form(
               key: _formKey,
               child: SignUpFore1(
+              
                 emailController: emailController,
                 passwordController: passwordController,
                 confirmPasswordController: confirmPasswordController,

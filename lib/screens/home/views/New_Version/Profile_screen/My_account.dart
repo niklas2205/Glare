@@ -67,14 +67,14 @@ class MyAccount extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             // Display user information here if needed
-                            Text(
-                              'Hello, ${user.name ?? 'User'}',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
+                            // Text(
+                            //   'Hello, ${user.name ?? 'User'}',
+                            //   style: TextStyle(
+                            //     color: Colors.white,
+                            //     fontSize: 20,
+                            //   ),
+                            // ),
+                            const SizedBox(height: 10),
                             _buildCategoryBox(
                               context,
                               options: [
@@ -91,12 +91,12 @@ class MyAccount extends StatelessWidget {
                                     );
                                   },
                                 ),
-                                _buildSettingsOption(
-                                  context,
-                                  icon: 'assets/icons/Profile_screen/security-safe.svg',
-                                  text: 'Security Settings',
-                                  onTap: () {},
-                                ),
+                                // _buildSettingsOption(
+                                //   context,
+                                //   icon: 'assets/icons/Profile_screen/security-safe.svg',
+                                //   text: 'Security Settings',
+                                //   onTap: () {},
+                                // ),
                                 _buildSettingsOption(
                                   context,
                                   icon: 'assets/icons/Profile_screen/music.svg',

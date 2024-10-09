@@ -242,7 +242,7 @@ class VenueDetail extends StatelessWidget {
                         );
                       } else if (state is EventListByIdsError) {
                         return const Text(
-                          'Failed to load events',
+                          'No upcoming events',
                           style: TextStyle(color: Colors.red),
                         );
                       }

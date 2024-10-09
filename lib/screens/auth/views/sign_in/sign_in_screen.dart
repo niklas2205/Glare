@@ -88,8 +88,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 passwordController: passwordController,
                 loginWithEmail: _loginWithEmail,
                 registerWithEmail: _registerWithEmail,
-                forgotPasswordbutton: _forgotPassword,
+                // forgotPasswordbutton: _forgotPassword,
                 onContinueWithApple: _onContinueWithApplePressed,
+                onContinueWithGoogle: _onContinueWithGooglePressed,
               ),
             ),
           ],
@@ -134,6 +135,20 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
     );
   }
+  void _onContinueWithGooglePressed() async {
+  try {
+    print("Pressed on Google");
+    await context.read<UserRepository>().signInWithGoogle();
+    // No need to navigate here; AuthenticationBloc will handle it
+  } catch (e) {
+    // Handle errors
+    print('Error signing in with Google: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error signing in with Google: $e')),
+    );
+  }
+}
+
 
   void _forgotPassword() {
     // Handle forgot password logic

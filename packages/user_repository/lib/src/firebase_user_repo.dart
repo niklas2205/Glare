@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'dart:developer';
@@ -27,30 +28,28 @@ class FirebaseUserRepo implements UserRepository {
   })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
         _firestore = firestore ?? FirebaseFirestore.instance;
 
+
  @override
-Future<void> updateUserData(Map<String, dynamic> userData) async {
-  var currentUser = _firebaseAuth.currentUser;
-  if (currentUser == null) {
-    throw Exception("No user signed in.");
+  Future<void> updateUserData(Map<String, dynamic> userData) async {
+    var currentUser = _firebaseAuth.currentUser;
+    if (currentUser == null) {
+      throw Exception("No user signed in.");
+    }
+    try {
+      // Convert DateTime fields to Timestamp
+      Map<String, dynamic> processedData = userData.map((key, value) {
+        if (value is DateTime) {
+          return MapEntry(key, Timestamp.fromDate(value));
+        } else {
+          return MapEntry(key, value);
+        }
+      });
+      await usersCollection.doc(currentUser.uid).update(processedData);
+    } catch (e) {
+      log('Error updating user data: ${e.toString()}');
+      rethrow; // Or handle more gracefully
+    }
   }
-  try {
-    // Convert DateTime fields to Timestamp
-    Map<String, dynamic> processedData = userData.map((key, value) {
-      if (value is DateTime) {
-        return MapEntry(key, Timestamp.fromDate(value));
-      } else {
-        return MapEntry(key, value);
-      }
-    });
-    await usersCollection.doc(currentUser.uid).update(processedData);
-  } catch (e) {
-    log('Error updating user data: ${e.toString()}');
-    rethrow; // Or handle more gracefully
-  }
-}
-
-
-
 
   @override
   Stream<MyUser?> get user {
@@ -91,11 +90,11 @@ Future<void> updateUserData(Map<String, dynamic> userData) async {
   Future<MyUser> signUp(MyUser myUser, String password) async {
     try {
       UserCredential user = await _firebaseAuth.createUserWithEmailAndPassword(
-          email: myUser.email,
-          password: password
+        email: myUser.email,
+        password: password,
       );
-      myUser.userId = user.user!.uid;  // Ensure you update the user ID after successful sign-up
-      await setUserData(myUser);  // Save user data after signing up
+      myUser.userId = user.user!.uid; // Ensure you update the user ID after successful sign-up
+      await setUserData(myUser); // Save user data after signing up
       return myUser;
     } catch (e) {
       log(e.toString());
@@ -111,9 +110,7 @@ Future<void> updateUserData(Map<String, dynamic> userData) async {
   @override
   Future<void> setUserData(MyUser myUser) async {
     try {
-      await usersCollection
-          .doc(myUser.userId)
-          .set(myUser.toEntity().toDocument());
+      await usersCollection.doc(myUser.userId).set(myUser.toEntity().toDocument());
     } catch (e) {
       log(e.toString());
       rethrow;
@@ -122,8 +119,7 @@ Future<void> updateUserData(Map<String, dynamic> userData) async {
 
   @override
   Future<List<String>> fetchFavoriteVenueIds(String userId) async {
-    var snapshot = await FirebaseFirestore.instance
-        .collection('users')
+    var snapshot = await usersCollection
         .doc(userId)
         .collection('favorite_venues')
         .get();
@@ -137,7 +133,7 @@ Future<void> updateUserData(Map<String, dynamic> userData) async {
       await usersCollection.doc(userId).update({'favoriteGenres': genres});
     } catch (e) {
       log('Failed to save user genres: ${e.toString()}');
-      rethrow;  // Or handle more gracefully
+      rethrow; // Or handle more gracefully
     }
   }
 
@@ -171,9 +167,9 @@ Future<void> updateUserData(Map<String, dynamic> userData) async {
 
   @override
   Future<bool> isEventLiked(String userId, String eventId) async {
-    final userDoc = await _firestore.collection('users').doc(userId).get();
+    final userDoc = await usersCollection.doc(userId).get();
     if (userDoc.exists) {
-      List likedEvents = userDoc.data()?['likedEvents'] ?? [];
+      List<dynamic> likedEvents = userDoc.data()?['likedEvents'] ?? [];
       return likedEvents.contains(eventId);
     }
     return false;
@@ -181,9 +177,9 @@ Future<void> updateUserData(Map<String, dynamic> userData) async {
 
   @override
   Future<List<String>> getLikedEvents(String userId) async {
-    final userDoc = await _firestore.collection('users').doc(userId).get();
+    final userDoc = await usersCollection.doc(userId).get();
     if (userDoc.exists) {
-      List likedEvents = userDoc.data()?['likedEvents'] ?? [];
+      List<dynamic> likedEvents = userDoc.data()?['likedEvents'] ?? [];
       return List<String>.from(likedEvents);
     }
     return [];
@@ -191,7 +187,7 @@ Future<void> updateUserData(Map<String, dynamic> userData) async {
 
   // Friend request and friends management methods
 
-   @override
+  @override
   Future<void> sendFriendRequest(String userId, String friendId) async {
     final friendRef = _firestore.collection('users').doc(friendId);
 
@@ -231,13 +227,15 @@ Future<void> updateUserData(Map<String, dynamic> userData) async {
         .where('name', isLessThanOrEqualTo: '$query\uf8ff')
         .get();
 
-    return snapshot.docs.map((doc) => MyUser.fromEntity(MyUserEntity.fromDocument(doc.data()))).toList();
+    return snapshot.docs
+        .map((doc) => MyUser.fromEntity(MyUserEntity.fromDocument(doc.data())))
+        .toList();
   }
 
   @override
   Stream<List<MyUser>> getFriends(String userId) {
     return usersCollection.doc(userId).snapshots().asyncMap((doc) async {
-      final List<String> friendsIds = List<String>.from(doc['friends'] ?? []);
+      final List<dynamic> friendsIds = doc['friends'] ?? [];
       final List<MyUser> friends = [];
 
       for (final friendId in friendsIds) {
@@ -254,7 +252,7 @@ Future<void> updateUserData(Map<String, dynamic> userData) async {
   @override
   Stream<List<MyUser>> getFriendRequests(String userId) {
     return usersCollection.doc(userId).snapshots().asyncMap((doc) async {
-      List<String> requestIds = List<String>.from(doc['friendRequests'] ?? []);
+      List<dynamic> requestIds = List<dynamic>.from(doc['friendRequests'] ?? []);
       List<MyUser> requests = [];
 
       for (final requestId in requestIds) {
@@ -270,12 +268,14 @@ Future<void> updateUserData(Map<String, dynamic> userData) async {
 
   @override
   Future<List<MyUser>> getFirstUsers(int limit) async {
-    final snapshot = await _firestore.collection('users')
+    final snapshot = await usersCollection
         .orderBy('name')
         .limit(limit)
         .get();
 
-    return snapshot.docs.map((doc) => MyUser.fromEntity(MyUserEntity.fromDocument(doc.data()))).toList();
+    return snapshot.docs
+        .map((doc) => MyUser.fromEntity(MyUserEntity.fromDocument(doc.data())))
+        .toList();
   }
 
   // Getter for current user
@@ -292,6 +292,49 @@ Future<void> updateUserData(Map<String, dynamic> userData) async {
     return null;
   }
 
+  @override
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser == null) {
+        // The user canceled the sign-in
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Sign in with Firebase
+      UserCredential userCredential =
+          await _firebaseAuth.signInWithCredential(credential);
+
+      // Check if the user is new
+      bool isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
+
+      if (isNewUser) {
+        // Create a new MyUser object
+        MyUser myUser = MyUser(
+          userId: userCredential.user!.uid,
+          email: userCredential.user!.email ?? '',
+          name: userCredential.user!.displayName ?? '',
+          dateOfBirth: null, // To be set during onboarding
+          favoriteGenres: [], // To be set during onboarding
+        );
+
+        // Save user data to Firestore
+        await setUserData(myUser);
+      }
+    } catch (e) {
+      log('Error signing in with Google: ${e.toString()}');
+      rethrow;
+    }
+  }
 
   @override
   Future<void> signInWithApple() async {
@@ -321,19 +364,15 @@ Future<void> updateUserData(Map<String, dynamic> userData) async {
           email: userCredential.user!.email ?? '',
           name: '${appleCredential.givenName ?? ''} ${appleCredential.familyName ?? ''}'.trim(),
           dateOfBirth: null, // To be set during onboarding
-          favoriteGenres: null, // To be set during onboarding
-          // Initialize other fields as necessary
+          favoriteGenres: [], // To be set during onboarding
         );
 
         // Save user data to Firestore
         await setUserData(myUser);
       }
-
-      // The AuthenticationBloc will pick up the user change via the stream
     } catch (e) {
       log('Error signing in with Apple: ${e.toString()}');
       rethrow;
     }
   }
-
 }

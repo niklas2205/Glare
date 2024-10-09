@@ -10,6 +10,7 @@ import 'package:glare/screens/background_screen/background_screen.dart';
 import 'package:glare/screens/home/views/New_Version/Profile_screen/Manage_friends.dart';
 import 'package:glare/screens/home/views/New_Version/Profile_screen/My_account.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:user_repository/user_repository.dart';
 
 
@@ -256,7 +257,7 @@ class SettingsContainer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle(context, 'General'),
+          // _buildSectionTitle(context, 'General'),
           _buildCategoryBox(
             context,
             options: [
@@ -274,32 +275,32 @@ class SettingsContainer extends StatelessWidget {
                 
                 },
               ),
-              _buildSettingsOption(
-                context,
-                icon: 'assets/icons/Profile_screen/people.svg',
-                text: 'Manage Friends',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ManageFriends(),
-                    ),
-                  );
+              // _buildSettingsOption(
+              //   context,
+              //   icon: 'assets/icons/Profile_screen/people.svg',
+              //   text: 'Manage Friends',
+              //   onTap: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => ManageFriends(),
+              //       ),
+              //     );
                 
-                },
-              ),
-              _buildSettingsOption(
-                context,
-                icon: 'assets/icons/Profile_screen/direct.svg',
-                text: 'Inbox',
-                onTap: () {},
-              ),
-            ],
-          ),
-          _buildSectionTitle(context, 'Information'),
-          _buildCategoryBox(
-            context,
-            options: [
+              //   },
+              // ),
+              // _buildSettingsOption(
+              //   context,
+              //   icon: 'assets/icons/Profile_screen/direct.svg',
+              //   text: 'Inbox',
+              //   onTap: () {},
+              // ),
+          //   ],
+          // ),
+          // // _buildSectionTitle(context, 'Information'),
+          // _buildCategoryBox(
+          //   context,
+          //   options: [
               _buildSettingsOption(
                 context,
                 icon: 'assets/icons/Profile_screen/document-text.svg',
@@ -312,30 +313,39 @@ class SettingsContainer extends StatelessWidget {
                 text: 'Privacy Policy',
                 onTap: () {},
               ),
-              _buildSettingsOption(
-                context,
-                icon: 'assets/icons/Profile_screen/mobile.svg',
-                text: 'About This App',
-                onTap: () {},
-              ),
-            ],
-          ),
-          _buildSectionTitle(context, 'Help & Support'),
-          _buildCategoryBox(
-            context,
-            options: [
-              _buildSettingsOption(
-                context,
-                icon: 'assets/icons/Profile_screen/message-question.svg',
-                text: 'FAQ',
-                onTap: () {},
-              ),
+              // _buildSettingsOption(
+              //   context,
+              //   icon: 'assets/icons/Profile_screen/mobile.svg',
+              //   text: 'About This App',
+              //   onTap: () {},
+              // ),
+          //   ],
+          // ),
+          // // _buildSectionTitle(context, 'Help & Support'),
+          // _buildCategoryBox(
+          //   context,
+          //   options: [
+              // _buildSettingsOption(
+              //   context,
+              //   icon: 'assets/icons/Profile_screen/message-question.svg',
+              //   text: 'FAQ',
+              //   onTap: () {},
+              // ),
               _buildSettingsOption(
                 context,
                 icon: 'assets/icons/Profile_screen/sms.svg',
                 text: 'Contact Us',
-                onTap: () {},
+                onTap: () async {
+                  final Uri url = Uri.parse('https://www.glare-events.com/kontakt');
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url);
+                  } else {
+                    // Handle the error by showing a message, for example
+                    throw 'Could not launch $url';
+                  }
+                },
               ),
+
             ],
           ),
         ],

@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -139,7 +140,7 @@ class WelcomeFrontend extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset('assets/icons/ic_google.png', height: 24),
+            SvgPicture.asset('assets/icons/google-color.svg', height: 24),
             const SizedBox(width: 10),
             Text(
               'Continue with Google',

@@ -15,6 +15,7 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		DDF5D4BC2CB52FA700C71A75 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DDF5D4AF2CB52FA600C71A75 /* GoogleService-Info.plist */; };
 		F397E6BCC3489B77CF7DC50E /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5200AF281D5740D54593CD41 /* Pods_RunnerTests.framework */; };
 		FC6066D1D0007AE13ED2577E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 399D6A3CE47332F35AB815CB /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
@@ -69,6 +70,7 @@
 		C3E9A2AA32D9A64E601158E1 /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		DDF5D4A92CB47A0600C71A75 /* RunnerDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerDebug.entitlements; sourceTree = "<group>"; };
 		DDF5D4AA2CB47A5900C71A75 /* RunnerRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerRelease.entitlements; sourceTree = "<group>"; };
+		DDF5D4AF2CB52FA600C71A75 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,6 +162,7 @@
 				DDF5D4AA2CB47A5900C71A75 /* RunnerRelease.entitlements */,
 				DDF5D4A92CB47A0600C71A75 /* RunnerDebug.entitlements */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
+				DDF5D4AF2CB52FA600C71A75 /* GoogleService-Info.plist */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
 				97C147021CF9000F007C117D /* Info.plist */,
@@ -272,6 +275,7 @@
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 				FC6066D1D0007AE13ED2577E /* GoogleService-Info.plist in Resources */,
+				DDF5D4BC2CB52FA700C71A75 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

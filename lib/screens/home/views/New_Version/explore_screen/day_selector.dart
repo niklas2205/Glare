@@ -15,7 +15,7 @@ class DaySelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<DateTime> days = List.generate(10, (i) => DateTime.now().add(Duration(days: i)));
+    final List<DateTime> days = List.generate(30, (i) => DateTime.now().add(Duration(days: i)));
 
     return BlocBuilder<DaySelectorBloc, DaySelectorState>(
       builder: (context, state) {

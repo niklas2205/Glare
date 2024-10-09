@@ -2,10 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.718317121487-ajd2fgri7a0q3vi4ck1hi2mbqg59kr7f</string>
 	<key>CLIENT_ID</key>
-	<string>718317121487-ajd2fgri7a0q3vi4ck1hi2mbqg59kr7f.apps.googleusercontent.com</string>
+	<string>718317121487-jqcr5cankukvd7engbn099a08r48oo08.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.718317121487-jqcr5cankukvd7engbn099a08r48oo08</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCng4zh29EoMLaO1kvFuutcUXdyCsnKFMU</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,22 +13,22 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.glare</string>
+	<string>com.galre-events.glare</string>
 	<key>PROJECT_ID</key>
 	<string>glare-8e959</string>
 	<key>STORAGE_BUCKET</key>
 	<string>glare-8e959.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_GCM_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:718317121487:ios:f9ba2d8f161fc315f62cba</string>
+	<string>1:718317121487:ios:ebf20dd7c9a292b6f62cba</string>
 </dict>
 </plist>

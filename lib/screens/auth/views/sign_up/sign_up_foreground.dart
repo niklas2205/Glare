@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glare/screens/auth/blocs/sign_up_bloc/sign_up_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -47,6 +49,7 @@ class SignUpFore1 extends StatelessWidget {
                 inputField('Email address', emailController),
                 passwordField('Password', passwordController),
                 passwordField('Confirm Password', confirmPasswordController),
+                passwordRequirements()
               ],
             ),
           ),
@@ -54,26 +57,50 @@ class SignUpFore1 extends StatelessWidget {
             margin: const EdgeInsets.fromLTRB(0, 0, 0, 24),
             width: 322,
             child: ElevatedButton(
-              onPressed: () {
-                if (passwordController.text != confirmPasswordController.text) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Passwords do not match!'),
-                    backgroundColor: Colors.red,
-                  ));
-                } else if (!isValidPassword(passwordController.text)) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Password must be 7-25 characters long, include at least one uppercase letter and one number.'),
-                    backgroundColor: Colors.red,
-                  ));
+              onPressed: () async {
+                if (emailController.text.isEmpty ||
+                    passwordController.text.isEmpty ||
+                    confirmPasswordController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('All fields are required.'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
                 } else if (!isValidEmail(emailController.text)) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Please enter a valid email address.'),
-                    backgroundColor: Colors.red,
-                  ));
-                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter a valid email address.'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                } else if (passwordController.text != confirmPasswordController.text) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Passwords do not match!'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                } else if (!isValidPassword(passwordController.text)) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Password must be 7-25 characters long, include at least one uppercase letter and one number.'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                // } else if (await isUsernameTaken(emailController.text)) {
+                //   ScaffoldMessenger.of(context).showSnackBar(
+                //     const SnackBar(
+                //       content: Text('The username is already taken. Please choose another one.'),
+                //       backgroundColor: Colors.red,
+                //     ),
+                //   );
+                 } 
+                else {
                   registerWithEmail();
                 }
               },
+
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.fromLTRB(0, 11, 0, 11),
                 backgroundColor: const Color(0xFF8FFA58),
@@ -284,6 +311,32 @@ class SignUpFore1 extends StatelessWidget {
     return lengthValid && hasUppercase && hasNumber;
   }
 
+  
+
+
+//   Future<bool> isUsernameTaken(String email) async {
+//   // Replace this with the actual Firestore query logic.
+//   final userExists = await userRepository.isUserExists(email); // Assuming this method exists
+//   return userExists;
+// }
+
+  Widget passwordRequirements() {
+  return Container(
+    margin: const EdgeInsets.only(top: 8.0, bottom: 0),
+    child: Text(
+      'Password must be 7-25 characters long, include at least one uppercase letter, and one number.',
+      style: GoogleFonts.getFont(
+        'Inter',
+        fontWeight: FontWeight.w400,
+        fontSize: 14,
+        height: 1.5,
+        color: const Color(0xFFFFFFFF),
+      ),
+      textAlign: TextAlign.center,
+    ),
+  );
+}
+
   Widget termsAndPrivacy() {
     return Container(
       margin: const EdgeInsets.fromLTRB(26.6, 0, 26.6, 35),
@@ -386,4 +439,5 @@ class SignUpFore1 extends StatelessWidget {
       ),
     );
   }
+  
 }

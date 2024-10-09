@@ -18,15 +18,17 @@ abstract class UserRepository {
 
   Future<void> sendFriendRequest(String userId, String friendId);
   Future<void> acceptFriendRequest(String userId, String friendId);
-  Future<void> rejectFriendRequest(String userId, String friendId); // Added this line
+  Future<void> rejectFriendRequest(String userId, String friendId);
   Future<List<MyUser>> searchUsers(String query);
-  Stream<List<MyUser>> getFriends(String userId); // Changed to Stream
-  Stream<List<MyUser>> getFriendRequests(String userId); // Added this line
+  Stream<List<MyUser>> getFriends(String userId);
+  Stream<List<MyUser>> getFriendRequests(String userId);
 
-  Future<List<MyUser>> getFirstUsers(int limit); // Add this line
-
+  Future<List<MyUser>> getFirstUsers(int limit);
+ // Updated return type
   Future<void> signInWithApple();
+
+   Future<void> signInWithGoogle();
+
 
   MyUser? get currentUser;
 }
-

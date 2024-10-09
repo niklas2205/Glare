@@ -14,8 +14,9 @@ class SignInFore1 extends StatefulWidget {
   final TextEditingController passwordController;
   final VoidCallback loginWithEmail;
   final VoidCallback registerWithEmail;
-  final VoidCallback forgotPasswordbutton;
+  // final VoidCallback forgotPasswordbutton;
   final VoidCallback onContinueWithApple;
+  final VoidCallback onContinueWithGoogle;
 
   const SignInFore1({
     Key? key,
@@ -23,8 +24,9 @@ class SignInFore1 extends StatefulWidget {
     required this.passwordController,
     required this.loginWithEmail,
     required this.registerWithEmail,
-    required this.forgotPasswordbutton,
+    // required this.forgotPasswordbutton,
     required this.onContinueWithApple,
+    required this.onContinueWithGoogle,
   }) : super(key: key);
 
   @override
@@ -54,7 +56,7 @@ class _SignInFore1State extends State<SignInFore1> {
           socialLoginButtons(context),
           dividerWithText(context),
           emailAndPasswordFields(context, widget.emailController, widget.passwordController),
-          forgotPassword(context, widget.forgotPasswordbutton),
+          // forgotPassword(context, widget.forgotPasswordbutton),
           loginButton(context, widget.loginWithEmail),
           registerButton(context, widget.registerWithEmail),
         ],
@@ -113,9 +115,10 @@ class _SignInFore1State extends State<SignInFore1> {
       children: [
         // Google Sign-In Button
         GestureDetector(
-          onTap: () {
+        
+             onTap: widget.onContinueWithGoogle, 
             // Implement your Google Sign-In logic here
-          },
+          
           child: Container(
             height: buttonHeight,
             width: buttonWidth,
@@ -125,7 +128,7 @@ class _SignInFore1State extends State<SignInFore1> {
               color: const Color(0xFFFFFFFF),
             ),
             alignment: Alignment.center,
-            child: Image.asset('assets/icons/ic_google.png', width: 24, height: 24),
+            child: SvgPicture.asset('assets/icons/google-color.svg', width: 24, height: 24),
           ),
         ),
         SizedBox(width: spacing),
@@ -295,35 +298,35 @@ class _SignInFore1State extends State<SignInFore1> {
     );
   }
 
-  Widget forgotPassword(BuildContext context, VoidCallback controller) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
-    final double horizontalPadding = screenWidth * 0.05; // 5% of screen width
-    final double topPadding = screenHeight * 0.02; // 2% of screen height
-    final double rightPadding = screenWidth * 0.11; // Adjust as needed for right padding
+  // Widget forgotPassword(BuildContext context, VoidCallback controller) {
+  //   final double screenWidth = MediaQuery.of(context).size.width;
+  //   final double screenHeight = MediaQuery.of(context).size.height;
+  //   final double horizontalPadding = screenWidth * 0.05; // 5% of screen width
+  //   final double topPadding = screenHeight * 0.02; // 2% of screen height
+  //   final double rightPadding = screenWidth * 0.11; // Adjust as needed for right padding
 
-    return Align(
-      alignment: Alignment.centerRight, // Align to the right
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(horizontalPadding, topPadding, rightPadding, 24), // Adjusted top padding to move it further down
-        child: InkWell(
-          onTap: () {
-            controller();
-          },
-          child: Text(
-            'Forgot password?',
-            style: GoogleFonts.getFont(
-              'Inter',
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
-              height: 1.6,
-              color: const Color(0xFF8FFA58),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  //   return Align(
+  //     alignment: Alignment.centerRight, // Align to the right
+  //     child: Padding(
+  //       padding: EdgeInsets.fromLTRB(horizontalPadding, topPadding, rightPadding, 24), // Adjusted top padding to move it further down
+  //       child: InkWell(
+  //         onTap: () {
+  //           controller();
+  //         },
+  //         child: Text(
+  //           'Forgot password?',
+  //           style: GoogleFonts.getFont(
+  //             'Inter',
+  //             fontWeight: FontWeight.w700,
+  //             fontSize: 14,
+  //             height: 1.6,
+  //             color: const Color(0xFF8FFA58),
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget loginButton(BuildContext context, VoidCallback controller) {
     final double screenWidth = MediaQuery.of(context).size.width;

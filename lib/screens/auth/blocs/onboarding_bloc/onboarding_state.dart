@@ -42,3 +42,5 @@ class GenresUpdated extends OnboardingState {
   @override
   List<Object> get props => [genres];
 }
+
+class OnboardingNotCompleted extends OnboardingState {}

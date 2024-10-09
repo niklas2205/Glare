@@ -43,10 +43,24 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
 
-  void _onContinueWithGooglePressed() {
-    // Handle continue with Google logic
+ void _onContinueWithGooglePressed() async {
+  try {
     print("Continue with Google Pressed");
+    await context.read<UserRepository>().signInWithGoogle();
+
+    // After signing in, navigate to PostAuthScreen to handle onboarding
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => PostAuthScreen()),
+    );
+  } catch (e) {
+    // Handle errors
+    print('Error signing in with Google: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error signing in with Google: $e')),
+    );
   }
+}
+
 
   void _onContinueWithApplePressed() async {
     try {
