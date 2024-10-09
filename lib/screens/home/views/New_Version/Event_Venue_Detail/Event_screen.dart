@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:glare/screens/home/views/ClickTracking.dart';
 import 'package:glare/screens/home/views/New_Version/explore_screen/venue_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:glare/screens/background_screen/background_screen.dart';
@@ -219,6 +220,9 @@ class EventDetail extends StatelessWidget {
                     width: widgetWidth,
                     child: ElevatedButton(
                       onPressed: () async {
+                        if (eventId != null) {
+                          ClickTrackingService().incrementTicketClick(eventId);
+                        }
                         // Launch the ticket URL
                         final url = ticket;
                         if (await canLaunchUrlString(url)) {

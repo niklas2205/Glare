@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glare/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:glare/screens/auth/blocs/onboarding_bloc/onboarding_bloc.dart';
 import 'package:glare/screens/auth/views/onboarding/onboarding_screen.dart';
+import 'package:glare/screens/auth/views/welcome_screen_comp/welcome_screen.dart';
 import 'package:user_repository/user_repository.dart';
 
 class PostAuthScreen extends StatefulWidget {
@@ -23,17 +24,23 @@ class _PostAuthScreenState extends State<PostAuthScreen> {
   }
 
   Future<void> _checkOnboardingStatus() async {
-    // Fetch user data
     try {
       final MyUser? user = await context.read<UserRepository>().getCurrentUser();
       print('PostAuthScreen - Fetched user data: $user');
 
+      if (user == null) {
+        // User is not authenticated, navigate back to WelcomeScreen
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => WelcomeScreen()),
+        );
+        return;
+      }
+
       bool isComplete = true;
 
-      // if (user == null || user.age == null || user.age! <= 0) {
-      if (user == null|| user.name == "") {
+      if (user.name == null || user.name!.isEmpty) {
         isComplete = false;
-        print("PostAuthScreen - Age is incomplete.");
+        print("PostAuthScreen - Name is incomplete.");
       }
 
       if (isComplete) {
@@ -42,20 +49,19 @@ class _PostAuthScreenState extends State<PostAuthScreen> {
       } else {
         print("PostAuthScreen - Onboarding required, navigating to /onboarding");
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) {
-                return MultiBlocProvider(
-                  providers: [
-                    BlocProvider<OnboardingBloc>(
-                      create: (context) => OnboardingBloc(userRepository: context.read<AuthenticationBloc>().userRepository)
-                        ..add(OnboardingStarted()),
-                    ),
-                  ],
-                  child: OnboardingScreen(),
-                );
-              },
-            ),
-          );
+          MaterialPageRoute(builder: (context) {
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider<OnboardingBloc>(
+                  create: (context) => OnboardingBloc(
+                    userRepository: context.read<AuthenticationBloc>().userRepository,
+                  )..add(OnboardingStarted()),
+                ),
+              ],
+              child: OnboardingScreen(),
+            );
+          }),
+        );
       }
     } catch (e) {
       print("PostAuthScreen - Error checking onboarding status: $e");

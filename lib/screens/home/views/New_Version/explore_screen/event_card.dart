@@ -2,6 +2,7 @@ import 'package:event_repository/event_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:glare/screens/home/views/ClickTracking.dart';
 import 'package:user_repository/user_repository.dart';
 
 import '../../../blocs/event_like_bloc/event_like_bloc.dart';
@@ -38,6 +39,9 @@ class EventCard extends StatelessWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(10),
             onTap: () async {
+              if (event.eventId != null) {
+                ClickTrackingService().incrementEventCardClick(event.eventId!);
+              }
               final bool result = await Navigator.push<bool>(
                 context,
                 MaterialPageRoute<bool>(

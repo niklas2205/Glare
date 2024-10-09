@@ -1,6 +1,7 @@
 import 'package:event_repository/event_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glare/screens/home/views/ClickTracking.dart';
 import 'package:glare/screens/home/views/New_Version/Event_Venue_Detail/Venue_screen.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:venue_repository/venue_repository.dart';
@@ -39,6 +40,7 @@ class VenueCard extends StatelessWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(10),
             onTap: () {
+              ClickTrackingService().incrementVenueCardClick(venue.venueId);
               Navigator.push(
                 context,
                 MaterialPageRoute<void>(

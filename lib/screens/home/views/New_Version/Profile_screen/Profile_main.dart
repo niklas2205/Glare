@@ -301,17 +301,25 @@ class SettingsContainer extends StatelessWidget {
           // _buildCategoryBox(
           //   context,
           //   options: [
-              _buildSettingsOption(
-                context,
-                icon: 'assets/icons/Profile_screen/document-text.svg',
-                text: 'Terms & Conditions',
-                onTap: () {},
-              ),
+              // _buildSettingsOption(
+              //   context,
+              //   icon: 'assets/icons/Profile_screen/document-text.svg',
+              //   text: 'Terms & Conditions',
+              //   onTap: () {},
+              // ),
               _buildSettingsOption(
                 context,
                 icon: 'assets/icons/Profile_screen/security-safe.svg',
                 text: 'Privacy Policy',
-                onTap: () {},
+                onTap: () async {
+                  final Uri url = Uri.parse('https://www.glare-events.com/impressum');
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url);
+                  } else {
+                    // Handle the error by showing a message, for example
+                    throw 'Could not launch $url';
+                  }
+                },
               ),
               // _buildSettingsOption(
               //   context,

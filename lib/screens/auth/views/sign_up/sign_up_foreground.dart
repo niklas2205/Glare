@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart'; // For TapGestureRecognizer
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SignUpFore1 extends StatelessWidget {
   final TextEditingController emailController;
@@ -361,21 +362,6 @@ class SignUpFore1 extends StatelessWidget {
               ),
             ),
             TextSpan(
-              text: 'Terms of Service',
-              style: GoogleFonts.getFont(
-                'Inter',
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-                decoration: TextDecoration.underline,
-                height: 1.3,
-                color: const Color(0xFF8FFA58),
-                decorationColor: const Color(0xFF8FFA58),
-              ),
-            ),
-            const TextSpan(
-              text: ' and ',
-            ),
-            TextSpan(
               text: 'Privacy Policy',
               style: GoogleFonts.getFont(
                 'Inter',
@@ -386,6 +372,15 @@ class SignUpFore1 extends StatelessWidget {
                 color: const Color(0xFF8FFA58),
                 decorationColor: const Color(0xFF8FFA58),
               ),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () async {
+                  final Uri url = Uri.parse('https://www.glare-events.com/impressum');
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url);
+                  } else {
+                    throw 'Could not launch $url';
+                  }
+                },
             ),
             const TextSpan(text: '.'),
           ],
