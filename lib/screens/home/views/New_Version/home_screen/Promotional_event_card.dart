@@ -1,5 +1,7 @@
 
 
+import 'dart:math';
+
 import 'package:event_repository/event_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,6 +29,8 @@ class PromotionEventCard extends StatelessWidget {
     final cardHeight = screenHeight * 0.35; // Adjust as needed
     final imageHeight = cardHeight * 0.6; // Image fills the top 60% of the card
     final imageMargin = cardWidth * 0.05; // 5% margin for the image
+
+    final diagonalInches = sqrt(pow(screenWidth, 2) + pow(screenHeight, 2)) / MediaQuery.of(context).devicePixelRatio;
 
     // Define the threshold height
     final double thresholdHeight = 700.0; // Initial height threshold
@@ -219,7 +223,7 @@ class PromotionEventCard extends StatelessWidget {
               ),
             ),
             // Event tags (conditionally displayed)
-            if (screenHeight >= thresholdHeight) // Conditional check
+            if (screenHeight >= thresholdHeight && diagonalInches < 7) // Conditional check
               Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: cardWidth * 0.05,

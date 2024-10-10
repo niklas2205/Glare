@@ -29,6 +29,7 @@ abstract class UserRepository {
 
    Future<void> signInWithGoogle();
 
+  Future<void> deleteAccount();
 
   MyUser? get currentUser;
 }

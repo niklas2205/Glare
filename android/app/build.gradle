@@ -1,8 +1,16 @@
+
+
 plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
     id "com.google.gms.google-services"
+}
+
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('../../key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
 def localProperties = new Properties()
@@ -52,11 +60,22 @@ android {
         versionName flutterVersionName
     }
 
-    buildTypes {
+    signingConfigs {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            keyAlias 'glare'
+            keyPassword 'Waller14!'
+            storeFile file('/Users/niklasheckmann/Desktop/Glare_main/release-key.keystore')
+
+            storePassword 'Waller14!'
+        }
+    }
+
+    buildTypes {
+        release {signingConfig signingConfigs.release
+            minifyEnabled false
+            shrinkResources false
+            // Add ProGuard rules if needed
+            // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -67,4 +86,5 @@ flutter {
 
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+    implementation 'androidx.browser:browser:1.3.0'
 }

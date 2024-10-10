@@ -1,10 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:glare/screens/home/blocs/user_bloc/user_bloc.dart';
+import 'package:glare/screens/home/views/New_Version/Profile_screen/Profile_main.dart';
 import 'package:glare/screens/home/views/New_Version/Profile_screen/change_genre.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:user_repository/user_repository.dart';
 
 import '../../../../background_screen/background_screen.dart';
 import 'Personal_details.dart';
@@ -112,6 +115,8 @@ class MyAccount extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            const SizedBox(height: 10),
+                            DeleteAccountButton(),
                           ],
                         ),
                       ),
@@ -204,6 +209,88 @@ class MyAccount extends StatelessWidget {
               height: 20, // Increased the size
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class DeleteAccountButton extends StatelessWidget {
+  const DeleteAccountButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.82,
+      height: 50,
+      margin: const EdgeInsets.symmetric(vertical: 0.0),
+      decoration: BoxDecoration(
+        color: Colors.transparent, // Transparent background
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.red, // Red border color
+          width: 2,
+        ),
+      ),
+      child: TextButton(
+        onPressed: () async {
+          final confirm = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Confirm Delete'),
+              content: const Text(
+                  'Are you sure you want to delete your account? This action cannot be undone.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text(
+                    'Delete',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
+          );
+
+          if (confirm == true) {
+            try {
+              final userRepository =
+                  RepositoryProvider.of<UserRepository>(context);
+              await userRepository.deleteAccount();
+
+              // Optionally, you can dispatch a logout event if using Bloc
+              // context.read<AuthenticationBloc>().add(LoggedOut());
+
+              // Navigate to the welcome screen
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/welcome', (route) => false);
+            } on FirebaseAuthException catch (e) {
+              // Since we're not handling re-authentication, just show the error
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Error: ${e.message}'),
+                ),
+              );
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Error deleting account: ${e.toString()}'),
+                ),
+              );
+            }
+          }
+        },
+        child: const Text(
+          'Delete Account',
+          style: TextStyle(
+            color: Colors.red, // Red text color
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+          ),
         ),
       ),
     );

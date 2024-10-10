@@ -126,7 +126,7 @@ class EventDetail extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            '$likesCount Likes',
+                            '$likesCount Going',
                             style: GoogleFonts.getFont(
                               'Inter',
                               fontWeight: FontWeight.w500,

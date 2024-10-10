@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -335,6 +337,40 @@ class FirebaseUserRepo implements UserRepository {
       rethrow;
     }
   }
+  @override
+Future<void> deleteAccount() async {
+  try {
+    User? user = _firebaseAuth.currentUser;
+
+    if (user != null) {
+      // Delete user data from Firestore
+      await usersCollection.doc(user.uid).delete();
+
+      // Delete user from Firebase Authentication
+      await user.delete();
+
+      // Sign out the user
+      await _firebaseAuth.signOut();
+    } else {
+      throw Exception('No user signed in');
+    }
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'requires-recent-login') {
+      // Handle re-authentication
+      throw FirebaseAuthException(
+        code: 'requires-recent-login',
+        message: 'User needs to re-authenticate',
+      );
+    } else {
+      log('Error deleting account: ${e.toString()}');
+      rethrow;
+    }
+  } catch (e) {
+    log('Error deleting account: ${e.toString()}');
+    rethrow;
+  }
+}
+
 
   @override
   Future<void> signInWithApple() async {

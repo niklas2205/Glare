@@ -1,7 +1,7 @@
 name: glare
 description: "A new Flutter project."
 publish_to: 'none'
-version: 0.1.0
+version: 1.0.2 
 
 environment:
   sdk: '>=3.2.6 <4.0.0'
@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  firebase_crashlytics: ^3.0.0
 
   dropdown_button2: ^2.3.9
   
@@ -50,6 +52,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.2
+
+  flutter_native_splash: ^2.2.17
+
+flutter_native_splash:
+  color: "#000000"  # Background color of the splash screen
+  image: assets/icons/glare-8.png  # Path to your splash image
+  android: true
+
 
 flutter:
   assets:
