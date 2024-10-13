@@ -38,7 +38,7 @@ class _PersonalDetailsState extends State<PersonalDetails> {
     if (userState is UserLoaded) {
       final user = userState.user;
       nameController.text = user.name ?? '';
-      emailController.text = user.email;
+      emailController.text = user.email!;
       phoneController.text = user.phoneNumber ?? '';
       selectedGender = user.gender ?? genders.last;
       selectedDateOfBirth = user.dateOfBirth; // Initialize date of birth

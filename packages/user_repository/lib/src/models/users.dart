@@ -2,7 +2,7 @@ import '../entities/entities.dart';
 
 class MyUser {
   String userId;
-  String email;
+  String? email;
   String? name;
   DateTime? dateOfBirth; // Changed from int? age to DateTime? dateOfBirth
   List<String>? favoriteGenres;
@@ -13,7 +13,7 @@ class MyUser {
 
   MyUser({
     required this.userId,
-    required this.email,
+    this.email,
     this.name,
     this.dateOfBirth,
     this.favoriteGenres,

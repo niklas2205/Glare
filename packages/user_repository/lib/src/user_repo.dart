@@ -32,4 +32,6 @@ abstract class UserRepository {
   Future<void> deleteAccount();
 
   MyUser? get currentUser;
+
+  Future<void> signInAnonymously();
 }

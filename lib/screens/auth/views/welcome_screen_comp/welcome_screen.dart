@@ -25,6 +25,8 @@ class WelcomeScreen extends StatefulWidget {
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
+
+
 class _WelcomeScreenState extends State<WelcomeScreen> {
   void _onContinueWithEmailPressed() {
     Navigator.of(context).pushReplacement(
@@ -41,6 +43,20 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
     print("Continue with Email Pressed");
   }
+
+  void _onContinueAsGuestPressed() async {
+  try {
+    await context.read<UserRepository>().signInAnonymously();
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => PostAuthScreen()),
+    );
+  } catch (e) {
+    print('Error continuing as guest: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error continuing as guest: $e')),
+    );
+  }
+}
 
 
  void _onContinueWithGooglePressed() async {
@@ -122,6 +138,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               onContinueWithGoogle: _onContinueWithGooglePressed,
               onContinueWithApple: _onContinueWithApplePressed,
               onContinueWithLogin: _onContinueWithLogin,
+              onContinueAsGuest: _onContinueAsGuestPressed,
             ),
           ],
         ),

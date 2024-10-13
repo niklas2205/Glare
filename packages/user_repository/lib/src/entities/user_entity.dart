@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MyUserEntity {
   String userId;
-  String email;
+  String? email;
   String? name;
   DateTime? dateOfBirth; // Changed from int? age to DateTime? dateOfBirth
   List<String>? favoriteGenres;
@@ -13,7 +13,7 @@ class MyUserEntity {
 
   MyUserEntity({
     required this.userId,
-    required this.email,
+    this.email,
     this.name,
     this.dateOfBirth,
     this.favoriteGenres,

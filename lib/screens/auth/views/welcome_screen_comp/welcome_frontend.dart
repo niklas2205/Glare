@@ -10,12 +10,14 @@ class WelcomeFrontend extends StatelessWidget {
   final VoidCallback onContinueWithGoogle;
   final VoidCallback onContinueWithApple;
   final VoidCallback onContinueWithLogin;
+  final VoidCallback onContinueAsGuest;
 
   const WelcomeFrontend({
     required this.onContinueWithEmail,
     required this.onContinueWithGoogle,
     required this.onContinueWithApple,
     required this.onContinueWithLogin,
+    required this.onContinueAsGuest,
     Key? key,
   }) : super(key: key);
 
@@ -43,6 +45,7 @@ class WelcomeFrontend extends StatelessWidget {
             _buildGoogleButton(context),
             _buildAppleButton(context),
             _loginPrompt(context),
+            _buildContinueAsGuestButton(context),
           ],
         ),
       ),
@@ -209,4 +212,39 @@ class WelcomeFrontend extends StatelessWidget {
       ),
     );
   }
+  Widget _buildContinueAsGuestButton(BuildContext context) {
+  final double screenHeight = MediaQuery.of(context).size.height;
+
+  return Container(
+    margin: EdgeInsets.only(top: screenHeight * 0.01), // 1% of screen height
+    child: RichText(
+      text: TextSpan(
+        style: GoogleFonts.getFont(
+          'Inter',
+          fontWeight: FontWeight.w400,
+          fontSize: 14,
+          height: 1.3,
+          color: const Color(0xFFFFFFFF),
+        ),
+        children: [
+          const TextSpan(
+            text: 'Want to explore as a guest? ',
+          ),
+          TextSpan(
+            text: 'Continue as Guest',
+            style: GoogleFonts.getFont(
+              'Inter',
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+              height: 1.3,
+              color: const Color(0xFF8FFA58),
+            ),
+            recognizer: TapGestureRecognizer()..onTap = onContinueAsGuest,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 }

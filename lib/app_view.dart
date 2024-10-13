@@ -154,7 +154,7 @@ class MainAppView extends StatelessWidget {
             '/signIn': (context) => const SignInScreen(),
             '/signUp': (context) => const SignUpScreen(),
             '/onboarding': (context) => OnboardingScreen(),
-            '/manage_friends': (context) => ManageFriends(),
+            // '/manage_friends': (context) => ManageFriends(),
             '/add_friends': (context) => const AddFriends(),
           },
         ),

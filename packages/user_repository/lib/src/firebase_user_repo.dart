@@ -81,8 +81,18 @@ class FirebaseUserRepo implements UserRepository {
     if (firebaseUser != null) {
       var userDoc = await usersCollection.doc(firebaseUser.uid).get();
       if (userDoc.exists) {
-        print("User document data: ${userDoc.data()}"); // Debugging log
         return MyUser.fromEntity(MyUserEntity.fromDocument(userDoc.data()!));
+      } else {
+        // For anonymous users, you might want to create a default MyUser
+        MyUser myUser = MyUser(
+          userId: firebaseUser.uid,
+          email: null,
+          name: 'Guest',
+          // Initialize other fields as needed
+        );
+        // Optionally save this data to Firestore
+        await setUserData(myUser);
+        return myUser;
       }
     }
     return null;
@@ -92,7 +102,7 @@ class FirebaseUserRepo implements UserRepository {
   Future<MyUser> signUp(MyUser myUser, String password) async {
     try {
       UserCredential user = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: myUser.email,
+        email: myUser.email!,
         password: password,
       );
       myUser.userId = user.user!.uid; // Ensure you update the user ID after successful sign-up
@@ -408,6 +418,24 @@ Future<void> deleteAccount() async {
       }
     } catch (e) {
       log('Error signing in with Apple: ${e.toString()}');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> signInAnonymously() async {
+    try {
+      UserCredential userCredential = await _firebaseAuth.signInAnonymously();
+      // Optionally, you can create a MyUser instance and set user data
+      MyUser myUser = MyUser(
+        userId: userCredential.user!.uid,
+        email: null, // Anonymous users don't have an email
+        name: 'Guest',
+        // Initialize other fields as needed
+      );
+      await setUserData(myUser);
+    } catch (e) {
+      log('Error signing in anonymously: ${e.toString()}');
       rethrow;
     }
   }
