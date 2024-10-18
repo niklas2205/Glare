@@ -116,7 +116,7 @@ class MyAccount extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 10),
-                            DeleteAccountButton(),
+                            const DeleteAccountButton(),
                           ],
                         ),
                       ),

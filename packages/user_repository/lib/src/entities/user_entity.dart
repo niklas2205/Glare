@@ -37,19 +37,20 @@ class MyUserEntity {
   };
 }
 
- static MyUserEntity fromDocument(Map<String, dynamic> doc) {
+ static MyUserEntity fromDocument(DocumentSnapshot doc) {
+  final data = doc.data() as Map<String, dynamic>;
   return MyUserEntity(
-    userId: doc['userId'] ?? '',
-    email: doc['email'] ?? '',
-    name: doc['name'],
-    dateOfBirth: doc['dateOfBirth'] != null
-        ? (doc['dateOfBirth'] as Timestamp).toDate()
+    userId: data['userId'] ?? doc.id,
+    email: data['email'] ?? '',
+    name: data['name'],
+    dateOfBirth: data['dateOfBirth'] != null
+        ? (data['dateOfBirth'] as Timestamp).toDate()
         : null,
-    favoriteGenres: List<String>.from(doc['favoriteGenres'] ?? []),
-    phoneNumber: doc['phoneNumber'],
-    gender: doc['gender'],
-    friendRequests: List<String>.from(doc['friendRequests'] ?? []),
-    friends: List<String>.from(doc['friends'] ?? []),
+    favoriteGenres: List<String>.from(data['favoriteGenres'] ?? []),
+    phoneNumber: data['phoneNumber'],
+    gender: data['gender'],
+    friendRequests: List<String>.from(data['friendRequests'] ?? []),
+    friends: List<String>.from(data['friends'] ?? []),
   );
 }
 

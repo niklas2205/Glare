@@ -12,71 +12,49 @@ class PostAuthScreen extends StatefulWidget {
 }
 
 class _PostAuthScreenState extends State<PostAuthScreen> {
-  bool _onboardingChecked = false;
+  bool _timeoutOccurred = false;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_onboardingChecked) {
-      _onboardingChecked = true;
-      _checkOnboardingStatus();
-    }
+  void initState() {
+    super.initState();
+    _checkOnboardingStatus();
+
+    // Set a timeout of 10 seconds
+    Future.delayed(Duration(seconds: 10), () {
+      if (mounted && !_timeoutOccurred) {
+        _timeoutOccurred = true;
+        // Navigate to WelcomeScreen if still on PostAuthScreen after timeout
+        Navigator.of(context).pushReplacementNamed('/welcome');
+      }
+    });
   }
 
   Future<void> _checkOnboardingStatus() async {
     try {
       final MyUser? user = await context.read<UserRepository>().getCurrentUser();
-      print('PostAuthScreen - Fetched user data: $user');
+
+      if (_timeoutOccurred || !mounted) return; // Prevent navigation if timeout occurred
 
       if (user == null) {
-        // User is not authenticated, navigate back to WelcomeScreen
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => WelcomeScreen()),
-        );
+        Navigator.of(context).pushReplacementNamed('/welcome');
         return;
       }
 
-      bool isComplete = true;
-
       if (user.name == null || user.name!.isEmpty) {
-        isComplete = false;
-        print("PostAuthScreen - Name is incomplete.");
-      }
-
-      if (isComplete) {
-        print("PostAuthScreen - Onboarding complete, navigating to /home");
-        Navigator.of(context).pushReplacementNamed('/home');
+        Navigator.of(context).pushReplacementNamed('/onboarding');
       } else {
-        print("PostAuthScreen - Onboarding required, navigating to /onboarding");
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) {
-            return MultiBlocProvider(
-              providers: [
-                BlocProvider<OnboardingBloc>(
-                  create: (context) => OnboardingBloc(
-                    userRepository: context.read<AuthenticationBloc>().userRepository,
-                  )..add(OnboardingStarted()),
-                ),
-              ],
-              child: OnboardingScreen(),
-            );
-          }),
-        );
+        Navigator.of(context).pushReplacementNamed('/home');
       }
     } catch (e) {
-      print("PostAuthScreen - Error checking onboarding status: $e");
-      // Handle error, e.g., show a dialog or navigate to an error screen
+      if (_timeoutOccurred || !mounted) return;
+      Navigator.of(context).pushReplacementNamed('/welcome');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // You can show a loading indicator or a splash image here
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
+      body: Center(child: CircularProgressIndicator()),
     );
   }
 }

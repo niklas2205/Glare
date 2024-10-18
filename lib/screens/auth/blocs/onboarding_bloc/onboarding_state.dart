@@ -34,6 +34,7 @@ class OnboardingFailure extends OnboardingState {
   List<Object> get props => [errorMessage];
 }
 
+
 class GenresUpdated extends OnboardingState {
   final List<String> genres;
 

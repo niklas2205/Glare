@@ -188,14 +188,19 @@ class FirebaseUserRepo implements UserRepository {
   }
 
   @override
-  Future<List<String>> getLikedEvents(String userId) async {
-    final userDoc = await usersCollection.doc(userId).get();
-    if (userDoc.exists) {
-      List<dynamic> likedEvents = userDoc.data()?['likedEvents'] ?? [];
-      return List<String>.from(likedEvents);
-    }
-    return [];
+Future<List<String>> getLikedEvents(String userId) async {
+  final userDoc = await usersCollection.doc(userId).get();
+  if (userDoc.exists) {
+    List<dynamic> likedEvents = userDoc.data()?['likedEvents'] ?? [];
+    // Filter out any null or empty eventIds
+    List<String> validLikedEvents = likedEvents
+        .where((id) => id != null && id.toString().isNotEmpty)
+        .map((id) => id.toString())
+        .toList();
+    return validLikedEvents;
   }
+  return [];
+}
 
   // Friend request and friends management methods
 

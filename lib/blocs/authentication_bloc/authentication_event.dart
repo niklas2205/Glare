@@ -13,3 +13,12 @@ class AuthenticationUserchanged extends AuthenticationEvent {
   const AuthenticationUserchanged(this.user);
 
 }
+
+class AuthenticationErrorOccurred extends AuthenticationEvent {
+  final String errorMessage;
+
+  const AuthenticationErrorOccurred(this.errorMessage);
+
+  @override
+  List<Object> get props => [errorMessage];
+}

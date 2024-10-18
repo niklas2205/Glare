@@ -15,42 +15,63 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  // Flags to track if navigation has been handled
-  bool _hasNavigated = false;
+  bool _timeoutOccurred = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Set a timeout of 10 seconds
+    Future.delayed(Duration(seconds: 10), () {
+      if (mounted && !_timeoutOccurred) {
+        _timeoutOccurred = true;
+        // Navigate to WelcomeScreen if still on SplashScreen after timeout
+        Navigator.of(context).pushReplacementNamed('/welcome');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: MultiBlocListener(
-        listeners: [
-          // Listener for AuthenticationBloc
-          BlocListener<AuthenticationBloc, AuthenticationState>(
-            listener: (context, authState) {
-              if (authState.status == AuthenticationStatus.authenticated) {
-                // Trigger onboarding check
-                context.read<OnboardingBloc>().add(OnboardingStarted());
-              } else if (!_hasNavigated) {
-                _hasNavigated = true;
-                Navigator.of(context).pushReplacementNamed('/welcome');
-              }
-            },
-          ),
-          // Listener for OnboardingBloc
-          BlocListener<OnboardingBloc, OnboardingState>(
-            listener: (context, onboardingState) {
-              if (onboardingState is OnboardingCompletionSuccess && !_hasNavigated) {
-                _hasNavigated = true;
-                Navigator.of(context).pushReplacementNamed('/home');
-              } else if (onboardingState is OnboardingNotCompleted && !_hasNavigated) {
-                _hasNavigated = true;
-                Navigator.of(context).pushReplacementNamed('/onboarding');
-              }
-            },
-          ),
-        ],
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
+      body: BlocConsumer<AuthenticationBloc, AuthenticationState>(
+        listener: (context, authState) {
+          if (_timeoutOccurred) return; // Prevent navigation if timeout occurred
+
+          if (authState.status == AuthenticationStatus.authenticated) {
+            context.read<OnboardingBloc>().add(OnboardingStarted());
+          } else if (authState.status == AuthenticationStatus.unauthenticated) {
+            Navigator.of(context).pushReplacementNamed('/welcome');
+          } else if (authState.status == AuthenticationStatus.error) {
+            // Handle authentication error
+            Navigator.of(context).pushReplacementNamed('/welcome');
+          }
+        },
+        builder: (context, authState) {
+          if (authState.status == AuthenticationStatus.authenticated) {
+            return BlocConsumer<OnboardingBloc, OnboardingState>(
+              listener: (context, onboardingState) {
+                if (_timeoutOccurred) return;
+
+                if (onboardingState is OnboardingCompletionSuccess) {
+                  Navigator.of(context).pushReplacementNamed('/home');
+                } else if (onboardingState is OnboardingRequired) {
+                  Navigator.of(context).pushReplacementNamed('/onboarding');
+                } else if (onboardingState is OnboardingFailure) {
+                  Navigator.of(context).pushReplacementNamed('/welcome');
+                }
+              },
+              builder: (context, onboardingState) {
+                return Center(child: CircularProgressIndicator());
+              },
+            );
+          } else if (authState.status == AuthenticationStatus.error) {
+            // Show error message or navigate away
+            return Center(child: Text('An error occurred.'));
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        },
       ),
     );
   }

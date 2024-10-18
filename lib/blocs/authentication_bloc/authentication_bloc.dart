@@ -13,17 +13,25 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
 
   AuthenticationBloc({required this.userRepository})
       : super(const AuthenticationState.unknown()) {
-    _userSubscription = userRepository.user.listen((user) {
-      add(AuthenticationUserchanged(user));
-    });
+    _userSubscription = userRepository.user.listen(
+      (user) {
+        add(AuthenticationUserchanged(user));
+      },
+      onError: (error) {
+        add(AuthenticationErrorOccurred(error.toString()));
+      },
+    );
 
     on<AuthenticationUserchanged>((event, emit) {
-      if (event.user != MyUser.empty) {
-        emit(AuthenticationState.authenticated(event.user!));
-      } else {
-        emit(const AuthenticationState.unauthenticated());
-      }
-    });
+  print("AuthenticationUserchanged event triggered: ${event.user}");
+  if (event.user != null && event.user != MyUser.empty) {
+    print("User authenticated: ${event.user}");
+    emit(AuthenticationState.authenticated(event.user!));
+  } else {
+    print("User unauthenticated or empty: ${event.user}");
+    emit(const AuthenticationState.unauthenticated());
+  }
+});
   }
 
   @override
@@ -32,3 +40,4 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     return super.close();
   }
 }
+
