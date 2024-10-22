@@ -25,14 +25,14 @@ class EventDetail extends StatelessWidget {
   final String name;
   final String venue;
   final String description;
-  final String pictureUrl;
   final int age;
   final String eventId;
   final String venueId;
   final List<String> eventTag;
-  final String location; 
+  final String location;
   final String price;
   final String ticket;
+  final String pictureUrl; // Moved to the end for consistency
 
   const EventDetail({
     required this.name,
@@ -46,8 +46,8 @@ class EventDetail extends StatelessWidget {
     required this.location,
     required this.price,
     required this.ticket,
-    super.key,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -166,49 +166,54 @@ class EventDetail extends StatelessWidget {
                         age: age,
                         location: location,
                         price: price,
+                        venueName: venue, // Pass the venue name
+                        venueId: venueId, 
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.09),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Venue',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                if (venueId != "0000") // Only display if venueId is not "0000"
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.09),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Venue',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      BlocBuilder<GetVenueBloc, GetVenueState>(
-                        builder: (context, state) {
-                          if (state is GetVenueSuccess) {
-                            final venue = state.venues.firstWhere(
-                              (venue) => venue.venueId == venueId,
-                              orElse: () => Venue.empty(),
-                            );
-                            if (venue.venueId.isEmpty) {
+                        const SizedBox(height: 10),
+                        BlocBuilder<GetVenueBloc, GetVenueState>(
+                          builder: (context, state) {
+                            // Existing code to display the venue
+                            if (state is GetVenueSuccess) {
+                              final venue = state.venues.firstWhere(
+                                (venue) => venue.venueId == venueId,
+                                orElse: () => Venue.empty(),
+                              );
+                              if (venue.venueId.isEmpty) {
+                                return const Text(
+                                  'Venue not found',
+                                  style: TextStyle(color: Colors.red),
+                                );
+                              }
+                              return _buildVenueRow(context, venue);
+                            } else if (state is GetVenueFailure) {
                               return const Text(
-                                'Venue not found',
+                                'Failed to load venue',
                                 style: TextStyle(color: Colors.red),
                               );
+                            } else {
+                              return const Center(child: CircularProgressIndicator());
                             }
-                            return _buildVenueRow(context, venue);
-                          } else if (state is GetVenueFailure) {
-                            return const Text(
-                              'Failed to load venue',
-                              style: TextStyle(color: Colors.red),
-                            );
-                          } else {
-                            return const Center(child: CircularProgressIndicator());
-                          }
                         },
                       ),
+
                     ],
                   ),
                 ),
@@ -259,6 +264,34 @@ class EventDetail extends StatelessWidget {
     ),
   );
 }
+
+Widget _buildVenueNameBox(BuildContext context, String venueName) {
+  final double screenWidth = MediaQuery.of(context).size.width;
+  final double cardWidth = screenWidth * 0.82;
+  final double cardHeight = MediaQuery.of(context).size.height * 0.04;
+
+  return Container(
+    width: cardWidth,
+    height: cardHeight,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(10),
+      color: const Color(0xFF1A1A1A),
+    ),
+    padding: const EdgeInsets.all(1),
+    child: Center(
+      child: Text(
+        venueName,
+        style: GoogleFonts.getFont(
+          'Inter',
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          color: Color(0xFF8FFA58),
+        ),
+      ),
+    ),
+  );
+}
+
 
  Widget _buildVenueRow(BuildContext context, Venue venue) {
   final double screenWidth = MediaQuery.of(context).size.width;
@@ -421,6 +454,8 @@ class InformationBox extends StatefulWidget {
   final int age;
   final String location;
   final String price;
+  final String venueName;
+  final String venueId;
 
   const InformationBox({
     required this.width,
@@ -428,12 +463,15 @@ class InformationBox extends StatefulWidget {
     required this.age,
     required this.location,
     required this.price,
+    required this.venueName,
+    required this.venueId,
     Key? key,
   }) : super(key: key);
 
   @override
   _InformationBoxState createState() => _InformationBoxState();
 }
+
 
 class _InformationBoxState extends State<InformationBox> {
   bool isExpanded = false;
@@ -490,12 +528,18 @@ class _InformationBoxState extends State<InformationBox> {
             iconPath: 'assets/icons/user_8_x2.svg',
             text: '${widget.age}+',
           ),
+        
           // Price Row (Conditionally Displayed)
           if (showPrice)
             InfoRow(
               iconPath: 'assets/icons/dollar_circle_2_x2.svg',
               text: '€${widget.price}',
             ),
+            if (widget.venueId == "0000" && widget.venueName.isNotEmpty)
+          InfoRow(
+            iconPath: 'assets/icons/location.svg', // Use the same icon
+            text: widget.venueName,
+          ),
           // Location Row (Always Displayed)
           LocationRow(
             location: widget.location,

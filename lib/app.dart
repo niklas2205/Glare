@@ -12,16 +12,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiRepositoryProvider(
-      providers: [
-        RepositoryProvider<UserRepository>.value(value: userRepository),
-        RepositoryProvider<AuthenticationBloc>(
-          create: (context) => AuthenticationBloc(userRepository: userRepository),
-        ),
-        RepositoryProvider<DatabaseRepository>(
-          create: (context) => DatabaseRepository(),
-        ),
-      ],
+    return RepositoryProvider<UserRepository>.value(
+      value: userRepository,
       child: MainAppView(userRepository: userRepository),
     );
   }

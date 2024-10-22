@@ -126,7 +126,7 @@ class EventCard extends StatelessWidget {
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w400,
-                                  fontSize: 10,
+                                  fontSize: 12,
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -144,7 +144,7 @@ class EventCard extends StatelessWidget {
                                     style: const TextStyle(
                                       color: Color(0xFF8FFA58),
                                       fontWeight: FontWeight.w400,
-                                      fontSize: 12,
+                                      fontSize: 10,
                                     ),
                                   );
                                 },

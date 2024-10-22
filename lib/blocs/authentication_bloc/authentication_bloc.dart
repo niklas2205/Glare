@@ -23,15 +23,16 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     );
 
     on<AuthenticationUserchanged>((event, emit) {
-  print("AuthenticationUserchanged event triggered: ${event.user}");
-  if (event.user != null && event.user != MyUser.empty) {
-    print("User authenticated: ${event.user}");
-    emit(AuthenticationState.authenticated(event.user!));
-  } else {
-    print("User unauthenticated or empty: ${event.user}");
-    emit(const AuthenticationState.unauthenticated());
-  }
-});
+      print("AuthenticationUserchanged event triggered: ${event.user}");
+      if (event.user != null && event.user != MyUser.empty) {
+        print("User authenticated: ${event.user}");
+        emit(AuthenticationState.authenticated(event.user!));
+      } else {
+        print("User unauthenticated or empty: ${event.user}");
+        emit(const AuthenticationState.unauthenticated());
+      }
+    });
+
   }
 
   @override

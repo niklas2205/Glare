@@ -39,8 +39,13 @@ class MyUserEntity {
 
  static MyUserEntity fromDocument(DocumentSnapshot doc) {
   final data = doc.data() as Map<String, dynamic>;
+  // Ensure data['userId'] is not null and not empty
+  final userId = (data['userId'] != null && (data['userId'] as String).isNotEmpty)
+      ? data['userId'] as String
+      : doc.id;
+
   return MyUserEntity(
-    userId: data['userId'] ?? doc.id,
+    userId: userId,
     email: data['email'] ?? '',
     name: data['name'],
     dateOfBirth: data['dateOfBirth'] != null
@@ -53,6 +58,8 @@ class MyUserEntity {
     friends: List<String>.from(data['friends'] ?? []),
   );
 }
+
+
 
 
 }

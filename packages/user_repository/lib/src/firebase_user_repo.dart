@@ -54,16 +54,17 @@ class FirebaseUserRepo implements UserRepository {
   }
 
   @override
-  Stream<MyUser?> get user {
-    return _firebaseAuth.authStateChanges().asyncMap((firebaseUser) async {
-      if (firebaseUser == null) {
-        return MyUser.empty;
-      } else {
-        var doc = await usersCollection.doc(firebaseUser.uid).get();
-        return MyUser.fromEntity(MyUserEntity.fromDocument(doc.data()!));
-      }
-    });
-  }
+Stream<MyUser?> get user {
+  return _firebaseAuth.authStateChanges().asyncMap((firebaseUser) async {
+    if (firebaseUser == null) {
+      return MyUser.empty;
+    } else {
+      var doc = await usersCollection.doc(firebaseUser.uid).get();
+      return MyUser.fromEntity(MyUserEntity.fromDocument(doc));
+    }
+  });
+}
+
 
   @override
   Future<void> signIn(String email, String password) async {
@@ -76,27 +77,28 @@ class FirebaseUserRepo implements UserRepository {
   }
 
   @override
-  Future<MyUser?> getCurrentUser() async {
-    var firebaseUser = _firebaseAuth.currentUser;
-    if (firebaseUser != null) {
-      var userDoc = await usersCollection.doc(firebaseUser.uid).get();
-      if (userDoc.exists) {
-        return MyUser.fromEntity(MyUserEntity.fromDocument(userDoc.data()!));
-      } else {
-        // For anonymous users, you might want to create a default MyUser
-        MyUser myUser = MyUser(
-          userId: firebaseUser.uid,
-          email: null,
-          name: 'Guest',
-          // Initialize other fields as needed
-        );
-        // Optionally save this data to Firestore
-        await setUserData(myUser);
-        return myUser;
-      }
+Future<MyUser?> getCurrentUser() async {
+  var firebaseUser = _firebaseAuth.currentUser;
+  if (firebaseUser != null) {
+    var userDoc = await usersCollection.doc(firebaseUser.uid).get();
+    if (userDoc.exists) {
+      return MyUser.fromEntity(MyUserEntity.fromDocument(userDoc));
+    } else {
+      // For new users, create a default MyUser
+      MyUser myUser = MyUser(
+        userId: firebaseUser.uid,
+        email: firebaseUser.email ?? '',
+        name: 'Guest',
+        // Initialize other fields as needed
+      );
+      // Save this data to Firestore
+      await setUserData(myUser);
+      return myUser;
     }
-    return null;
   }
+  return null;
+}
+
 
   @override
   Future<MyUser> signUp(MyUser myUser, String password) async {
@@ -204,96 +206,96 @@ Future<List<String>> getLikedEvents(String userId) async {
 
   // Friend request and friends management methods
 
-  @override
-  Future<void> sendFriendRequest(String userId, String friendId) async {
-    final friendRef = _firestore.collection('users').doc(friendId);
+  // @override
+  // Future<void> sendFriendRequest(String userId, String friendId) async {
+  //   final friendRef = _firestore.collection('users').doc(friendId);
 
-    await friendRef.update({
-      'friendRequests': FieldValue.arrayUnion([userId])
-    });
-  }
+  //   await friendRef.update({
+  //     'friendRequests': FieldValue.arrayUnion([userId])
+  //   });
+  // }
 
-  @override
-  Future<void> acceptFriendRequest(String userId, String friendId) async {
-    final userRef = _firestore.collection('users').doc(userId);
-    final friendRef = _firestore.collection('users').doc(friendId);
+  // @override
+  // Future<void> acceptFriendRequest(String userId, String friendId) async {
+  //   final userRef = _firestore.collection('users').doc(userId);
+  //   final friendRef = _firestore.collection('users').doc(friendId);
 
-    await userRef.update({
-      'friends': FieldValue.arrayUnion([friendId]),
-      'friendRequests': FieldValue.arrayRemove([friendId])
-    });
+  //   await userRef.update({
+  //     'friends': FieldValue.arrayUnion([friendId]),
+  //     'friendRequests': FieldValue.arrayRemove([friendId])
+  //   });
 
-    await friendRef.update({
-      'friends': FieldValue.arrayUnion([userId])
-    });
-  }
+  //   await friendRef.update({
+  //     'friends': FieldValue.arrayUnion([userId])
+  //   });
+  // }
 
-  @override
-  Future<void> rejectFriendRequest(String userId, String friendId) async {
-    final userRef = _firestore.collection('users').doc(userId);
+  // @override
+  // Future<void> rejectFriendRequest(String userId, String friendId) async {
+  //   final userRef = _firestore.collection('users').doc(userId);
 
-    await userRef.update({
-      'friendRequests': FieldValue.arrayRemove([friendId])
-    });
-  }
+  //   await userRef.update({
+  //     'friendRequests': FieldValue.arrayRemove([friendId])
+  //   });
+  // }
 
-  @override
-  Future<List<MyUser>> searchUsers(String query) async {
-    final snapshot = await _firestore.collection('users')
-        .where('name', isGreaterThanOrEqualTo: query)
-        .where('name', isLessThanOrEqualTo: '$query\uf8ff')
-        .get();
+  // @override
+  // Future<List<MyUser>> searchUsers(String query) async {
+  //   final snapshot = await _firestore.collection('users')
+  //       .where('name', isGreaterThanOrEqualTo: query)
+  //       .where('name', isLessThanOrEqualTo: '$query\uf8ff')
+  //       .get();
 
-    return snapshot.docs
-        .map((doc) => MyUser.fromEntity(MyUserEntity.fromDocument(doc.data())))
-        .toList();
-  }
+  //   return snapshot.docs
+  //       .map((doc) => MyUser.fromEntity(MyUserEntity.fromDocument(doc.data())))
+  //       .toList();
+  // }
 
-  @override
-  Stream<List<MyUser>> getFriends(String userId) {
-    return usersCollection.doc(userId).snapshots().asyncMap((doc) async {
-      final List<dynamic> friendsIds = doc['friends'] ?? [];
-      final List<MyUser> friends = [];
+  // @override
+  // Stream<List<MyUser>> getFriends(String userId) {
+  //   return usersCollection.doc(userId).snapshots().asyncMap((doc) async {
+  //     final List<dynamic> friendsIds = doc['friends'] ?? [];
+  //     final List<MyUser> friends = [];
 
-      for (final friendId in friendsIds) {
-        final friendDoc = await usersCollection.doc(friendId).get();
-        if (friendDoc.exists) {
-          friends.add(MyUser.fromEntity(MyUserEntity.fromDocument(friendDoc.data()!)));
-        }
-      }
+  //     for (final friendId in friendsIds) {
+  //       final friendDoc = await usersCollection.doc(friendId).get();
+  //       if (friendDoc.exists) {
+  //         friends.add(MyUser.fromEntity(MyUserEntity.fromDocument(friendDoc.data()!)));
+  //       }
+  //     }
 
-      return friends;
-    });
-  }
+  //     return friends;
+  //   });
+  // }
 
-  @override
-  Stream<List<MyUser>> getFriendRequests(String userId) {
-    return usersCollection.doc(userId).snapshots().asyncMap((doc) async {
-      List<dynamic> requestIds = List<dynamic>.from(doc['friendRequests'] ?? []);
-      List<MyUser> requests = [];
+  // @override
+  // Stream<List<MyUser>> getFriendRequests(String userId) {
+  //   return usersCollection.doc(userId).snapshots().asyncMap((doc) async {
+  //     List<dynamic> requestIds = List<dynamic>.from(doc['friendRequests'] ?? []);
+  //     List<MyUser> requests = [];
 
-      for (final requestId in requestIds) {
-        final requestDoc = await usersCollection.doc(requestId).get();
-        if (requestDoc.exists) {
-          requests.add(MyUser.fromEntity(MyUserEntity.fromDocument(requestDoc.data()!)));
-        }
-      }
+  //     for (final requestId in requestIds) {
+  //       final requestDoc = await usersCollection.doc(requestId).get();
+  //       if (requestDoc.exists) {
+  //         requests.add(MyUser.fromEntity(MyUserEntity.fromDocument(requestDoc.data()!)));
+  //       }
+  //     }
 
-      return requests;
-    });
-  }
+  //     return requests;
+  //   });
+  // }
 
-  @override
-  Future<List<MyUser>> getFirstUsers(int limit) async {
-    final snapshot = await usersCollection
-        .orderBy('name')
-        .limit(limit)
-        .get();
+  // @override
+  // Future<List<MyUser>> getFirstUsers(int limit) async {
+  //   final snapshot = await usersCollection
+  //       .orderBy('name')
+  //       .limit(limit)
+  //       .get();
 
-    return snapshot.docs
-        .map((doc) => MyUser.fromEntity(MyUserEntity.fromDocument(doc.data())))
-        .toList();
-  }
+  //   return snapshot.docs
+  //       .map((doc) => MyUser.fromEntity(MyUserEntity.fromDocument(doc.data())))
+  //       .toList();
+  // }
 
   // Getter for current user
   @override

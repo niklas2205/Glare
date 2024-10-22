@@ -27,7 +27,7 @@ import 'screens/auth/views/onboarding/onboarding_screen.dart';
 import 'screens/auth/views/welcome_screen_comp/welcome_screen.dart';
 import 'screens/home/blocs/event_list_by_Ids_bloc/event_list_by_ids_bloc.dart';
 import 'screens/home/blocs/favourite_venue_bloc/favourite_venue_bloc.dart';
-import 'screens/home/blocs/friends_bloc/friends_bloc.dart';
+// import '../Archive/friends_bloc/friends_bloc.dart';
 import 'screens/home/blocs/user_bloc/user_bloc.dart';
 import 'screens/home/blocs/user_update_bloc/user_update_bloc.dart';
 
@@ -49,9 +49,7 @@ class MainAppView extends StatelessWidget {
         RepositoryProvider<VenueRepo>(    // Add this line
           create: (_) => FirebaseVenueRepo(),  // Implement the FirebaseVenueRepo
         ),
-      ],
-      child: MultiBlocProvider(
-        providers: [
+
           BlocProvider<AuthenticationBloc>(
             create: (context) => AuthenticationBloc(userRepository: userRepository),
           ),
@@ -97,9 +95,9 @@ class MainAppView extends StatelessWidget {
           BlocProvider<ChangeGenreBloc>(
             create: (context) => ChangeGenreBloc(userRepository: userRepository),
           ),
-          BlocProvider<FriendsBloc>(
-            create: (context) => FriendsBloc(userRepository: userRepository),
-          ),
+          // BlocProvider<FriendsBloc>(
+          //   create: (context) => FriendsBloc(userRepository: userRepository),
+          // ),
           BlocProvider<RecommendedEventsBloc>(
             create: (context) => RecommendedEventsBloc(
               eventRepo: context.read<EventRepo>(),
@@ -155,64 +153,64 @@ class MainAppView extends StatelessWidget {
             '/signUp': (context) => const SignUpScreen(),
             '/onboarding': (context) => OnboardingScreen(),
             // '/manage_friends': (context) => ManageFriends(),
-            '/add_friends': (context) => const AddFriends(),
+            // '/add_friends': (context) => const AddFriends(),
           },
         ),
-      ),
+      
     );
   }
 }
 
 
-  Widget _buildHome(BuildContext context, AuthenticationState authState) {
-    if (authState.status == AuthenticationStatus.authenticated) {
-      return OnboardingWrapper();
-    } else if (authState.status == AuthenticationStatus.unauthenticated) {
-      return const WelcomeScreen();
-    } else {
-      return SplashScreen();
-    }
-  }
+//   Widget _buildHome(BuildContext context, AuthenticationState authState) {
+//     if (authState.status == AuthenticationStatus.authenticated) {
+//       return OnboardingWrapper();
+//     } else if (authState.status == AuthenticationStatus.unauthenticated) {
+//       return const WelcomeScreen();
+//     } else {
+//       return SplashScreen();
+//     }
+//   }
 
 
-class OnboardingWrapper extends StatefulWidget {
-  @override
-  _OnboardingWrapperState createState() => _OnboardingWrapperState();
-}
+// class OnboardingWrapper extends StatefulWidget {
+//   @override
+//   _OnboardingWrapperState createState() => _OnboardingWrapperState();
+// }
 
-class _OnboardingWrapperState extends State<OnboardingWrapper> {
-  @override
-  void initState() {
-    super.initState();
-    // Add the OnboardingStarted event when the widget is initialized
-    context.read<OnboardingBloc>().add(OnboardingStarted());
-  }
+// class _OnboardingWrapperState extends State<OnboardingWrapper> {
+//   @override
+//   void initState() {
+//     super.initState();
+//     // Add the OnboardingStarted event when the widget is initialized
+//     context.read<OnboardingBloc>().add(OnboardingStarted());
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocBuilder<OnboardingBloc, OnboardingState>(
-        builder: (context, state) {
-          if (state is OnboardingCompletionSuccess) {
-            print('Onboarding complete, navigating to home');
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.of(context).pushReplacementNamed('/home');
-            });
-            return SizedBox.shrink();
-          } else if (state is OnboardingRequired) {
-            print('Onboarding required, navigating to onboarding');
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.of(context).pushReplacementNamed('/onboarding');
-            });
-            return SizedBox.shrink();
-          } else if (state is OnboardingLoadInProgress) {
-            return Center(child: CircularProgressIndicator());
-          } else {
-            // Default case
-            return Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: BlocBuilder<OnboardingBloc, OnboardingState>(
+//         builder: (context, state) {
+//           if (state is OnboardingCompletionSuccess) {
+//             print('Onboarding complete, navigating to home');
+//             WidgetsBinding.instance.addPostFrameCallback((_) {
+//               Navigator.of(context).pushReplacementNamed('/home');
+//             });
+//             return SizedBox.shrink();
+//           } else if (state is OnboardingRequired) {
+//             print('Onboarding required, navigating to onboarding');
+//             WidgetsBinding.instance.addPostFrameCallback((_) {
+//               Navigator.of(context).pushReplacementNamed('/onboarding');
+//             });
+//             return SizedBox.shrink();
+//           } else if (state is OnboardingLoadInProgress) {
+//             return Center(child: CircularProgressIndicator());
+//           } else {
+//             // Default case
+//             return Center(child: CircularProgressIndicator());
+//           }
+//         },
+//       ),
+//     );
+//   }
+// }

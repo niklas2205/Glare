@@ -1,12 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:glare/screens/background_screen/background_screen.dart';
-import 'package:glare/screens/home/blocs/friends_bloc/friends_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:glare/screens/background_screen/background_screen.dart';
+// import '../../../../../../Archive/friends_bloc/friends_bloc.dart';
+// import 'package:google_fonts/google_fonts.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 
 
-import '../../../blocs/friends_bloc/friends_state.dart';
+// import '../../../../../../Archive/friends_bloc/friends_state.dart';
 
 // class ManageFriends extends StatelessWidget {
 //   @override
