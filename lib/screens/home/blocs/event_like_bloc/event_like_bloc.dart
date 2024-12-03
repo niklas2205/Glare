@@ -47,49 +47,83 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
   }
 
   Future<void> _onLikeEvent(LikeEvent event, Emitter<EventLikeState> emit) async {
+    if (state is EventLikeSuccess) {
+      // Optimistically update the state
+      final likedEvents = List<String>.from((state as EventLikeSuccess).likedEvents);
+      final likesCountMap = Map<String, int>.from((state as EventLikeSuccess).likesCount);
+
+      likedEvents.add(event.eventId);
+      likesCountMap[event.eventId] = (likesCountMap[event.eventId] ?? 0) + 1;
+
+      emit((state as EventLikeSuccess).copyWith(
+        likedEvents: likedEvents,
+        likesCount: likesCountMap,
+      ));
+    } else {
+      emit(EventLikeSuccess([event.eventId], {event.eventId: 1}));
+    }
+
+    // Perform the backend call
     try {
       await userRepository.likeEvent(event.userId, event.eventId);
       await eventRepository.likeEvent(event.eventId, event.userId);
-
-      if (state is EventLikeSuccess) {
-        final likedEvents = List<String>.from((state as EventLikeSuccess).likedEvents);
-        final likesCountMap = Map<String, int>.from((state as EventLikeSuccess).likesCount);
-
-        likedEvents.add(event.eventId);
-        likesCountMap[event.eventId] = (likesCountMap[event.eventId] ?? 0) + 1;
-
-        emit((state as EventLikeSuccess).copyWith(
-          likedEvents: likedEvents,
-          likesCount: likesCountMap,
-        ));
-      } else {
-        emit(EventLikeSuccess([event.eventId], {event.eventId: 1}));
-      }
     } catch (e) {
-      emit(EventLikeFailure(e.toString()));
-    }
-  }
-
-  Future<void> _onUnlikeEvent(UnlikeEvent event, Emitter<EventLikeState> emit) async {
-    try {
-      await userRepository.unlikeEvent(event.userId, event.eventId);
-      await eventRepository.unlikeEvent(event.eventId, event.userId);
-
+      // Revert the optimistic update
       if (state is EventLikeSuccess) {
         final likedEvents = List<String>.from((state as EventLikeSuccess).likedEvents);
         final likesCountMap = Map<String, int>.from((state as EventLikeSuccess).likesCount);
 
         likedEvents.remove(event.eventId);
-        likesCountMap[event.eventId] = (likesCountMap[event.eventId] ?? 1) - 1;
+        likesCountMap[event.eventId] = (likesCountMap[event.eventId]! > 1)
+            ? likesCountMap[event.eventId]! - 1
+            : 0;
 
         emit((state as EventLikeSuccess).copyWith(
           likedEvents: likedEvents,
           likesCount: likesCountMap,
         ));
-      } else {
-        emit(EventLikeSuccess([], {event.eventId: 0}));
       }
+      emit(EventLikeFailure(e.toString()));
+    }
+  }
+
+  Future<void> _onUnlikeEvent(UnlikeEvent event, Emitter<EventLikeState> emit) async {
+    if (state is EventLikeSuccess) {
+      // Optimistically update the state
+      final likedEvents = List<String>.from((state as EventLikeSuccess).likedEvents);
+      final likesCountMap = Map<String, int>.from((state as EventLikeSuccess).likesCount);
+
+      likedEvents.remove(event.eventId);
+      likesCountMap[event.eventId] = (likesCountMap[event.eventId]! > 0)
+          ? likesCountMap[event.eventId]! - 1
+          : 0;
+
+      emit((state as EventLikeSuccess).copyWith(
+        likedEvents: likedEvents,
+        likesCount: likesCountMap,
+      ));
+    } else {
+      emit(EventLikeSuccess([], {event.eventId: 0}));
+    }
+
+    // Perform the backend call
+    try {
+      await userRepository.unlikeEvent(event.userId, event.eventId);
+      await eventRepository.unlikeEvent(event.eventId, event.userId);
     } catch (e) {
+      // Revert the optimistic update
+      if (state is EventLikeSuccess) {
+        final likedEvents = List<String>.from((state as EventLikeSuccess).likedEvents);
+        final likesCountMap = Map<String, int>.from((state as EventLikeSuccess).likesCount);
+
+        likedEvents.add(event.eventId);
+        likesCountMap[event.eventId] = likesCountMap[event.eventId]! + 1;
+
+        emit((state as EventLikeSuccess).copyWith(
+          likedEvents: likedEvents,
+          likesCount: likesCountMap,
+        ));
+      }
       emit(EventLikeFailure(e.toString()));
     }
   }
@@ -143,4 +177,3 @@ class EventLikeBloc extends Bloc<EventLikeEvent, EventLikeState> {
     }
   }
 }
-

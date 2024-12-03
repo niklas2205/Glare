@@ -49,7 +49,10 @@ class MainAppView extends StatelessWidget {
         RepositoryProvider<VenueRepo>(    // Add this line
           create: (_) => FirebaseVenueRepo(),  // Implement the FirebaseVenueRepo
         ),
-
+        RepositoryProvider<DatabaseRepository>(
+      create: (_) => DatabaseRepository(), // Provide the DatabaseRepository
+      ),
+        
           BlocProvider<AuthenticationBloc>(
             create: (context) => AuthenticationBloc(userRepository: userRepository),
           ),
