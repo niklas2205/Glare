@@ -10,8 +10,9 @@ import '../../../blocs/day_selector_bloc/day_selector_bloc.dart'; // Add this im
 
 class DaySelector extends StatelessWidget {
   final Function(DateTime) onDaySelected;
+  final ScrollController scrollController = ScrollController(); // for horizontal scrolling
 
-  const DaySelector({Key? key, required this.onDaySelected}) : super(key: key);
+  DaySelector({Key? key, required this.onDaySelected}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,18 +23,33 @@ class DaySelector extends StatelessWidget {
         DateTime? selectedDate;
         if (state is DaySelected) {
           selectedDate = state.selectedDate;
+          // Auto scroll the horizontal list to the selected date
+          Future.microtask(() {
+            final index = days.indexWhere((d) => _isSameDate(d, selectedDate!));
+            if (index != -1 && scrollController.hasClients) {
+              // Center the selected date
+              // Each item has width approx: let's assume a fixed width for each date container
+              // For a more dynamic approach, measure the item width or use a fixed width.
+              // Let's assume each item has width of about 100 including margins.
+              double itemWidth = 100.0;
+              double offset = index * itemWidth - (MediaQuery.of(context).size.width / 2) + (itemWidth / 2);
+              offset = offset < 0 ? 0 : offset;
+              scrollController.animateTo(offset, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+            }
+          });
         }
 
         return Container(
           height: 60,
           child: ListView.builder(
+            controller: scrollController,
             scrollDirection: Axis.horizontal,
             itemCount: days.length,
             itemBuilder: (context, index) {
               final day = days[index];
               final isSelected = selectedDate != null && _isSameDate(selectedDate, day);
               final dayText = DateFormat('dd.MM').format(day);
-              final weekdayText = DateFormat('EEEE').format(day);
+              final weekdayText = DateFormat('EEE').format(day);
 
               return GestureDetector(
                 onTap: () {
@@ -41,13 +57,14 @@ class DaySelector extends StatelessWidget {
                   onDaySelected(day);
                 },
                 child: Container(
+                  width: 80,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   decoration: BoxDecoration(
                     border: Border.all(color: const Color(0xFF8FFA58)),
                     borderRadius: BorderRadius.circular(10),
                     color: isSelected ? const Color(0xFF8FFA58) : const Color(0xFF1A1A1A),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

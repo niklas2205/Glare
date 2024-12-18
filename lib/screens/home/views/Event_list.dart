@@ -7,67 +7,20 @@ import 'package:intl/intl.dart';
 import '../blocs/event_like_bloc/event_like_bloc.dart';
 import 'New_Version/explore_screen/event_card.dart';
 
-class EventListWidget extends StatefulWidget {
+class EventListWidget extends StatelessWidget {
   final List<Event> events;
-  final ScrollController scrollController;
 
   const EventListWidget({
     Key? key,
     required this.events,
-    required this.scrollController,
   }) : super(key: key);
 
   @override
-  _EventListWidgetState createState() => _EventListWidgetState();
-}
-
-class _EventListWidgetState extends State<EventListWidget> {
-  late EventLikeBloc _eventLikeBloc;
-
-  @override
-  void initState() {
-    super.initState();
-    _eventLikeBloc = context.read<EventLikeBloc>();
-
-    // Fetch initial like counts for all events
-    widget.events.forEach((event) {
-      if (event.eventId != null) {
-        _eventLikeBloc.add(LoadEventLikeCount(event.eventId!));
-      }
-    });
-
-    // Load liked events for the current user
-    _loadLikedEvents();
-  }
-
-  Future<void> _loadLikedEvents() async {
-    final user = await context.read<UserRepository>().getCurrentUser();
-    if (user != null) {
-      _eventLikeBloc.add(LoadLikedEvents(user.userId));
-    }
-  }
-
-  Future<void> _refreshEventsAndLikes(BuildContext context) async {
-    final getEventBloc = context.read<GetEventBloc>();
-    final userRepository = context.read<UserRepository>();
-
-    // Fetch and update events
-    getEventBloc.add(LoadEvents());
-
-    // Fetch and update liked events
-    final user = await userRepository.getCurrentUser();
-    if (user != null) {
-      _eventLikeBloc.add(LoadLikedEvents(user.userId));
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final groupedEvents = _groupEventsByDate(widget.events);
+    final groupedEvents = _groupEventsByDate(events);
 
     return ListView.builder(
-      controller: widget.scrollController,
-      padding: EdgeInsets.zero, // Ensure no padding at the start
+      padding: EdgeInsets.zero,
       itemCount: groupedEvents.length,
       itemBuilder: (context, index) {
         final group = groupedEvents[index];
