@@ -1,7 +1,7 @@
 import 'package:event_repository/event_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:glare/screens/home/blocs/bloc/event_scroll_bloc.dart';
+
 import 'package:glare/screens/home/blocs/event_like_bloc/event_like_bloc.dart';
 import 'package:glare/screens/home/views/Event_list.dart';
 import 'package:glare/screens/home/views/New_Version/explore_screen/day_selector.dart';
@@ -14,6 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_repository/user_repository.dart';
 
 import '../../../blocs/day_selector_bloc/day_selector_bloc.dart';
+import '../../../blocs/event_scroll_bloc/event_scroll_bloc.dart';
 import '../../../blocs/get_event_bloc/get_event_bloc.dart';
 import '../../../blocs/search_event_bloc/search_event_bloc.dart';
 
@@ -64,8 +65,8 @@ class EventListScreen extends StatelessWidget {
             create: (context) => EventScrollBloc(
               groupedEvents: groupedEvents,
               dateIndexMap: dateIndexMap,
-              headerHeight: 50, // Adjust as necessary
-              eventHeight: 100, // Adjust as necessary
+              headerHeight: 27, // Adjust as necessary
+              eventHeight: 117.5, // Adjust as necessary
             ),
             child: Column(
               children: [
@@ -124,8 +125,8 @@ class EventListScreen extends StatelessWidget {
                                 return _buildDateHeader(context, item);
                               } else if (item is Event) {
                                 final double cardWidth = MediaQuery.of(context).size.width * 0.82;
-                                final double cardHeight = 100;
-                                final double imageSize = cardHeight - 16;
+                                const double cardHeight = 100;
+                                const double imageSize = cardHeight - 16;
                                 return EventCard(
                                   event: item,
                                   cardWidth: cardWidth,
@@ -150,21 +151,40 @@ class EventListScreen extends StatelessWidget {
   }
 
   void scrollToEvent(BuildContext context, DateTime selectedDate) {
-    if (dateIndexMap.containsKey(selectedDate)) {
-      final index = dateIndexMap[selectedDate]!;
-      double offset = _calculateOffsetForIndex(index, groupedEvents);
+  DateTime? targetDate;
 
-      _scrollController.animateTo(
-        offset,
-        duration: const Duration(seconds: 1),
-        curve: Curves.easeInOut,
-      );
+  // If there's a direct match for the selected date
+  if (dateIndexMap.containsKey(selectedDate)) {
+    targetDate = selectedDate;
+  } else {
+    // If there's no direct match, find the next available date after the selectedDate.
+    final sortedDates = dateIndexMap.keys.toList()..sort();
+
+    for (final date in sortedDates) {
+      // Check if this date is on or after the selected date
+      if (date.isAtSameMomentAs(selectedDate) || date.isAfter(selectedDate)) {
+        targetDate = date;
+        break;
+      }
     }
   }
 
+  // If we found a suitable target date to scroll to
+  if (targetDate != null) {
+    final index = dateIndexMap[targetDate]!;
+    double offset = _calculateOffsetForIndex(index, groupedEvents);
+
+    _scrollController.animateTo(
+      offset,
+      duration: const Duration(seconds: 1),
+      curve: Curves.easeInOut,
+    );
+  }
+}
+
   double _calculateOffsetForIndex(int index, List<dynamic> groupedEvents) {
-    double headerHeight = 50;
-    double eventHeight = 100;
+    double headerHeight = 27;
+    double eventHeight = 117.5;
     double offset = 0.0;
 
     for (int i = 0; i < index; i++) {

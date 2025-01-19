@@ -59,26 +59,30 @@ class EventScrollBloc extends Bloc<EventScrollEvent, EventScrollState> {
   }
 
   DateTime? _findVisibleDateForOffset(double offset) {
-    // Let's compute offsets by iterating through groupedEvents and track when we hit a date.
-    // groupedEvents: [DateTime(dateHeader), Event, Event, DateTime(dateHeader), Event, ...]
-    double currentOffset = 0.0;
-    DateTime? currentDate;
-    for (var item in groupedEvents) {
-      if (item is DateTime) {
-        // date header
-        currentDate = item;
-        currentOffset += headerHeight;
-        if (currentOffset > offset) {
-          return currentDate;
-        }
-      } else {
-        // event
-        currentOffset += eventHeight;
-        if (currentOffset > offset && currentDate != null) {
-          return currentDate;
-        }
+  double currentOffset = 0.0;
+  DateTime? currentDate;
+
+  for (var item in groupedEvents) {
+    if (item is DateTime) {
+      // This is a date header
+      currentDate = item;
+      currentOffset += headerHeight;
+
+      // Once currentOffset surpasses the given offset, we consider that date as visible
+      if (currentOffset > offset) {
+        return currentDate;
+      }
+    } else {
+      // This is an event
+      currentOffset += eventHeight;
+
+      // If we've passed beyond the offset, we stick with the last encountered date header
+      if (currentOffset > offset && currentDate != null) {
+        return currentDate;
       }
     }
-    return currentDate;
   }
+  return currentDate;
+}
+
 }

@@ -92,42 +92,6 @@
           ]
         }
       }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:718317121487:android:3e9cc49896ee2522f62cba",
-        "android_client_info": {
-          "package_name": "com.glareevents100.glare"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "718317121487-0fj1jrpuijgldu8r9fv5n0l1178enpff.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC7xGUAU3huprdes6UUSOztCUSHmWVwtsg"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "718317121487-0fj1jrpuijgldu8r9fv5n0l1178enpff.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "718317121487-24truogoqgeeq2kvkltker6ns03rqb5b.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.glare"
-              }
-            }
-          ]
-        }
-      }
     }
   ],
   "configuration_version": "1"
