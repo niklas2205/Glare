@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-package="com.glareevents.glare">
+package="com.glareevents100.glare">
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application

@@ -1,4 +1,4 @@
-package com.glareevents.glare
+package com.glareevents100.glare
 
 import io.flutter.embedding.android.FlutterActivity
 
